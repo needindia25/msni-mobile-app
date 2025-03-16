@@ -3,57 +3,32 @@
     "name": "Need India",
     "slug": "need-india",
     "version": "1.0.0",
-    "newArchEnabled": false,
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
     "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "icon": "./assets/images/icon100x100.png",
     "splash": {
-      "image": "./assets/images/icon.png",
+      "image": "./assets/images/icon100x100.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.needindia25.msni"
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "server",
-      "favicon": "./assets/images/favicon.png"
-    },
     "plugins": [
-      [
-        "expo-router",
-        {
-          "origin": "http://www.multisolutionofneedindia.com/"
-        }
-      ],
-      "expo-font",
-      "expo-secure-store",
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "Allow Need India to access your photo library",
-          "cameraPermission": "Allow Need India to use your camera"
-        }
-      ]
+      "expo-router"
     ],
     "experiments": {
       "typedRoutes": true
     },
-    "extra": {
-      "router": {
-        "origin": "http://www.multisolutionofneedindia.com/"
-      },
-      "eas": {
-        "projectId": "0f884026-0bcd-4399-99bd-2851cc46d677"
-      }
+    "scheme": "needindia",
+    "android": {
+      "package": "com.needindia25.needindia"
     }
   }
 }

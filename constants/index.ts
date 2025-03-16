@@ -34,9 +34,9 @@ import check from "@/assets/images/check.png";
 import getStarted from "@/assets/images/get-started.png";
 import message from "@/assets/images/message.png";
 import noResult from "@/assets/images/no-result.png";
-import onboarding1 from "@/assets/images/onboarding1.png";
-import onboarding2 from "@/assets/images/onboarding2.png";
-import onboarding3 from "@/assets/images/onboarding3.png";
+import msniOnBoarding1 from "@/assets/images/msniOnBoarding1.png";
+import msniOnBoarding2 from "@/assets/images/msniOnBoarding2.png";
+import msniOnBoarding3 from "@/assets/images/msniOnBoarding3.png";
 import VerticalLogo from "@/assets/images/vertical-logo.png";
 import HorizontalLogo from "@/assets/images/horizontal-logo.png";
 import adaptiveIcon from "@/assets/images/adaptive-icon.png";
@@ -44,9 +44,9 @@ import adaptiveIcon from "@/assets/images/adaptive-icon.png";
 
 
 export const images = {
-  onboarding1,
-  onboarding2,
-  onboarding3,
+  msniOnBoarding1,
+  msniOnBoarding2,
+  msniOnBoarding3,
   getStarted,
   VerticalLogo,
   HorizontalLogo,
@@ -97,14 +97,14 @@ export const onboarding = [
     title: "Rent and Property",
     description:
       "Your go-to solution for home, land, shop, showroom, godown rentals",
-    image: images.onboarding1,
+    image: images.msniOnBoarding1,
   },
   {
     id: 2,
     title: "Ready to Explore",
     description:
       "Find your perfect rental space in just a few taps",
-    image: images.onboarding2,
+    image: images.msniOnBoarding2,
   },
   // {
   //   id: 3,

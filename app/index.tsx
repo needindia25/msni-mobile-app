@@ -1,22 +1,82 @@
-import Button from "@/components/Button";
-import { Alert, Text, View } from "react-native";
+import { router } from "expo-router";
+import { useRef, useState } from "react";
+import { Image, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Swiper from "react-native-swiper";
 
-export default function Index() {
-  return (
-    <View className="flex-1 items-center justify-center gap-y-2">
-      <View className="items-center">
-        <Text className="text-4xl">Welcome to NativeWind!</Text>
-        <Text className="text-xl">Style your app with</Text>
-        <Text className="text-3xl bg-yellow-100 font-bold underline">
-          Tailwind CSS!
-        </Text>
-      </View>
-      <Button
-        label="Sounds good!"
-        onPress={() => {
-          Alert.alert("NativeWind", "You're all set up!");
-        }}
-      />
-    </View>
-  );
-}
+import CustomButton from "@/components/CustomButton";
+import { onboarding, images } from "@/constants";
+
+const Home = () => {
+    const swiperRef = useRef<Swiper>(null);
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    const isLastSlide = activeIndex === onboarding.length - 1;
+
+    return (
+        <SafeAreaView className="flex h-full items-center justify-between bg-white">
+            {/* <TouchableOpacity
+                // onPress={() => {
+                //   router.replace("/(auth)/sign-up");
+                // }}
+                className="w-full flex justify-end items-end p-5"
+            >
+                <Text className="text-black text-md font-JakartaBold">Skip</Text>
+            </TouchableOpacity> */}
+            <View className="flex-1 bg-white">
+                <View className="w-full flex-row justify-between items-center mt-5 px-5">
+                    <Image source={images.HorizontalLogo} className="w-[100px] h-[50px]" />
+                    <TouchableOpacity
+                        // onPress={() => {
+                        //     router.replace("/(auth)/sign-up");
+                        // }}
+                        className="p-5"
+                    >
+                        <Text className="text-black text-md font-JakartaBold">Skip</Text>
+                    </TouchableOpacity>
+                </View>
+                <Swiper
+                    ref={swiperRef}
+                    loop={false}
+                    dot={
+                        <View className="w-[32px] h-[4px] mx-1 bg-[#E2E8F0] rounded-full" />
+                    }
+                    activeDot={
+                        <View className="w-[32px] h-[4px] mx-1 bg-[#0286FF] rounded-full" />
+                    }
+                    onIndexChanged={(index) => setActiveIndex(index)}
+                >
+                    {onboarding.map((item) => (
+                        <View key={item.id} className="flex items-center justify-center p-5">
+                            <Image
+                                source={item.image}
+                                className="w-full h-[300px]"
+                                resizeMode="contain"
+                            />
+                            <View className="flex flex-row items-center justify-center w-full mt-10">
+                                <Text className="text-black text-2xl font-bold mx-10 text-center">
+                                    {item.title}
+                                </Text>
+                            </View>
+                            <Text className="text-md font-JakartaSemiBold text-center text-[#858585] mx-10 mt-3">
+                                {item.description}
+                            </Text>
+                        </View>
+                    ))}
+                </Swiper>
+            </View>
+
+            <CustomButton
+                title={isLastSlide ? "Get Started" : "Next"}
+                // onPress={() =>
+                //     isLastSlide
+                //         ? router.replace("/(auth)/sign-up")
+                //         : swiperRef.current?.scrollBy(1)
+                // }
+                className="w-11/12 mt-10 mb-5"
+            />
+        </SafeAreaView>
+    );
+};
+
+export default Home;

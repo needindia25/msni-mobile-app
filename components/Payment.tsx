@@ -119,7 +119,7 @@ const Payment = ({
           }
         },
       },
-      returnURL: "myapp://choose-subscription",
+      returnURL: "needindia://choose-subscription",
     });
 
     if (!error) {
