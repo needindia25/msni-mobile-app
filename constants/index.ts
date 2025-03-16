@@ -36,7 +36,7 @@ import message from "@/assets/images/message.png";
 import noResult from "@/assets/images/no-result.png";
 // import niOnBoarding1 from "@/assets/images/ni-on-boarding1.png";
 // import niOnBoarding2 from "@/assets/images/ni-on-boarding2.png";
-// import niOnBoarding3 from "@/assets/images/ni-on-boarding3.png";
+import niOnBoarding3 from "@/assets/images/ni-on-boarding3.png";
 import VerticalLogo from "@/assets/images/vertical-logo.png";
 import HorizontalLogo from "@/assets/images/horizontal-logo.png";
 import adaptiveIcon from "@/assets/images/adaptive-icon.png";
@@ -44,7 +44,7 @@ import adaptiveIcon from "@/assets/images/adaptive-icon.png";
 export const images = {
   // niOnBoarding1,
   // niOnBoarding2,
-  // niOnBoarding3,
+  niOnBoarding3,
   getStarted,
   VerticalLogo,
   HorizontalLogo,
@@ -90,26 +90,26 @@ export const icons = {
 };
 
 export const onboarding = [
+  // {
+  //   id: 1,
+  //   title: "Rent and Property",
+  //   description:
+  //     "Your go-to solution for home, land, shop, showroom, godown rentals",
+  //   image: images.niOnBoarding1,
+  // },
+  // {
+  //   id: 2,
+  //   title: "Ready to Explore",
+  //   description:
+  //     "Find your perfect rental space in just a few taps",
+  //   image: images.niOnBoarding2,
+  // },
   {
     id: 1,
-    title: "Rent and Property",
-    description:
-      "Your go-to solution for home, land, shop, showroom, godown rentals",
-    // image: images.niOnBoarding1,
-  },
-  {
-    id: 2,
-    title: "Ready to Explore",
-    description:
-      "Find your perfect rental space in just a few taps",
-    // image: images.niOnBoarding2,
-  },
-  {
-    id: 3,
     title: "Easy Property Search",
     description:
       "Need a tenant or a house for rent? Need India app will solve your problem",
-    // image: images.niOnBoarding3,
+    image: images.niOnBoarding3,
   },
 ];
 
