@@ -120,7 +120,7 @@ export const data = {
 
 export const constants = {
   // API_URL: "http://192.168.0.110:8000/api",
-  API_URL: "http://multisolutionofneedindia.com/api",
+  API_URL: "https://multisolutionofneedindia.com/api",
   DEFAULT_PASSWORD: "MSNI@2025",
   EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY: "pk_test_51R0N0gGhb2i5A0MqBJqYMuC6CrGhn13grWTDwVhXGeKO4DGUFokbDXFXgiu07ZMt8XPawGUzOBellBcC4q8bus8V00UNh3aqUD",
   STRIPE_SECRET_KEY: "sk_test_51R0N0gGhb2i5A0MqcUDabfwSB9wV1PPuujd4Flj1URVtHGmUqsb0Rzcx3Bk8omACSr6hRqNpVyiy6ViyP4OCasG200LxTVHlS3"
