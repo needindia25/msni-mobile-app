@@ -13,13 +13,12 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
     onBack,
     number,
 }) => {
-    const [otp, setOtp] = useState(['', '', '', '']);
+    const OTP_LENGTH = 6; // Adjust OTP length as needed
+    const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
     const [timeRemaining, setTimeRemaining] = useState(59);
     const [whatsappChecked, setWhatsappChecked] = useState(false);
     const [generatedOtp, setGeneratedOtp] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-
-
     const inputRefs = useRef<(TextInput | null)[]>([]);
 
     useEffect(() => {
@@ -31,7 +30,7 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
     }, []);
 
     useEffect(() => {
-        const randomOtp = Math.floor(1000 + Math.random() * 9000).toString();
+        const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
         setGeneratedOtp(randomOtp);
         Alert.alert('Generated OTP:', randomOtp);
     }, []);
@@ -40,13 +39,19 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
         const newOtp = [...otp];
         newOtp[index] = value;
         setOtp(newOtp);
+
+
+        // Move focus to the next input if value is entered
+        if (value && index < OTP_LENGTH - 1) {
+            inputRefs.current[index + 1]?.focus();
+        }
     };
 
     const handleResendCode = () => {
         // Logic to resend the OTP code
         console.log('Resend code');
         setTimeRemaining(59);
-        const randomOtp = Math.floor(1000 + Math.random() * 9000).toString();
+        const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
         setGeneratedOtp(randomOtp);
         Alert.alert('Generated OTP:', randomOtp);
         setErrorMessage('');
@@ -62,6 +67,12 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
             console.log('Invalid OTP');
             setOtp(['', '', '', '']);
             setErrorMessage('Invalid OTP. Please try again.');
+        }
+    };
+
+    const handleKeyPress = (index: number, event: any) => {
+        if (event.nativeEvent.key === "Backspace" && !otp[index] && index > 0) {
+            inputRefs.current[index - 1]?.focus();
         }
     };
 
@@ -89,6 +100,7 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
                         ref={(ref) => (inputRefs.current[index] = ref)}
                         value={digit}
                         onChangeText={(value) => handleOtpChange(index, value)}
+                        onKeyPress={(event) => handleKeyPress(index, event)}
                         maxLength={1}
                         keyboardType="numeric"
                         className="w-12 h-12 border border-gray-300 rounded-lg text-center text-2xl mx-1"
@@ -112,9 +124,11 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
       <Text className="text-gray-500 text-center mt-2">
         I agree to receive important updates via WhatsApp
       </Text> */}
-            <TouchableOpacity onPress={handleVerify} className="bg-green-500 rounded-lg p-3 mt-5 w-full">
-                <Text className="text-white text-center font-bold">Verify</Text>
-            </TouchableOpacity>
+            {otp.every((digit) => digit) && (
+                <TouchableOpacity onPress={handleVerify} className="bg-green-500 rounded-lg p-3 mt-5 w-full">
+                    <Text className="text-white text-center font-bold">Verify</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };

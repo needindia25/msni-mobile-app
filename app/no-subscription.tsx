@@ -46,7 +46,7 @@ const NoSubscription = () => {
                         <Text className="text-white text-lg font-bold">Subscribe Now</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        // onPress={() => userInfo?.user_type_id === 1 ? router.push('/(seeker)/(tabs)/home') : router.push('/(provider)/(tabs)/home')}
+                        onPress={() => userInfo?.user_type_id === 1 ? router.push('/(seeker)/(tabs)/home') : router.push('/(provider)/(tabs)/home')}
                     >
                         <Text className="text-lg text-black">Subscribe later</Text>
                     </TouchableOpacity>

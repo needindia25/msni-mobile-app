@@ -37,6 +37,7 @@ import noResult from "@/assets/images/no-result.png";
 // import niOnBoarding1 from "@/assets/images/ni-on-boarding1.png";
 // import niOnBoarding2 from "@/assets/images/ni-on-boarding2.png";
 import niOnBoarding3 from "@/assets/images/ni-on-boarding3.png";
+import niOnBoarding4 from "@/assets/images/ni-on-boarding4.png";
 import VerticalLogo from "@/assets/images/vertical-logo.png";
 import HorizontalLogo from "@/assets/images/horizontal-logo.png";
 import adaptiveIcon from "@/assets/images/adaptive-icon.png";
@@ -45,6 +46,7 @@ export const images = {
   // niOnBoarding1,
   // niOnBoarding2,
   niOnBoarding3,
+  niOnBoarding4,
   getStarted,
   VerticalLogo,
   HorizontalLogo,
@@ -90,13 +92,13 @@ export const icons = {
 };
 
 export const onboarding = [
-  // {
-  //   id: 1,
-  //   title: "Rent and Property",
-  //   description:
-  //     "Your go-to solution for home, land, shop, showroom, godown rentals",
-  //   image: images.niOnBoarding1,
-  // },
+  {
+    id: 1,
+    title: "Rent and Property",
+    description:
+      "Your go-to solution for home, land, shop, showroom, godown rentals",
+    image: images.niOnBoarding4,
+  },
   // {
   //   id: 2,
   //   title: "Ready to Explore",
@@ -105,7 +107,7 @@ export const onboarding = [
   //   image: images.niOnBoarding2,
   // },
   {
-    id: 1,
+    id: 2,
     title: "Easy Property Search",
     description:
       "Need a tenant or a house for rent? Need India app will solve your problem",
@@ -118,10 +120,16 @@ export const data = {
 };
 
 
+// export const constants = {
+//   API_URL: "http://192.168.0.110:8000/api",
+//   DEFAULT_PASSWORD: "MSNI@2025",
+//   EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY: "pk_test_51R0N0gGhb2i5A0MqBJqYMuC6CrGhn13grWTDwVhXGeKO4DGUFokbDXFXgiu07ZMt8XPawGUzOBellBcC4q8bus8V00UNh3aqUD",
+//   STRIPE_SECRET_KEY: "sk_test_51R0N0gGhb2i5A0MqcUDabfwSB9wV1PPuujd4Flj1URVtHGmUqsb0Rzcx3Bk8omACSr6hRqNpVyiy6ViyP4OCasG200LxTVHlS3"
+// };
+
 export const constants = {
-  // API_URL: "http://192.168.0.110:8000/api",
   API_URL: "https://multisolutionofneedindia.com/api",
   DEFAULT_PASSWORD: "MSNI@2025",
-  EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY: "pk_test_51R0N0gGhb2i5A0MqBJqYMuC6CrGhn13grWTDwVhXGeKO4DGUFokbDXFXgiu07ZMt8XPawGUzOBellBcC4q8bus8V00UNh3aqUD",
-  STRIPE_SECRET_KEY: "sk_test_51R0N0gGhb2i5A0MqcUDabfwSB9wV1PPuujd4Flj1URVtHGmUqsb0Rzcx3Bk8omACSr6hRqNpVyiy6ViyP4OCasG200LxTVHlS3"
+  EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY: "pk_test_51R430HGaMYl6ECTXSnXmMyDytNVGAm4uzib27JcLraI1H9eduex1YOmcnGT9aNbAemg2Y8Y2rFJzYsDn3IWnBQUM00iXMCCuzs",
+  STRIPE_SECRET_KEY: "sk_test_51R430HGaMYl6ECTXDPlVv9Es4gGogft8wNvgf7XDKpHn4HZkjJtxIkQLrwdFNkZJlFBWF2pkgEIptqSnzC9GvW0H00qGNIK8w7"
 };

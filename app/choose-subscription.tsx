@@ -88,7 +88,7 @@ const ChooseSubscription = () => {
                         <View className="flex-1 bg-white p-5">
                             <View className="flex-row items-center mb-5">
                                 <TouchableOpacity
-                                    // onPress={() => userInfo?.user_type_id === 1 ? router.push('/(seeker)/(tabs)/profile') : router.push('/(provider)/(tabs)/profile')}
+                                    onPress={() => userInfo?.user_type_id === 1 ? router.push('/(seeker)/(tabs)/profile') : router.push('/(provider)/(tabs)/profile')}
                                     className="p-5"
                                 >
                                     <Image

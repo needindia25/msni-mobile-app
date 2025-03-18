@@ -49,16 +49,16 @@ const SignIn = () => {
         await AsyncStorage.setItem('token', access);
         await AsyncStorage.setItem('refresh', refresh);
         await AsyncStorage.setItem('user_info', JSON.stringify(user_info));
-        // if (user_info.has_subscription) {
-        //   if (user_info.user_type_id === 1) {
-        //     router.replace("/(seeker)/(tabs)/home");
-        //   } else {
-        //     router.replace("/(provider)/(tabs)/home");
-        //   }
-        // } else {
-        //   router.replace("/no-subscription");
-        // }
-        Alert.alert("Success", "Logged in successfully");
+        if (user_info.has_subscription) {
+          if (user_info.user_type_id === 1) {
+            router.replace("/(seeker)/(tabs)/home");
+          } else {
+            router.replace("/(provider)/(tabs)/home");
+          }
+        } else {
+          router.replace("/no-subscription");
+        }
+
       } else {
         Alert.alert("Error", "Invalid credentials. Please try again.");
       }
