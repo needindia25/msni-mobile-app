@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router';
 import InputField from '@/components/InputField';
 import CustomTextarea from '@/components/CustomTextarea';
 import ImagePickerComponent from '@/components/ImagePicker';
+import ComingSoon from '@/components/ComingSoon';
 
 const Home = () => {
   const router = useRouter();
@@ -68,6 +69,14 @@ const Home = () => {
   };
 
   const screenWidth = Dimensions.get('screen').width;
+
+  return (
+    <SafeAreaView className="flex h-full bg-white">
+      <ScrollView className="flex-1 bg-white p-5">
+        <ComingSoon />
+      </ScrollView>
+    </SafeAreaView>
+  )
 
   return (
     <SafeAreaView className="flex h-full bg-white">

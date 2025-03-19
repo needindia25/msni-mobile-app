@@ -1,7 +1,10 @@
 import { icons } from '@/constants';
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
+import { OTPWidget } from '@msg91comm/sendotp-react-native';
 
+const widgetId = "356372726e61363838313534";
+const tokenAuth = "444202Th2tWl4Ud67d9ba29P1";
 interface VerificationUsingOTPProps {
     onPress: () => void;
     onBack: () => void;
@@ -30,9 +33,19 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
     }, []);
 
     useEffect(() => {
-        const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
-        setGeneratedOtp(randomOtp);
-        Alert.alert('Generated OTP:', randomOtp);
+        const fetchOtp = async () => {
+            // const data = {
+            //     identifier: `91${number}`
+            // };
+            // const response = await OTPWidget.sendOTP(data);
+            // console.log(response);
+            // Alert.alert('Generated OTPWidget OTP:', response.otp);
+            const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
+            setGeneratedOtp(randomOtp);
+            Alert.alert('Generated OTP:', randomOtp);
+        };
+
+        fetchOtp();
     }, []);
 
     const handleOtpChange = (index: number, value: string) => {
@@ -65,7 +78,7 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
             onPress();
         } else {
             console.log('Invalid OTP');
-            setOtp(['', '', '', '']);
+            setOtp(Array(OTP_LENGTH).fill(""));
             setErrorMessage('Invalid OTP. Please try again.');
         }
     };
@@ -115,15 +128,15 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
                 <Text className="text-blue-500 font-bold">Resend Code</Text>
             </TouchableOpacity>
             {/* <View className="flex-row items-center mt-5">
-        <CheckBox
-          value={whatsappChecked}
-          onValueChange={setWhatsappChecked}
-        />
-        <Text className="text-gray-500 ml-2">WhatsApp Message</Text>
-      </View>
-      <Text className="text-gray-500 text-center mt-2">
-        I agree to receive important updates via WhatsApp
-      </Text> */}
+                <CheckBox
+                    value={whatsappChecked}
+                    onValueChange={setWhatsappChecked}
+                />
+                <Text className="text-gray-500 ml-2">WhatsApp Message</Text>
+            </View>
+            <Text className="text-gray-500 text-center mt-2">
+                I agree to receive important updates via WhatsApp
+            </Text> */}
             {otp.every((digit) => digit) && (
                 <TouchableOpacity onPress={handleVerify} className="bg-green-500 rounded-lg p-3 mt-5 w-full">
                     <Text className="text-white text-center font-bold">Verify</Text>
@@ -134,3 +147,61 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
 };
 
 export default VerificationUsingOTP;
+
+// import React, { useEffect, useState } from 'react';
+// import { OTPWidget } from '@msg91comm/sendotp-react-native';
+// import { TextInput, TouchableOpacity, View, Text } from 'react-native';
+
+// const widgetId = "356372726e61363838313534";
+// const tokenAuth = "444202Th2tWl4Ud67d9ba29P1";
+
+// interface VerificationUsingOTPProps {
+//     onPress: () => void;
+//     onBack: () => void;
+//     number: string;
+// }
+
+// const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
+//     onPress,
+//     onBack,
+//     number,
+// }) => {
+//     useEffect(() => {
+//         OTPWidget.initializeWidget(widgetId, tokenAuth); //Widget initialization
+//     }, [])
+
+//     // const [number, setNumber] = useState('');
+
+//     const handleSendOtp = async () => {
+//         const data = {
+//             identifier: `91${number}`
+//         }
+//         const response = await OTPWidget.sendOTP(data);
+//         console.log(response);
+//     }
+
+//     return (
+//         <View>
+//             {/* <TextInput
+//                 placeholder='Number'
+//                 value={number}
+//                 keyboardType='numeric'
+//                 style={{ backgroundColor: '#ededed', margin: 10 }}
+//                 onChangeText={(text) => {
+//                     setNumber(text)
+//                 }}
+//             /> */}
+//             <TouchableOpacity className="bg-green-500 rounded-lg p-3 mt-5 w-full"
+//                 onPress={()=>{
+//                     handleSendOtp()
+//                 }}
+//             >
+//                 <Text style={{ color: 'white', textAlign: 'center', fontWeight: 'bold' }}>
+//                     Send OTP
+//                 </Text>
+//             </TouchableOpacity>
+//         </View>
+//     );
+// }
+
+// export default VerificationUsingOTP;

@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Swiper from "react-native-swiper";
 
 import CustomButton from "@/components/CustomButton";
-import { onboarding, images } from "@/constants";
+import { onboarding, images, icons } from "@/constants";
 
 const Home = () => {
     const swiperRef = useRef<Swiper>(null);
@@ -25,7 +25,7 @@ const Home = () => {
             </TouchableOpacity> */}
             <View className="flex-1 bg-white">
                 <View className="w-full flex-row justify-between items-center mt-5 px-5">
-                    <Image source={images.HorizontalLogo} className="w-[100px] h-[50px]" />
+                <Image source={images.HorizontalLogo} className="w-[100px] h-[50px]" />
                     <TouchableOpacity
                         onPress={() => {
                             router.replace("/(auth)/sign-up");

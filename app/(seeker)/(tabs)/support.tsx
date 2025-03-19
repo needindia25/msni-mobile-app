@@ -8,13 +8,6 @@ const Support = () => {
 
   const router = useRouter();
   return (
-    <SafeAreaView className="flex h-full bg-white">
-      <ScrollView className="flex-1 bg-white p-5">
-        <ComingSoon />
-      </ScrollView>
-    </SafeAreaView>
-  )
-  return (
     <SafeAreaView className="flex h-full items-center justify-between bg-white">
       <View className="flex-1 bg-white p-5">
         <Text className="text-2xl font-bold text-center mb-5">Support</Text>
