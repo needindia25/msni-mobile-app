@@ -19,7 +19,7 @@ const Support = () => {
           </View>
           <View className="flex-row justify-center">
             <Text className="text-lg font-semibold">Phone :</Text>
-            <Text className="text-lg ml-2">+91 0987654321</Text>
+            <Text className="text-lg ml-2">+91 91227 52713</Text>
           </View>
         </View>
       </View>
