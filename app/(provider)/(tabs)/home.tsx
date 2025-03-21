@@ -59,20 +59,12 @@ const Home = () => {
     //     },
     // ];
 
-    // return (
-    //     <SafeAreaView className="flex h-full bg-white">
-    //         <ScrollView className="flex-1 bg-white p-5">
-    //             <ComingSoon />
-    //         </ScrollView>
-    //     </SafeAreaView>
-    // )
-
     return (
         <>
-            {listings.length && (
+            {listings.length > 0 && (
                 <TouchableOpacity
                     className="absolute top-5 right-5 bg-green-500 rounded-full p-5 shadow-lg"
-                    onPress={() => router.push('/add-service')}
+                    onPress={() => router.push('/add-property')}
                     style={{ zIndex: 1000 }} // Ensures it stays on top of other elements
                 >
                     <Text className="text-white text-2xl font-bold">+</Text>
@@ -86,7 +78,35 @@ const Home = () => {
                     </View>
                 ) : (
                     <>
-                        {listings.length === 0 && (
+                        {listings.length > 0 ? (
+                            listings.map((listing: any) => (
+                                <View key={listing.id} className="bg-white rounded-lg shadow-md mb-5 p-5">
+                                    <Image source={{ uri: listing.image }} className="w-full h-40 rounded-lg mb-3" />
+                                    <Text className="text-xl font-bold mb-1">{listing.title}</Text>
+                                    <Text className="text-gray-500 mb-1">{listing.location}</Text>
+
+                                    {/* Rating and Price Row */}
+                                    <View className="flex-row justify-between items-center mb-1">
+                                        <Text className="text-blue-500 text-lg font-bold">
+                                            {listing.price} <Text className="text-sm text-gray-500">/month</Text>
+                                        </Text>
+                                        <View className="flex-row items-center">
+                                            <Text className="text-yellow-500 mr-1">★</Text>
+                                            <Text className="text-gray-500">{listing.rating}</Text>
+                                        </View>
+                                    </View>
+
+                                    {/* Requests and Favorites Row */}
+                                    <View className="flex-row justify-between items-center">
+                                        <Text className="text-gray-500">{listing.requests} request</Text>
+                                        <View className="flex-row items-center">
+                                            <Text className="text-red-500 mr-1">❤</Text>
+                                            <Text className="text-gray-500">{listing.favorites}</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            ))
+                        ) : (
                             <View className="flex-1 items-center justify-center bg-white p-5">
                                 <View className="bg-gray-200 rounded-full p-5 mb-5">
                                     <Image
@@ -100,39 +120,12 @@ const Home = () => {
                                 </Text>
                                 <TouchableOpacity
                                     className="bg-green-500 py-3 px-10 rounded-full mb-5"
-                                    onPress={() => router.push('/add-service')}
+                                    onPress={() => router.push('/add-property')}
                                 >
                                     <Text className="text-white text-lg font-bold">Add New Property</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
-                        {listings.map((listing: any) => (
-                            <View key={listing.id} className="bg-white rounded-lg shadow-md mb-5 p-5">
-                                <Image source={{ uri: listing.image }} className="w-full h-40 rounded-lg mb-3" />
-                                <Text className="text-xl font-bold mb-1">{listing.title}</Text>
-                                <Text className="text-gray-500 mb-1">{listing.location}</Text>
-
-                                {/* Rating and Price Row */}
-                                <View className="flex-row justify-between items-center mb-1">
-                                    <Text className="text-blue-500 text-lg font-bold">
-                                        {listing.price} <Text className="text-sm text-gray-500">/month</Text>
-                                    </Text>
-                                    <View className="flex-row items-center">
-                                        <Text className="text-yellow-500 mr-1">★</Text>
-                                        <Text className="text-gray-500">{listing.rating}</Text>
-                                    </View>
-                                </View>
-
-                                {/* Requests and Favorites Row */}
-                                <View className="flex-row justify-between items-center">
-                                    <Text className="text-gray-500">{listing.requests} request</Text>
-                                    <View className="flex-row items-center">
-                                        <Text className="text-red-500 mr-1">❤</Text>
-                                        <Text className="text-gray-500">{listing.favorites}</Text>
-                                    </View>
-                                </View>
-                            </View>
-                        ))}
                     </>
                 )}
             </ScrollView>

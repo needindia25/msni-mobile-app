@@ -1,10 +1,7 @@
 import { icons } from '@/constants';
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
-import { OTPWidget } from '@msg91comm/sendotp-react-native';
 
-const widgetId = "356372726e61363838313534";
-const tokenAuth = "444202Th2tWl4Ud67d9ba29P1";
 interface VerificationUsingOTPProps {
     onPress: () => void;
     onBack: () => void;
@@ -28,23 +25,15 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
         const timer = setInterval(() => {
             setTimeRemaining((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
         }, 1000);
-
         return () => clearInterval(timer);
     }, []);
 
     useEffect(() => {
         const fetchOtp = async () => {
-            // const data = {
-            //     identifier: `91${number}`
-            // };
-            // const response = await OTPWidget.sendOTP(data);
-            // console.log(response);
-            // Alert.alert('Generated OTPWidget OTP:', response.otp);
             const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
             setGeneratedOtp(randomOtp);
             Alert.alert('Generated OTP:', randomOtp);
         };
-
         fetchOtp();
     }, []);
 
@@ -52,8 +41,6 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
         const newOtp = [...otp];
         newOtp[index] = value;
         setOtp(newOtp);
-
-
         // Move focus to the next input if value is entered
         if (value && index < OTP_LENGTH - 1) {
             inputRefs.current[index + 1]?.focus();
@@ -147,61 +134,3 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
 };
 
 export default VerificationUsingOTP;
-
-// import React, { useEffect, useState } from 'react';
-// import { OTPWidget } from '@msg91comm/sendotp-react-native';
-// import { TextInput, TouchableOpacity, View, Text } from 'react-native';
-
-// const widgetId = "356372726e61363838313534";
-// const tokenAuth = "444202Th2tWl4Ud67d9ba29P1";
-
-// interface VerificationUsingOTPProps {
-//     onPress: () => void;
-//     onBack: () => void;
-//     number: string;
-// }
-
-// const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
-//     onPress,
-//     onBack,
-//     number,
-// }) => {
-//     useEffect(() => {
-//         OTPWidget.initializeWidget(widgetId, tokenAuth); //Widget initialization
-//     }, [])
-
-//     // const [number, setNumber] = useState('');
-
-//     const handleSendOtp = async () => {
-//         const data = {
-//             identifier: `91${number}`
-//         }
-//         const response = await OTPWidget.sendOTP(data);
-//         console.log(response);
-//     }
-
-//     return (
-//         <View>
-//             {/* <TextInput
-//                 placeholder='Number'
-//                 value={number}
-//                 keyboardType='numeric'
-//                 style={{ backgroundColor: '#ededed', margin: 10 }}
-//                 onChangeText={(text) => {
-//                     setNumber(text)
-//                 }}
-//             /> */}
-//             <TouchableOpacity className="bg-green-500 rounded-lg p-3 mt-5 w-full"
-//                 onPress={()=>{
-//                     handleSendOtp()
-//                 }}
-//             >
-//                 <Text style={{ color: 'white', textAlign: 'center', fontWeight: 'bold' }}>
-//                     Send OTP
-//                 </Text>
-//             </TouchableOpacity>
-//         </View>
-//     );
-// }
-
-// export default VerificationUsingOTP;

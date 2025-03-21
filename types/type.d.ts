@@ -118,6 +118,11 @@ declare interface PaymentProps {
   subscriptionId: number;
 }
 
+declare interface DropdownProps {
+  label: string;
+  value: string | number;
+}
+
 declare interface LocationStore {
   userLatitude: number | null;
   userLongitude: number | null;
