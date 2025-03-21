@@ -59,25 +59,6 @@ const MultiStepForm = () => {
       city: yup.number().min(1, "Select a valid city").required("City is required"),
       zip: yup.string().matches(/^\d{6}$/, "Enter a valid 6-digit ZIP code").required("ZIP is required"),
     }),
-
-    yup.object().shape({
-      housingType: yup.string().required("Housing Type is required"),
-      bhkType: yup.string().required("BHK Type is required"),
-      familyPreference: yup.string().required("Family Preference in size is required"),
-      foodPreference: yup.string().required("Food Preference is required"),
-
-    }),
-    yup.object().shape({
-      rent: yup.number().min(0, "Enter valid rent").required("Rent is required"),
-      advance: yup.number().min(0, "Enter valid advance").required("Advance is required"),
-      areaInSize: yup.number().min(0, "Enter valid Area in size").required("Area in size is required"),
-      floorNumber: yup.number().min(0, "Select a Floor number").required("Floor Number is required"),
-      numberOfBedRooms: yup.number().min(0, "Select Number of Bed Rooms").required("Number of Bed Rooms is required"),
-      numberOfBalconies: yup.number().min(0, "Select Number of Balconies").required("Number of Balconies is required"),
-      numberOfBathRooms: yup.number().min(0, "Select Number of Bath Rooms").required("Number of Bath Rooms is required"),
-      ageOfProperty: yup.number().min(0, "Select Age of Property").required("Age of Property is required"),
-
-    }),
   ];
 
   // Handle Form Submission
@@ -151,7 +132,7 @@ const MultiStepForm = () => {
             additionalAmenities: [] as string[],
             sourceOfWater: "",
           }}
-          validationSchema={validationSchemas[step - 1]}
+          validationSchema={step == 1 ? validationSchemas[0] : null}
           onSubmit={(values) => {
             console.log("step:", step);
             if (step === validationSchemas.length) {
@@ -418,55 +399,29 @@ const MultiStepForm = () => {
                 </View>
               )}
 
-              {step === 2 && values.propertyType === "PG/Hostel" && (
+              {step === 2 && values.propertyType === "Commercial" && (
                 <View>
                   {/* Housing Type Dropdown */}
                   <CustomDropdown
-                    label="Room Type"
+                    label="Commercial Type"
                     data={[
-                      { label: "Single", value: "Single" },
-                      { label: "Sharing 2 Beds", value: "Sharing 2 Beds" },
-                      { label: "Sharing 3 Beds", value: "Sharing 3 Beds" },
-                      { label: "Sharing 4 Beds", value: "Sharing 4 Beds" },
+                      { label: "Office Space", value: "Office Space" },
+                      { label: "Co-Working", value: "Co-Working" },
+                      { label: "Shop", value: "Shop" },
+                      { label: "Showroom", value: "Showroom" },
+                      { label: "Godown", value: "Godown" },
+                      { label: "Warehouse", value: "Warehouse" },
+                      { label: "Industrial Shed", value: "Industrial Shed" },
+                      { label: "Industrial Building", value: "Industrial Building" },
+                      { label: "Restaurant / Cafe", value: "Restaurant / Cafe" },
+                      { label: "Others", value: "Others" }
                     ]}
                     value={values.housingType}
-                    placeholder="Select Room Type"
+                    placeholder="Select Commercial Type"
                     onChange={(selectedItem: DropdownProps) => setFieldValue("housingType", selectedItem.value)}
                   />
                   {touched.housingType && errors.housingType && (
                     <Text className="text-red-500">{errors.housingType}</Text>
-                  )}
-
-                  {/* Family Preference Dropdown */}
-                  <CustomDropdown
-                    label="Gender Preference"
-                    data={[
-                      { label: "Male", value: "Male" },
-                      { label: "Female", value: "Female" },
-                      { label: "Any", value: "Any" },
-                    ]}
-                    value={values.familyPreference}
-                    placeholder="Select Gender Preference"
-                    onChange={(selectedItem: DropdownProps) => setFieldValue("familyPreference", selectedItem.value)}
-                  />
-                  {touched.familyPreference && errors.familyPreference && (
-                    <Text className="text-red-500">{errors.familyPreference}</Text>
-                  )}
-
-                  {/* Food Preference Dropdown */}
-                  <CustomDropdown
-                    label="Food Preference"
-                    data={[
-                      { label: "Veg", value: "Veg" },
-                      { label: "Non-Veg", value: "Non-Veg" },
-                      { label: "Any", value: "Any" },
-                    ]}
-                    value={values.foodPreference}
-                    placeholder="Select Food Preference"
-                    onChange={(selectedItem: DropdownProps) => setFieldValue("foodPreference", selectedItem.value)}
-                  />
-                  {touched.foodPreference && errors.foodPreference && (
-                    <Text className="text-red-500">{errors.foodPreference}</Text>
                   )}
                 </View>
               )}
@@ -713,13 +668,13 @@ const MultiStepForm = () => {
                 </TouchableOpacity>}
                 {step < 4 ? (
                   <TouchableOpacity disabled={!!Object.keys(errors).length} onPress={() => setStep(step + 1)} className="bg-blue-500 py-3 px-5 rounded-lg">
-                    <Text className="text-white text-2xl font-bold">Save & Next</Text>
+                    <Text className="text-white text-2xl font-bold">Save & Next - {Object.keys(errors).length}</Text>
                   </TouchableOpacity>
                 ) : (
                   <TouchableOpacity onPress={() => handleSubmit()} className="bg-green-500 py-3 px-5 rounded-lg">
                     <Text className="text-white text-2xl font-bold">Submit</Text>
                   </TouchableOpacity>
-                )}
+                )}ghf
               </View>
             </ScrollView>
           )}
