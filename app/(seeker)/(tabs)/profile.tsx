@@ -94,43 +94,34 @@ const Profile = () => {
                             <Text className="text-gray-500">+91 {userInfo?.email.split('@')[0]}</Text>
                             <Text className="text-gray-500">{userInfo?.code}</Text>
                         </View>
-                        {
-                            subscriptionPlans.length && (
-                                <>
-                                    <FlatList
-                                        data={subscriptionPlans}
-                                        keyExtractor={(item) => item.id.toString()}
-                                        renderItem={({ item }) => (
-                                            <SubscriptionCard
-                                                subscriptionId={item.id}
-                                                planName={item.planName}
-                                                price={item.price}
-                                                duration={item.duration}
-                                                services={item.services}
-                                                isPremium={item.isPremium}
-                                                used={item.used}
-                                                expiryDate={item.expiryDate}
-                                            />
-                                        )}
+                        {subscriptionPlans.length > 0 ? (
+                            <FlatList
+                                data={subscriptionPlans}
+                                keyExtractor={(item) => item.id.toString()}
+                                renderItem={({ item }) => (
+                                    <SubscriptionCard
+                                        subscriptionId={item.id}
+                                        planName={item.planName}
+                                        price={item.price}
+                                        duration={item.duration}
+                                        services={item.services}
+                                        isPremium={item.isPremium}
+                                        used={item.used}
+                                        expiryDate={item.expiryDate}
                                     />
-                                </>
-                            )
-                        }
-                        {
-                            subscriptionPlans.length === 0 && (
-                                <>
-                                    <View className="flex-1 items-center justify-center bg-white p-5">
-                                        <Text className="text-xl font-bold text-black mb-2">No Active Subscription</Text>
-                                        <TouchableOpacity
-                                            className="bg-green-500 py-3 px-10 rounded-full mb-5"
-                                            onPress={() => router.push('/choose-subscription')}
-                                        >
-                                            <Text className="text-white text-lg font-bold">Subscribe Now</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </>
-                            )
-                        }
+                                )}
+                            />
+                        ) : (
+                            <View className="flex-1 items-center justify-center bg-white p-5">
+                                <Text className="text-xl font-bold text-black mb-2">No Active Subscription</Text>
+                                <TouchableOpacity
+                                    className="bg-green-500 py-3 px-10 rounded-full mb-5"
+                                    onPress={() => router.push('/choose-subscription')}
+                                >
+                                    <Text className="text-white text-lg font-bold">Subscribe Now</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
                     </View>
                 </>
             )}

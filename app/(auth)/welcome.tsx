@@ -25,10 +25,10 @@ const Home = () => {
             </TouchableOpacity> */}
             <View className="flex-1 bg-white">
                 <View className="w-full flex-row justify-between items-center mt-5 px-5">
-                <Image source={images.HorizontalLogo} className="w-[100px] h-[50px]" />
+                <Image source={images.HorizontalLogo} className="w-[120px] h-[45px]" />                
                     <TouchableOpacity
                         onPress={() => {
-                            router.replace("/(auth)/sign-up");
+                            router.replace("/(auth)/sign-in");
                         }}
                         className="p-5"
                     >
@@ -70,7 +70,7 @@ const Home = () => {
                 title={isLastSlide ? "Get Started" : "Next"}
                 onPress={() =>
                     isLastSlide
-                        ? router.replace("/(auth)/sign-up")
+                        ? router.replace("/(auth)/sign-in")
                         : swiperRef.current?.scrollBy(1)
                 }
                 className="w-11/12 mt-10 mb-5"
