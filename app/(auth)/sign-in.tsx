@@ -71,8 +71,12 @@ const SignIn = () => {
   return (
     <ScrollView className="flex-1 bg-white">
       <View className="flex-1 bg-white">
+        {/* <View className="w-full justify-center items-center mt-10"> */}
+          {/* <Image source={images.VerticalLogo} className="z-0 w-[200px] h-[120px]" /> */}
+          {/* <Image source={require("../../assets/images/vertical-logo-02.png")} className="z-0 w-[300px] h-[250px]" /> */}          
+        {/* </View> */}
         <View className="w-full justify-center items-center mt-10">
-          <Image source={images.adaptiveIcon} className="z-0 w-[170px] h-[160px]" />
+          <Image source={images.HorizontalLogo} className="z-0 w-[250px] h-[100px]" />
         </View>
         {loading ? (
           <View className="flex-1 justify-center mt-[60%] items-center">

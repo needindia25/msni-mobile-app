@@ -52,7 +52,7 @@ const Layout = () => {
       </View>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="add-services" options={{ headerShown: false }} />
+        <Stack.Screen name="add-property" options={{ headerShown: false }} />
       </Stack>
     </>
   );
