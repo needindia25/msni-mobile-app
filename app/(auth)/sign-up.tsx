@@ -64,7 +64,6 @@ const SignUp = () => {
     if (!validateForm()) {
       return;
     }
-
     setVerificationModal(true);
   };
 
@@ -86,12 +85,13 @@ const SignUp = () => {
           district: form.district,
         }),
       });
+      console.log(response)
 
       if (response.ok) {
         setShowSuccessModal(true);
       } else {
         const errorData = await response.json();
-        Alert.alert("Error", errorData.error || "Registration failed");
+        Alert.alert("Error", errorData.error || "Mobile number is already registered, try Sign In.");
       }
     } catch (err) {
       Alert.alert("Error", "An error occurred");

@@ -123,6 +123,7 @@ const MultiStepForm = () => {
       ) : (
         <Formik
           initialValues={{
+            propertyFor: "Rent",
             title: "",
             propertyType: "",
             description: "",
@@ -143,7 +144,7 @@ const MultiStepForm = () => {
             numberOfBedRooms: 1,
             numberOfBalconies: 0,
             numberOfBathRooms: 0,
-            ageOfProperty: 0,            
+            ageOfProperty: 0,
             furnishing: "",
             parking: "",
             basicAmenities: [] as string[],
@@ -169,6 +170,7 @@ const MultiStepForm = () => {
             touched,
             setFieldValue,
           }: FormikProps<{
+            propertyFor: string;
             title: string;
             propertyType: string;
             description: string;
@@ -189,7 +191,7 @@ const MultiStepForm = () => {
             numberOfBedRooms: number;
             numberOfBalconies: number;
             numberOfBathRooms: number;
-            ageOfProperty: number;            
+            ageOfProperty: number;
             furnishing: string;
             parking: string;
             basicAmenities: string[];
@@ -209,7 +211,37 @@ const MultiStepForm = () => {
 
               {step === 1 && (
                 <View>
-                  <Text className="text-lg font-bold mb-3">Title</Text>
+                  <View className="flex-row flex-wrap justify-between mt-5">
+                    {['Rent', 'Lease'].map((pref) => (
+                      <TouchableOpacity
+                        key={pref}
+                        className={`rounded-lg p-3 flex-1 mr-2 ${values.propertyFor === pref ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
+                        onPress={() => setFieldValue("propertyFor", pref)}
+                      >
+                        <Text className="text-center text-2xl font-bold text-white">{pref}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                  <CustomDropdown
+                    label="Property Type"
+                    data={
+                      values.propertyFor === "Lease" ? [
+                        { label: "Full House", value: "Full House" },
+                        { label: "Commercial", value: "Commercial" },
+                      ] :
+                        [
+                          { label: "Full House", value: "Full House" },
+                          { label: "PG/Hostel", value: "PG/Hostel" },
+                          { label: "Commercial", value: "Commercial" },
+                        ]
+                    }
+                    value={values.propertyType}
+                    placeholder="Select a Property Type"
+                    onChange={(selectedItem: DropdownProps) => setFieldValue("propertyType", selectedItem.value)}
+                  />
+                  {touched.propertyType && errors.propertyType && <Text className="text-red-500">{errors.propertyType}</Text>}
+
+                  <Text className="text-lg font-bold mt-3">Title</Text>
                   <TextInput
                     placeholder="Enter property name"
                     className="border border-gray-300 rounded-lg p-3 bg-white"
@@ -218,20 +250,6 @@ const MultiStepForm = () => {
                     onBlur={handleBlur("title")}
                   />
                   {touched.title && errors.title && <Text className="text-red-500">{errors.title}</Text>}
-
-                  <CustomDropdown
-                    label="Property Type"
-                    data={[
-                      { label: "Full House", value: "Full House" },
-                      { label: "PG/Hostel", value: "PG/Hostel" },
-                      { label: "Flatmates", value: "Flatmates" },
-                      { label: "Commercial", value: "Commercial" },
-                    ]}
-                    value={values.propertyType}
-                    placeholder="Select a Property Type"
-                    onChange={(selectedItem: DropdownProps) => setFieldValue("propertyType", selectedItem.value)}
-                  />
-                  {touched.propertyType && errors.propertyType && <Text className="text-red-500">{errors.propertyType}</Text>}
 
                   <Text className="text-lg font-bold mt-3  mb-3">Description</Text>
                   <CustomTextarea value={values.description} onChangeText={handleChange("description")} />
@@ -347,6 +365,112 @@ const MultiStepForm = () => {
                 </View>
               )}
 
+              {step === 2 && values.propertyType === "PG/Hostel" && (
+                <View>
+                  {/* Housing Type Dropdown */}
+                  <CustomDropdown
+                    label="Room Type"
+                    data={[
+                      { label: "Single", value: "Single" },
+                      { label: "Sharing 2 Beds", value: "Sharing 2 Beds" },
+                      { label: "Sharing 3 Beds", value: "Sharing 3 Beds" },
+                      { label: "Sharing 4 Beds", value: "Sharing 4 Beds" },
+                    ]}
+                    value={values.housingType}
+                    placeholder="Select Room Type"
+                    onChange={(selectedItem: DropdownProps) => setFieldValue("housingType", selectedItem.value)}
+                  />
+                  {touched.housingType && errors.housingType && (
+                    <Text className="text-red-500">{errors.housingType}</Text>
+                  )}
+
+                  {/* Family Preference Dropdown */}
+                  <CustomDropdown
+                    label="Gender Preference"
+                    data={[
+                      { label: "Male", value: "Male" },
+                      { label: "Female", value: "Female" },
+                      { label: "Any", value: "Any" },
+                    ]}
+                    value={values.familyPreference}
+                    placeholder="Select Gender Preference"
+                    onChange={(selectedItem: DropdownProps) => setFieldValue("familyPreference", selectedItem.value)}
+                  />
+                  {touched.familyPreference && errors.familyPreference && (
+                    <Text className="text-red-500">{errors.familyPreference}</Text>
+                  )}
+
+                  {/* Food Preference Dropdown */}
+                  <CustomDropdown
+                    label="Food Preference"
+                    data={[
+                      { label: "Veg", value: "Veg" },
+                      { label: "Non-Veg", value: "Non-Veg" },
+                      { label: "Any", value: "Any" },
+                    ]}
+                    value={values.foodPreference}
+                    placeholder="Select Food Preference"
+                    onChange={(selectedItem: DropdownProps) => setFieldValue("foodPreference", selectedItem.value)}
+                  />
+                  {touched.foodPreference && errors.foodPreference && (
+                    <Text className="text-red-500">{errors.foodPreference}</Text>
+                  )}
+                </View>
+              )}
+
+              {step === 2 && values.propertyType === "PG/Hostel" && (
+                <View>
+                  {/* Housing Type Dropdown */}
+                  <CustomDropdown
+                    label="Room Type"
+                    data={[
+                      { label: "Single", value: "Single" },
+                      { label: "Sharing 2 Beds", value: "Sharing 2 Beds" },
+                      { label: "Sharing 3 Beds", value: "Sharing 3 Beds" },
+                      { label: "Sharing 4 Beds", value: "Sharing 4 Beds" },
+                    ]}
+                    value={values.housingType}
+                    placeholder="Select Room Type"
+                    onChange={(selectedItem: DropdownProps) => setFieldValue("housingType", selectedItem.value)}
+                  />
+                  {touched.housingType && errors.housingType && (
+                    <Text className="text-red-500">{errors.housingType}</Text>
+                  )}
+
+                  {/* Family Preference Dropdown */}
+                  <CustomDropdown
+                    label="Gender Preference"
+                    data={[
+                      { label: "Male", value: "Male" },
+                      { label: "Female", value: "Female" },
+                      { label: "Any", value: "Any" },
+                    ]}
+                    value={values.familyPreference}
+                    placeholder="Select Gender Preference"
+                    onChange={(selectedItem: DropdownProps) => setFieldValue("familyPreference", selectedItem.value)}
+                  />
+                  {touched.familyPreference && errors.familyPreference && (
+                    <Text className="text-red-500">{errors.familyPreference}</Text>
+                  )}
+
+                  {/* Food Preference Dropdown */}
+                  <CustomDropdown
+                    label="Food Preference"
+                    data={[
+                      { label: "Veg", value: "Veg" },
+                      { label: "Non-Veg", value: "Non-Veg" },
+                      { label: "Any", value: "Any" },
+                    ]}
+                    value={values.foodPreference}
+                    placeholder="Select Food Preference"
+                    onChange={(selectedItem: DropdownProps) => setFieldValue("foodPreference", selectedItem.value)}
+                  />
+                  {touched.foodPreference && errors.foodPreference && (
+                    <Text className="text-red-500">{errors.foodPreference}</Text>
+                  )}
+                </View>
+              )}
+
               {step === 3 && (
                 <View>
                   <Text className="text-lg font-bold mt-3 mb-3">Rent Amount</Text>
@@ -379,7 +503,7 @@ const MultiStepForm = () => {
                         className={`rounded-lg p-3 flex-1 mr-2 ${values.rentNegotiable === pref ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
                         onPress={() => setFieldValue("rentNegotiable", pref)}
                       >
-                        <Text className="text-center text-xs text-white">{pref}</Text>
+                        <Text className="text-center text-2xl font-bold text-white">{pref}</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
@@ -425,48 +549,52 @@ const MultiStepForm = () => {
                   />
                   {touched.floorNumber && errors.floorNumber && <Text className="text-red-500">{errors.floorNumber}</Text>}
 
-                  <CustomDropdown
-                    label="Number of Bed Room(s)"
-                    data={[
-                      { label: "1", value: 1 },
-                      { label: "2", value: 2 },
-                      { label: "3", value: 3 },
-                      { label: "4+", value: 4 },
-                    ]}
-                    value={values.numberOfBedRooms}
-                    placeholder="Select a Number of Bed Room(s)"
-                    onChange={(selectedItem: DropdownProps) => setFieldValue("numberOfBedRooms", selectedItem.value)}
-                  />
-                  {touched.numberOfBedRooms && errors.numberOfBedRooms && <Text className="text-red-500">{errors.numberOfBedRooms}</Text>}
+                  {values.propertyType === "Full House" && (
+                    <>
+                      <CustomDropdown
+                        label="Number of Bed Room(s)"
+                        data={[
+                          { label: "1", value: 1 },
+                          { label: "2", value: 2 },
+                          { label: "3", value: 3 },
+                          { label: "4+", value: 4 },
+                        ]}
+                        value={values.numberOfBedRooms}
+                        placeholder="Select a Number of Bed Room(s)"
+                        onChange={(selectedItem: DropdownProps) => setFieldValue("numberOfBedRooms", selectedItem.value)}
+                      />
+                      {touched.numberOfBedRooms && errors.numberOfBedRooms && <Text className="text-red-500">{errors.numberOfBedRooms}</Text>}
 
-                  <CustomDropdown
-                    label="Number of Balconies"
-                    data={[
-                      { label: "0", value: 0 },
-                      { label: "1", value: 1 },
-                      { label: "2", value: 2 },
-                      { label: "3", value: 3 },
-                      { label: "4+", value: 4 },
-                    ]}
-                    value={values.numberOfBalconies}
-                    placeholder="Select a Number of Balconies"
-                    onChange={(selectedItem: DropdownProps) => setFieldValue("numberOfBalconies", selectedItem.value)}
-                  />
-                  {touched.numberOfBalconies && errors.numberOfBalconies && <Text className="text-red-500">{errors.numberOfBalconies}</Text>}
+                      <CustomDropdown
+                        label="Number of Balconies"
+                        data={[
+                          { label: "0", value: 0 },
+                          { label: "1", value: 1 },
+                          { label: "2", value: 2 },
+                          { label: "3", value: 3 },
+                          { label: "4+", value: 4 },
+                        ]}
+                        value={values.numberOfBalconies}
+                        placeholder="Select a Number of Balconies"
+                        onChange={(selectedItem: DropdownProps) => setFieldValue("numberOfBalconies", selectedItem.value)}
+                      />
+                      {touched.numberOfBalconies && errors.numberOfBalconies && <Text className="text-red-500">{errors.numberOfBalconies}</Text>}
 
-                  <CustomDropdown
-                    label="Number of Bath Room(s)"
-                    data={[
-                      { label: "1", value: 1 },
-                      { label: "2", value: 2 },
-                      { label: "3", value: 3 },
-                      { label: "4", value: 4 },
-                    ]}
-                    value={values.numberOfBathRooms}
-                    placeholder="Select a Number of Bath Room(s)"
-                    onChange={(selectedItem: DropdownProps) => setFieldValue("numberOfBathRooms", selectedItem.value)}
-                  />
-                  {touched.numberOfBathRooms && errors.numberOfBathRooms && <Text className="text-red-500">{errors.numberOfBathRooms}</Text>}
+                      <CustomDropdown
+                        label="Number of Bath Room(s)"
+                        data={[
+                          { label: "1", value: 1 },
+                          { label: "2", value: 2 },
+                          { label: "3", value: 3 },
+                          { label: "4", value: 4 },
+                        ]}
+                        value={values.numberOfBathRooms}
+                        placeholder="Select a Number of Bath Room(s)"
+                        onChange={(selectedItem: DropdownProps) => setFieldValue("numberOfBathRooms", selectedItem.value)}
+                      />
+                      {touched.numberOfBathRooms && errors.numberOfBathRooms && <Text className="text-red-500">{errors.numberOfBathRooms}</Text>}
+                    </>
+                  )}
 
                   <CustomDropdown
                     label="Age of Property"
@@ -579,17 +707,17 @@ const MultiStepForm = () => {
               {step === 6 && (<ComingSoon />)}
 
               {/* Navigation Buttons */}
-              <View className="flex-row justify-between mt-5 mb-10">
+              <View className={`flex-row ${step > 1 ? "justify-between" : "justify-end"} mt-5 mb-10`}>
                 {step > 1 && <TouchableOpacity onPress={() => setStep(step - 1)} className="bg-gray-500 py-3 px-5 rounded-lg">
-                  <Text className="text-white text-lg">Back</Text>
+                  <Text className="text-white text-2xl font-bold">Back</Text>
                 </TouchableOpacity>}
                 {step < 4 ? (
                   <TouchableOpacity disabled={!!Object.keys(errors).length} onPress={() => setStep(step + 1)} className="bg-blue-500 py-3 px-5 rounded-lg">
-                    <Text className="text-white text-lg">Next - {Object.keys(errors).length}</Text>
+                    <Text className="text-white text-2xl font-bold">Save & Next</Text>
                   </TouchableOpacity>
                 ) : (
                   <TouchableOpacity onPress={() => handleSubmit()} className="bg-green-500 py-3 px-5 rounded-lg">
-                    <Text className="text-white text-lg">Submit</Text>
+                    <Text className="text-white text-2xl font-bold">Submit</Text>
                   </TouchableOpacity>
                 )}
               </View>

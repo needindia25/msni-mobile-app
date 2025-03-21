@@ -1,6 +1,6 @@
 import { DropdownProps } from "@/types/type";
 import React, { useState } from "react";
-import { View, Text, ScrollView } from "react-native";
+import { View, Text } from "react-native";
 import MultiSelect from "react-native-multiple-select";
 import { LogBox } from "react-native";
 
@@ -26,37 +26,33 @@ const CustomMultiDropdown: React.FC<CustomMultiDropdownProps> = ({ label, data, 
     return (
         <View className="mt-5">
             <Text className="text-lg font-bold mb-3">{label}</Text>
-            <View style={{ maxHeight: 300 }}> {/* Prevents VirtualizedList nesting issue */}
-                <ScrollView nestedScrollEnabled>
-                    <MultiSelect
-                        items={data}
-                        uniqueKey="value"
-                        onSelectedItemsChange={handleChange}
-                        selectedItems={selectedValues}
-                        selectText={placeholder}
-                        searchInputPlaceholderText="Search..."
-                        tagRemoveIconColor="#3B82F6"
-                        tagBorderColor="#3B82F6"
-                        tagTextColor="#3B82F6"
-                        selectedItemTextColor="#3B82F6"
-                        selectedItemIconColor="#3B82F6"
-                        itemTextColor="#000"
-                        displayKey="label"
-                        submitButtonText="Confirm"
-                        styleDropdownMenu={{
-                            paddingLeft: 10,
-                            paddingRight: 5,
-                            borderWidth: 1,
-                            borderColor: "#D1D5DB",
-                            borderRadius: 8,
-                            backgroundColor: "#FFFFFF",
-                        }}
-                        styleDropdownMenuSubsection={{
-                            padding: 12,
-                        }}
-                    />
-                </ScrollView>
-            </View>
+            <MultiSelect
+                items={data}
+                uniqueKey="value"
+                onSelectedItemsChange={handleChange}
+                selectedItems={selectedValues}
+                selectText={placeholder}
+                searchInputPlaceholderText="Search..."
+                tagRemoveIconColor="#3B82F6"
+                tagBorderColor="#3B82F6"
+                tagTextColor="#3B82F6"
+                selectedItemTextColor="#3B82F6"
+                selectedItemIconColor="#3B82F6"
+                itemTextColor="#000"
+                displayKey="label"
+                submitButtonText="Confirm"
+                styleDropdownMenu={{
+                    paddingLeft: 10,
+                    paddingRight: 5,
+                    borderWidth: 1,
+                    borderColor: "#D1D5DB",
+                    borderRadius: 8,
+                    backgroundColor: "#FFFFFF",
+                }}
+                styleDropdownMenuSubsection={{
+                    padding: 12,
+                }}
+            />
         </View>
     );
 };

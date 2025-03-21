@@ -30,50 +30,63 @@ const SignIn = () => {
     if (!validateForm()) {
       return;
     }
-
     setVerificationModal(true);
   };
 
   const handleLogin = async () => {
     setLoading(true);
+    setVerificationModal(false);
     try {
       const response = await fetch(`${constants.API_URL}/auth/login/`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username: username, password: constants.DEFAULT_PASSWORD }),
+        body: JSON.stringify({ username, password: constants.DEFAULT_PASSWORD }),
       });
-      if (response.ok) {
-        const { refresh, access, user_info } = await response.json();
-        await AsyncStorage.setItem('token', access);
-        await AsyncStorage.setItem('refresh', refresh);
-        await AsyncStorage.setItem('user_info', JSON.stringify(user_info));
-        if (user_info.has_subscription) {
-          if (user_info.user_type_id === 1) {
-            router.replace("/(seeker)/(tabs)/home");
-          } else {
-            router.replace("/(provider)/(tabs)/home");
-          }
-        } else {
-          router.replace("/no-subscription");
-        }
 
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null); // Handle JSON parsing errors
+        const errorMessage = errorData?.detail || "Invalid credentials. Please try again.";
+        Alert.alert("Error", errorMessage);
+        return;
+      }
+
+      const data = await response.json(); // Parse response once confirmed it's valid
+      const { refresh, access, user_info } = data;
+
+      if (!refresh || !access || !user_info) {
+        Alert.alert("Error", "Unexpected response from server.");
+        return;
+      }
+
+      // Store tokens and user info
+      await AsyncStorage.multiSet([
+        ["token", access],
+        ["refresh", refresh],
+        ["user_info", JSON.stringify(user_info)],
+      ]);
+
+      // Navigate based on user type and subscription
+      if (user_info.has_subscription) {
+        router.replace(user_info.user_type_id === 1 ? "/(seeker)/(tabs)/home" : "/(provider)/(tabs)/home");
       } else {
-        Alert.alert("Error", "Invalid credentials. Please try again.");
+        router.replace("/no-subscription");
       }
     } catch (err) {
+      console.error("Login error:", err);
       Alert.alert("Error", "Log in failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <ScrollView className="flex-1 bg-white">
       <View className="flex-1 bg-white">
         {/* <View className="w-full justify-center items-center mt-10"> */}
-          {/* <Image source={images.VerticalLogo} className="z-0 w-[200px] h-[120px]" /> */}
-          {/* <Image source={require("../../assets/images/vertical-logo-02.png")} className="z-0 w-[300px] h-[250px]" /> */}          
+        {/* <Image source={images.VerticalLogo} className="z-0 w-[200px] h-[120px]" /> */}
+        {/* <Image source={require("../../assets/images/vertical-logo-02.png")} className="z-0 w-[300px] h-[250px]" /> */}
         {/* </View> */}
         <View className="w-full justify-center items-center mt-10">
           <Image source={images.HorizontalLogo} className="z-0 w-[250px] h-[100px]" />
