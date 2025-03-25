@@ -110,7 +110,9 @@ const MultiStepForm = () => {
       //   Alert.alert("Error", "Something went wrong. Please try again.");
       // }
       console.log(response)
-      setServiceId(response.id)
+      if (method === "POST") {
+        setServiceId(response.id)
+      }
     } catch (error) {
       Alert.alert("Error", "Failed to save property details.");
       console.error("Error saving data:", error);
