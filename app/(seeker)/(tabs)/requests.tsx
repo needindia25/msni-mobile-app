@@ -1,4 +1,4 @@
-import ComingSoon from '@/components/ComingSoon';
+// import ComingSoon from '@/components/ComingSoon';
 import RequestCard from '@/components/RequestCard';
 import React from 'react';
 import { View, Text, SafeAreaView, ScrollView } from 'react-native';
@@ -43,13 +43,6 @@ const requests = [
 
 const Requests = () => {
 
-  return (
-    <SafeAreaView className="flex h-full bg-white">
-      <ScrollView className="flex-1 bg-white p-5">
-        <ComingSoon />
-      </ScrollView>
-    </SafeAreaView>
-  )
   return (
     <SafeAreaView className="flex h-full bg-white">
       <ScrollView className="flex-1 bg-white p-5">

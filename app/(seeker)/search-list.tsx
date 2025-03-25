@@ -65,7 +65,7 @@ const SearchList = () => {
                         onPress={() => {
                             router.push('/(seeker)/property-details');
                         }}>
-                        <Text className="text-white text-center font-bold">Contact Owner</Text>
+                        <Text className="text-white text-center font-bold">View Details</Text>
                     </TouchableOpacity>
                 </View>
             ))}
