@@ -11,6 +11,7 @@ import * as yup from "yup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import CustomMultiDropdown from "@/components/CustomMultiDropdown";
+import ImagePickerComponent from "@/components/ImagePicker";
 
 const MultiStepForm = () => {
   const router = useRouter();
@@ -131,6 +132,7 @@ const MultiStepForm = () => {
             basicAmenities: [] as string[],
             additionalAmenities: [] as string[],
             sourceOfWater: "",
+            images: [] as string[],
           }}
           validationSchema={step == 1 ? validationSchemas[0] : null}
           onSubmit={(values) => {
@@ -178,12 +180,13 @@ const MultiStepForm = () => {
             basicAmenities: string[];
             additionalAmenities: string[];
             sourceOfWater: string;
+            images: string[];
           }>) => (
             <ScrollView className="flex-1 p-5 bg-gray-100">
               <Text className="text-2xl font-bold text-center mb-5">Add New Property</Text>
               {/* Step Indicator */}
               <View className="flex-row justify-between mb-5">
-                {[1, 2, 3, 4].map((num) => (
+                {[1, 2, 3, 4, 5].map((num) => (
                   <Text key={num} className={`text-lg font-bold ${step === num ? "text-blue-500" : "text-gray-400"}`}>
                     Step {num}
                   </Text>
@@ -658,7 +661,19 @@ const MultiStepForm = () => {
                 </View>
               )}
 
-              {step === 5 && (<ComingSoon />)}
+              {step === 5 && (
+                <View className="mb-5">
+                  <Text className="text-xl font-bold mb-4">Upload Image</Text>
+                  <ImagePickerComponent
+                    images={values.images}
+                    onImageSelect={(imagePath: string) => {
+                      // Append the new image path to the existing array
+                      console.log(values.images, imagePath)
+                      setFieldValue("images", [...values.images, imagePath]);
+                    }}
+                  />
+                </View>
+              )}
               {step === 6 && (<ComingSoon />)}
 
               {/* Navigation Buttons */}
@@ -666,7 +681,7 @@ const MultiStepForm = () => {
                 {step > 1 && <TouchableOpacity onPress={() => setStep(step - 1)} className="bg-gray-500 py-3 px-5 rounded-lg">
                   <Text className="text-white text-2xl font-bold">Back</Text>
                 </TouchableOpacity>}
-                {step < 4 ? (
+                {step < 5 ? (
                   <TouchableOpacity disabled={!!Object.keys(errors).length} onPress={() => setStep(step + 1)} className="bg-blue-500 py-3 px-5 rounded-lg">
                     <Text className="text-white text-2xl font-bold">Save & Next - {Object.keys(errors).length}</Text>
                   </TouchableOpacity>
@@ -674,7 +689,7 @@ const MultiStepForm = () => {
                   <TouchableOpacity onPress={() => handleSubmit()} className="bg-green-500 py-3 px-5 rounded-lg">
                     <Text className="text-white text-2xl font-bold">Submit</Text>
                   </TouchableOpacity>
-                )}ghf
+                )}
               </View>
             </ScrollView>
           )}

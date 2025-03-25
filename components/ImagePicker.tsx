@@ -62,10 +62,14 @@
 import React, { useState } from 'react';
 import { View, Image, TouchableOpacity, Text, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { constants } from '@/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ImagePickerComponent = () => {
-  const [selectedImage, setSelectedImage] = useState<string[]>([]);
-
+interface ImagePickerProps {
+  images: string[];
+  onImageSelect: (imagePath: string) => void;
+}
+const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], onImageSelect }) => {
   const handleImagePick = async (mode: 'camera' | 'gallery') => {
     try {
       // Request permissions
@@ -95,9 +99,24 @@ const ImagePickerComponent = () => {
         });
       }
 
-      if (!result.canceled) {
-        console.log(result);
-        setSelectedImage([...selectedImage, result.assets[0].uri]);
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const token = await AsyncStorage.getItem('token');
+        const refresh = await AsyncStorage.getItem('refresh');
+        if (!token || !refresh) {
+            Alert.alert("Error", "No token found. Please log in again.");
+            return;
+        }
+        const imageUri = result.assets[0].uri;
+        console.log("imageUri", imageUri)
+
+        // Upload the image to the Django API
+        const savedPath: any = await uploadImageToDjangoAPI(imageUri, token);
+        console.log("imageUri", savedPath)
+
+        if (savedPath) {
+          // Call onImageSelect with the saved path
+          onImageSelect(savedPath["filePath"]);
+        }
       }
     } catch (error) {
       console.error('Image picker error:', error);
@@ -105,11 +124,49 @@ const ImagePickerComponent = () => {
     }
   };
 
+  // Function to upload the image to the Django API
+  const uploadImageToDjangoAPI = async (imageUri: string, token: string): Promise<string | null> => {
+    try {
+      const formData = new FormData();
+      const responseImageUri = await fetch(imageUri);
+      const blob = await responseImageUri.blob();
+      const file = new File([blob], `image_${Date.now()}.jpg`, { type: 'image/jpeg' });
+      formData.append('image', file);
+      console.log(formData)
+      console.log(`${constants.API_URL}/image-upload/`, token)
+      const response = await fetch(`${constants.API_URL}/image-upload/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+      
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.filePath; // Assuming the API returns the saved file path as `filePath`
+      } else {
+        console.error('Failed to upload image:', response.statusText);
+        Alert.alert('Error', 'Failed to upload the image.');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      Alert.alert('Error', 'Something went wrong while uploading the image.');
+      return null;
+    }
+  };
+
   return (
     <View className="p-4 items-center">
-      {selectedImage.length > 0 && (
+      {images.length > 0 && (
         <View className="flex-row flex-wrap gap-2">
-          {selectedImage.map((image, index) => (
+          {images.map((image, index) => (
             <Image
               key={index}
               source={{ uri: image }}

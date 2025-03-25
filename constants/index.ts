@@ -128,8 +128,9 @@ export const data = {
 // };
 
 export const constants = {
-  API_URL: "https://multisolutionofneedindia.com/api",
+  API_URL: "https://www.multisolutionofneedindia.com/api",
   DEFAULT_PASSWORD: "MSNI@2025",
+  EXPO_PUBLIC_PLACES_API_KEY: "AIzaSyBJnJ0WfMVeL1erTljsNOROO14OuUC2D1E",
   EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY: "pk_test_51R430HGaMYl6ECTXSnXmMyDytNVGAm4uzib27JcLraI1H9eduex1YOmcnGT9aNbAemg2Y8Y2rFJzYsDn3IWnBQUM00iXMCCuzs",
   STRIPE_SECRET_KEY: "sk_test_51R430HGaMYl6ECTXDPlVv9Es4gGogft8wNvgf7XDKpHn4HZkjJtxIkQLrwdFNkZJlFBWF2pkgEIptqSnzC9GvW0H00qGNIK8w7"
 };
