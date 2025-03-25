@@ -17,6 +17,7 @@ const MultiStepForm = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(1);
+  const [serviceId, setServiceId] = useState(null);
   const [states, setStates] = useState<{ id: number; name: string; code: string }[]>([]);
   const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
 
@@ -75,20 +76,41 @@ const MultiStepForm = () => {
         router.replace("/(auth)/sign-in");
         return;
       }
-      const response = await fetchAPI(`${constants.API_URL}/property/create`, {
-        method: "POST",
+      console.log({
+        title: values.title,
+        options: values,
+        user_id: 1,
+        service_id: 1,
+      })
+      let url = `${constants.API_URL}/user-services/`;
+      let method = "POST";
+      if (serviceId !== null && serviceId !== undefined) {
+        method = "PATCH"
+        url = `${constants.API_URL}/user-services/${serviceId}/update_option/`;
+      }
+      console.log("URL", url)
+      console.log("METHOD", method)
+      const response = await fetchAPI(url, {
+        method: method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          title: values.title,
+          options: values,
+          user_id: 1,
+          service_id: 1,
+        }),
       });
 
-      if (response.success) {
-        Alert.alert("Success", "Property details saved successfully!");
-      } else {
-        Alert.alert("Error", "Something went wrong. Please try again.");
-      }
+      // if (response.success) {
+      //   Alert.alert("Success", "Property details saved successfully!");
+      // } else {
+      //   Alert.alert("Error", "Something went wrong. Please try again.");
+      // }
+      console.log(response)
+      setServiceId(response.id)
     } catch (error) {
       Alert.alert("Error", "Failed to save property details.");
       console.error("Error saving data:", error);
@@ -137,11 +159,12 @@ const MultiStepForm = () => {
           validationSchema={step == 1 ? validationSchemas[0] : null}
           onSubmit={(values) => {
             console.log("step:", step);
-            if (step === validationSchemas.length) {
-              handleSubmit(values);
-            } else {
-              setStep(step + 1);
-            }
+            handleSubmit(values);
+            // if (step === validationSchemas.length) {
+            //   handleSubmit(values);
+            // } else {
+            //   setStep(step + 1);
+            // }
           }}
         >
           {({
@@ -678,11 +701,11 @@ const MultiStepForm = () => {
 
               {/* Navigation Buttons */}
               <View className={`flex-row ${step > 1 ? "justify-between" : "justify-end"} mt-5 mb-10`}>
-                {step > 1 && <TouchableOpacity onPress={() => setStep(step - 1)} className="bg-gray-500 py-3 px-5 rounded-lg">
+                {step > 1 && <TouchableOpacity onPress={() =>{ handleSubmit(); setStep(step - 1);}} className="bg-gray-500 py-3 px-5 rounded-lg">
                   <Text className="text-white text-2xl font-bold">Back</Text>
                 </TouchableOpacity>}
                 {step < 5 ? (
-                  <TouchableOpacity disabled={!!Object.keys(errors).length} onPress={() => setStep(step + 1)} className="bg-blue-500 py-3 px-5 rounded-lg">
+                  <TouchableOpacity disabled={!!Object.keys(errors).length} onPress={() =>{ handleSubmit(); setStep(step + 1);}} className="bg-blue-500 py-3 px-5 rounded-lg">
                     <Text className="text-white text-2xl font-bold">Save & Next - {Object.keys(errors).length}</Text>
                   </TouchableOpacity>
                 ) : (
