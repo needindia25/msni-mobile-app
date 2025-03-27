@@ -725,10 +725,12 @@ const MultiStepForm = () => {
                         <Text className="text-xl font-bold mb-4">Upload Image</Text>
                         <ImagePickerComponent
                           images={values.images}
+                          serviceId={serviceId}
                           onImageSelect={(imagePath: string) => {
                             // Append the new image path to the existing array
                             console.log(values.images, imagePath)
                             setFieldValue("images", [...values.images, imagePath]);
+                            console.log(values)
                           }}
                         />
                       </View>
