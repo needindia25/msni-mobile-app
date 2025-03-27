@@ -128,6 +128,7 @@ export const data = {
 // };
 
 export const constants = {
+  BASE_URL: "https://www.multisolutionofneedindia.com",
   API_URL: "https://www.multisolutionofneedindia.com/api",
   DEFAULT_PASSWORD: "MSNI@2025",
   EXPO_PUBLIC_PLACES_API_KEY: "AIzaSyBJnJ0WfMVeL1erTljsNOROO14OuUC2D1E",

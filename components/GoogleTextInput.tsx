@@ -1,5 +1,7 @@
 import { View, Image } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import 'react-native-get-random-values'; // Polyfill for crypto.getRandomValues
+import { v4 as uuidv4 } from 'uuid';
 
 import { constants, icons } from "@/constants";
 import { GoogleInputProps } from "@/types/type";
@@ -53,6 +55,7 @@ const GoogleTextInput = ({
           },
         }}
         onPress={(data, details = null) => {
+          console.log(data, details)
           handlePress({
             latitude: details?.geometry.location.lat!,
             longitude: details?.geometry.location.lng!,
@@ -74,7 +77,7 @@ const GoogleTextInput = ({
         )}
         textInputProps={{
           placeholderTextColor: "gray",
-          placeholder: initialLocation ?? "Where do you want to go?",
+          placeholder: initialLocation ?? "Where your property?",
         }}
       />
     </View>

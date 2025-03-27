@@ -70,6 +70,18 @@ interface ImagePickerProps {
   onImageSelect: (imagePath: string) => void;
 }
 const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], onImageSelect }) => {
+
+  const getMimeType = (uri: string) => {
+    const extension = uri.split(".").pop()?.toLowerCase() ?? "";
+    const mimeTypes: Record<string, string> = {
+      jpg: "image/jpeg",
+      jpeg: "image/jpeg",
+      png: "image/png",
+      gif: "image/gif",
+    };
+    return mimeTypes[extension] || "image/jpeg"; // Default to JPEG
+  };
+
   const handleImagePick = async (mode: 'camera' | 'gallery') => {
     try {
       // Request permissions
@@ -90,12 +102,14 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], onImage
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
           allowsEditing: true,
           quality: 1, // 1 = Best Quality
+          base64: true,
         });
       } else {
         result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
           allowsEditing: true,
           quality: 1,
+          base64: true,
         });
       }
 
@@ -103,20 +117,31 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], onImage
         const token = await AsyncStorage.getItem('token');
         const refresh = await AsyncStorage.getItem('refresh');
         if (!token || !refresh) {
-            Alert.alert("Error", "No token found. Please log in again.");
-            return;
+          Alert.alert("Error", "No token found. Please log in again.");
+          return;
         }
         const imageUri = result.assets[0].uri;
-        console.log("imageUri", imageUri)
-
+        const base64Data = result.assets[0].base64;
         // Upload the image to the Django API
-        const savedPath: any = await uploadImageToDjangoAPI(imageUri, token);
-        console.log("imageUri", savedPath)
+        if (result.assets[0].base64) {
+          // Get the correct MIME type
+          const mimeType = getMimeType(imageUri);
 
-        if (savedPath) {
-          // Call onImageSelect with the saved path
-          onImageSelect(savedPath["filePath"]);
+          // Add MIME type prefix to Base64 string
+          const fullBase64 = `data:${mimeType};base64,${base64Data}`;
+          console.log("fullBase64 : ", fullBase64.substring(0, 50))
+          const savedPath: any = await uploadImageToDjangoAPI(fullBase64, token);
+          console.log("imageUri", savedPath)
+          if (savedPath) {
+            // Call onImageSelect with the saved path
+            onImageSelect(constants.BASE_URL + '' + savedPath);
+          }
+        } else {
+          console.error('Base64 image data is missing.');
+          Alert.alert('Error', 'Failed to process the image.');
+          return;
         }
+
       }
     } catch (error) {
       console.error('Image picker error:', error);
@@ -125,27 +150,23 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], onImage
   };
 
   // Function to upload the image to the Django API
-  const uploadImageToDjangoAPI = async (imageUri: string, token: string): Promise<string | null> => {
+  const uploadImageToDjangoAPI = async (base64Image: string, token: string): Promise<string | null> => {
     try {
-      const formData = new FormData();
-      const responseImageUri = await fetch(imageUri);
-      const blob = await responseImageUri.blob();
-      const file = new File([blob], `image_${Date.now()}.jpg`, { type: 'image/jpeg' });
-      formData.append('image', file);
-      console.log(formData)
       console.log(`${constants.API_URL}/image-upload/`, token)
       const response = await fetch(`${constants.API_URL}/image-upload/`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: formData,
+        body: JSON.stringify({
+          image: base64Image
+        }),
       });
 
       console.log('Response status:', response.status);
       console.log('Response headers:', response.headers);
-      
+
 
       if (response.ok) {
         const data = await response.json();
