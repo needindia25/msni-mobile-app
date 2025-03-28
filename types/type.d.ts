@@ -92,10 +92,12 @@ declare interface GoogleInputProps {
     latitude,
     longitude,
     address,
+    address_components,
   }: {
     latitude: number;
     longitude: number;
     address: string;
+    address_components: Array;
   }) => void;
 }
 
@@ -134,19 +136,23 @@ declare interface LocationStore {
     latitude,
     longitude,
     address,
+    address_components,
   }: {
     latitude: number;
     longitude: number;
     address: string;
+    address_components: Array;
   }) => void;
   setDestinationLocation: ({
     latitude,
     longitude,
     address,
+    address_components,
   }: {
     latitude: number;
     longitude: number;
     address: string;
+    address_components: Array;
   }) => void;
 }
 

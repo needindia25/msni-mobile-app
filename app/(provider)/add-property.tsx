@@ -29,6 +29,8 @@ const MultiStepForm = () => {
     setDestinationLocation,
     setUserLocation,
   } = useLocationStore();
+  const stateOptions = states.map((state) => ({ label: state.name, value: state.id }));
+  let cityOptions = cities.map((city) => ({ label: city.name, value: city.id }));
 
   useEffect(() => {
     const fetchStates = async () => {
@@ -50,13 +52,11 @@ const MultiStepForm = () => {
     try {
       const response = await fetchAPI(`${constants.API_URL}/master/state/${stateId}/cities`);
       setCities(response);
+      cityOptions = response.map((city: any) => ({ label: city.name, value: city.id }));
     } catch (error) {
       console.error("Error fetching cities:", error);
     }
   };
-
-  const stateOptions = states.map((state) => ({ label: state.name, value: state.id }));
-  const cityOptions = cities.map((district) => ({ label: district.name, value: district.id }));
 
   // 📌 Validation Schema using Yup
   const validationSchemas = [
@@ -67,7 +67,6 @@ const MultiStepForm = () => {
       address: yup.string().required("Address is required"),
       // location: yup.string().required("Location is required"),
       state: yup.number().min(1, "Select a valid state").required("State is required"),
-      city: yup.number().min(1, "Select a valid city").required("City is required"),
       zip: yup.string().matches(/^\d{6}$/, "Enter a valid 6-digit ZIP code").required("ZIP is required"),
     }),
   ];
@@ -284,20 +283,60 @@ const MultiStepForm = () => {
                         <CustomTextarea value={values.description} onChangeText={handleChange("description")} />
                         {touched.description && errors.description && <Text className="text-red-500">{errors.description}</Text>}
 
-                        {/* <View className="my-3">
+                        <View className="my-3">
                           <GoogleTextInput
                             icon={icons.target}
                             initialLocation={userAddress!}
                             containerStyle="bg-neutral-100"
                             textInputBackgroundColor="#f5f5f5"
-                            handlePress={(location) => {
-                              setUserLocation(location)
-                              values.latitude = location.latitude
-                              values.longitude = location.longitude
-                              values.address = location.address
+                            handlePress={async (location) => {
+                              setUserLocation(location);
+                              values.latitude = location.latitude;
+                              values.longitude = location.longitude;
+                              values.address = location.address;
+                            
+                              const addressComponents = location.address_components;
+                              if (!addressComponents || addressComponents.length === 0) return; // ✅ Check for undefined components
+                            
+                              const totalAddComponents = addressComponents.length - 1;
+                              values.state = 0;
+                              values.city = 0;
+                            
+                              for (let index = totalAddComponents; index >= 0; index--) {
+                                const element = addressComponents[index];
+                            
+                                // ✅ Extract ZIP Code
+                                if (index === totalAddComponents && parseInt(element.long_name, 10)) {
+                                  console.log("zip", index, "=>", typeof element.long_name, "=>", element.long_name);
+                                  values.zip = element.long_name;
+                                  continue;
+                                }
+                            
+                                // ✅ Extract State
+                                if (!values.state) {
+                                  const selectedState = stateOptions.find((state) => state.label === element.long_name);
+                                  if (selectedState) {
+                                    values.state = selectedState.value;
+                                    console.log(selectedState)
+                                    await fetchCities(values.state); // ✅ Awaiting city fetch
+                                    continue;
+                                  }
+                                }
+                            
+                                // ✅ Extract City
+                                if (!values.city) {
+                                  const selectedCity = cityOptions.find((city) => city.label === element.long_name);
+                                  console.log(selectedCity)
+                                  if (selectedCity) {
+                                    values.city = selectedCity.value;
+                                    break;
+                                  }
+                                }
+                              }
                             }}
+                            
                           />
-                        </View> */}
+                        </View>
                         <Text className="text-lg font-bold mt-3  mb-3">Address</Text>
                         <CustomTextarea value={values.address} onChangeText={handleChange("address")} />
                         {touched.address && errors.address && <Text className="text-red-500">{errors.address}</Text>}
