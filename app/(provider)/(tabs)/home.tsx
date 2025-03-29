@@ -143,7 +143,12 @@ const Home = () => {
                         {listings.length > 0 ? (
                             listings.map((listing: any) => (
                                 <View key={listing.id} className="bg-white rounded-lg shadow-md mb-5 p-5">
-                                    <Image source={{ uri: listing.image }} className="w-full h-40 rounded-lg mb-3" />
+                                    <Image
+                                        source={{ uri: listing.image }}
+                                        className="w-[200px] h-[200px] rounded-lg mb-3 justify-between items-center"
+                                        onError={() => console.log(`Failed to load image for listing ID: ${listing.id}`)}
+                                        defaultSource={{ uri: "https://www.multisolutionofneedindia.com/media/no-image-found.png" }}
+                                    />
                                     <Text className="text-xl font-bold mb-1">{listing.title}</Text>
                                     <Text className="text-gray-500 mb-1">{listing.location}</Text>
 

@@ -306,6 +306,7 @@ const MultiStepForm = () => {
                               values.latitude = location.latitude;
                               values.longitude = location.longitude;
                               values.address = location.address;
+                              values.location = location.address;
 
                               const addressComponents = location.address_components;
                               if (!addressComponents || addressComponents.length === 0) return; // ✅ Check for undefined components
@@ -313,7 +314,6 @@ const MultiStepForm = () => {
                               const totalAddComponents = addressComponents.length - 1;
                               values.state = 0;
                               values.city = 0;
-                              values.address = ""
                               values.zip = ""
                               for (let index = totalAddComponents; index >= 0; index--) {
                                 const element = addressComponents[index];
