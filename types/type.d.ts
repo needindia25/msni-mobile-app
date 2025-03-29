@@ -1,5 +1,17 @@
 import { TextInputProps, TouchableOpacityProps } from "react-native";
 
+type Listing = {
+  id: number;
+  title: string;
+  location: string;
+  rating: string;
+  price: string;
+  requests: number;
+  favorites: number;
+  image: string;
+  status: boolean;
+};
+
 interface UserInfo {
   user_type_id: number;
   has_subscription: boolean;

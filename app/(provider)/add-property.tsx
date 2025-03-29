@@ -16,10 +16,48 @@ import GoogleTextInput from "@/components/GoogleTextInput";
 import { useLocationStore } from "@/store";
 
 const MultiStepForm = () => {
+  // const { passServiceId } = useSearchParams(); // Retrieve the id from the route
+
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(1);
-  const [serviceId, setServiceId] = useState(null);
+  const [previousStep, setPreviousStep] = useState(0);
+  const [token, setToken] = useState<string | null>(null);
+  const [formData, setFormDate] = useState<any>(
+    {
+      propertyFor: "Rent",
+      title: "",
+      propertyType: "",
+      description: "",
+      latitude: 0,
+      longitude: 0,
+      address: "",
+      location: "",
+      state: 0,
+      city: 0,
+      zip: "",
+      housingType: "",
+      bhkType: "",
+      familyPreference: "",
+      foodPreference: "",
+      rent: 0,
+      advance: 0,
+      rentNegotiable: "No",
+      areaInSize: 0,
+      floorNumber: 0,
+      numberOfBedRooms: 1,
+      numberOfBalconies: 0,
+      numberOfBathRooms: 0,
+      ageOfProperty: 0,
+      furnishing: "",
+      parking: "",
+      basicAmenities: [] as string[],
+      additionalAmenities: [] as string[],
+      sourceOfWater: "",
+      images: [] as string[],
+    }
+  )
+  const [serviceId, setServiceId] = useState<number | null>(null);
   const [states, setStates] = useState<{ id: number; name: string; code: string }[]>([]);
   const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
 
@@ -33,17 +71,41 @@ const MultiStepForm = () => {
   let cityOptions = cities.map((city) => ({ label: city.name, value: city.id }));
 
   useEffect(() => {
-    const fetchStates = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch token
+        const token = await AsyncStorage.getItem('token');
+        const passServiceId = await AsyncStorage.getItem('passServiceId');
+        console.log(`token: ${token}`);
+        if (!!token) {
+          setToken(token);
+        }
         const response = await fetchAPI(`${constants.API_URL}/master/states`);
         setStates(response);
+        if (!!passServiceId) {
+          console.log("passServiceId", passServiceId)
+          setServiceId(parseInt(passServiceId as string, 10));
+          const response = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+          setFormDate((prevFormData: any) => ({
+            ...prevFormData,
+            ...response["options"],
+          }));
+          console.log(response["options"])
+          console.log(formData)
+          fetchCities(formData.state);
+        }
       } catch (error) {
-        console.error("Error fetching states:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchStates();
+    fetchData();
   }, []);
 
   // Fetch Cities when state changes
@@ -64,7 +126,6 @@ const MultiStepForm = () => {
       title: yup.string().required("Title is required"),
       propertyType: yup.string().required("Property type is required"),
       description: yup.string().min(10, "Description should be at least 10 characters").required("Description is required"),
-      address: yup.string().required("Address is required"),
       state: yup.number().min(1, "Select a valid state").required("State is required"),
       zip: yup.string().matches(/^\d{6}$/, "Enter a valid 6-digit ZIP code").required("ZIP is required"),
     }),
@@ -74,21 +135,6 @@ const MultiStepForm = () => {
   const handleSubmit = async (values: any) => {
     console.log("Form values:", values);
     try {
-      const token = await AsyncStorage.getItem('token');
-      if (!token) {
-        Alert.alert("Error", "No token found. Please log in again.");
-
-        await AsyncStorage.clear();
-        Alert.alert("Success", "You have been logged out.");
-        router.replace("/(auth)/sign-in");
-        return;
-      }
-      console.log({
-        title: values.title,
-        options: values,
-        user_id: 1,
-        service_id: 1,
-      })
       let url = `${constants.API_URL}/user-services/`;
       let method = "POST";
       if (serviceId !== null && serviceId !== undefined) {
@@ -103,17 +149,25 @@ const MultiStepForm = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({
+        body: JSON.stringify(method === "POST" ? {
           title: values.title,
           options: values,
-          user_id: 1,
           service_id: 1,
+          is_active: false
+        } : {
+          title: values.title,
+          options: values,
         }),
       });
       console.log(response)
       if (method === "POST") {
         setServiceId(response.id)
       }
+      console.log(step, previousStep);
+      if (step === previousStep) {
+        router.push("/(provider)/(tabs)/home");
+      }
+      setPreviousStep(step)
     } catch (error) {
       Alert.alert("Error", "Failed to save property details.");
       console.error("Error saving data:", error);
@@ -129,41 +183,10 @@ const MultiStepForm = () => {
         </View>
       ) : (
         <Formik
-          initialValues={{
-            propertyFor: "Rent",
-            title: "",
-            propertyType: "",
-            description: "",
-            latitude: 0,
-            longitude: 0,
-            address: "",
-            location: "",
-            state: 0,
-            city: 0,
-            zip: "",
-            housingType: "",
-            bhkType: "",
-            familyPreference: "",
-            foodPreference: "",
-            rent: 0,
-            advance: 0,
-            rentNegotiable: "No",
-            areaInSize: 0,
-            floorNumber: 0,
-            numberOfBedRooms: 1,
-            numberOfBalconies: 0,
-            numberOfBathRooms: 0,
-            ageOfProperty: 0,
-            furnishing: "",
-            parking: "",
-            basicAmenities: [] as string[],
-            additionalAmenities: [] as string[],
-            sourceOfWater: "",
-            images: [] as string[],
-          }}
+          initialValues={formData}
           validationSchema={step == 1 ? validationSchemas[0] : null}
           onSubmit={(values) => {
-            console.log("step:", step);
+            console.log("111 step:", step);
             handleSubmit(values);
           }}
         >
@@ -215,7 +238,9 @@ const MultiStepForm = () => {
                 data={[{ key: "form" }]} // Dummy data to render the form
                 renderItem={() => (
                   <View className="p-5 bg-gray-100">
-                    <Text className="text-2xl font-bold text-center mb-5">Add New Property</Text>
+                    <Text className="text-2xl font-bold text-center mb-5">
+                      {serviceId ? "Edit Property" : "Add New Property"}
+                    </Text>
                     {/* Step Indicator */}
                     <View className="flex-row justify-between mb-5">
                       {[1, 2, 3, 4, 5].map((num) => (
@@ -281,10 +306,10 @@ const MultiStepForm = () => {
                               values.latitude = location.latitude;
                               values.longitude = location.longitude;
                               values.address = location.address;
-                            
+
                               const addressComponents = location.address_components;
                               if (!addressComponents || addressComponents.length === 0) return; // ✅ Check for undefined components
-                            
+
                               const totalAddComponents = addressComponents.length - 1;
                               values.state = 0;
                               values.city = 0;
@@ -292,14 +317,14 @@ const MultiStepForm = () => {
                               values.zip = ""
                               for (let index = totalAddComponents; index >= 0; index--) {
                                 const element = addressComponents[index];
-                            
+
                                 // ✅ Extract ZIP Code
                                 if (index === totalAddComponents && parseInt(element.long_name, 10)) {
                                   console.log("zip", index, "=>", typeof element.long_name, "=>", element.long_name);
                                   values.zip = element.long_name;
                                   continue;
                                 }
-                            
+
                                 // ✅ Extract State
                                 if (!values.state) {
                                   const selectedState = stateOptions.find((state) => state.label === element.long_name);
@@ -310,7 +335,7 @@ const MultiStepForm = () => {
                                     continue;
                                   }
                                 }
-                            
+
                                 // ✅ Extract City
                                 if (!values.city) {
                                   const selectedCity = cityOptions.find((city) => city.label === element.long_name);
@@ -321,7 +346,7 @@ const MultiStepForm = () => {
                                   }
                                 }
                               }
-                            }}                            
+                            }}
                           />
                         </View>
                         {touched.address && errors.address && <Text className="text-red-500">{errors.address}</Text>}
@@ -768,7 +793,7 @@ const MultiStepForm = () => {
                       </TouchableOpacity>}
                       {step < 5 ? (
                         <TouchableOpacity disabled={!!Object.keys(errors).length} onPress={() => { handleSubmit(); setStep(step + 1); }} className="bg-blue-500 py-3 px-5 rounded-lg">
-                          <Text className="text-white text-2xl font-bold">Save & Next - {Object.keys(errors).length}</Text>
+                          <Text className="text-white text-2xl font-bold">Save & Next</Text>
                         </TouchableOpacity>
                       ) : (
                         <TouchableOpacity onPress={() => handleSubmit()} className="bg-green-500 py-3 px-5 rounded-lg">

@@ -1,63 +1,125 @@
-import ComingSoon from '@/components/ComingSoon';
-import { icons } from '@/constants';
-import { UserInfo } from '@/types/type';
+import { constants, icons } from '@/constants';
+import { fetchAPI } from '@/lib/fetch';
+import { Listing } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, SafeAreaView } from 'react-native';
 
+import { Alert } from "react-native";
+
 const Home = () => {
     const router = useRouter();
 
     const [loading, setLoading] = useState(true);
-    const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+    const [listings, setListings] = useState<Listing[]>([]);
 
     useEffect(() => {
         const checkAuth = async () => {
             const token = await AsyncStorage.getItem('token');
-            console.log(`token: ${token}`)
+            await AsyncStorage.setItem("passServiceId", "");
+            console.log(`token: ${token}`);
             if (!!token) {
-                const userInfo = await AsyncStorage.getItem('user_info');
-                console.log(`userInfo: ${userInfo}`)
-                setUserInfo(userInfo ? JSON.parse(userInfo) : null)
+                const response: any = await fetchAPI(`${constants.API_URL}/user-services/list_my_active/`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                setListings(transformData(response));
             }
             setLoading(false);
         };
         checkAuth();
     }, []);
-    const listings: any = [];
-    // const listings = [
-    //     {
-    //         id: 1,
-    //         title: 'Modern Apartment',
-    //         location: 'Downtown Area',
-    //         rating: 4.8,
-    //         price: '₹ 25000',
-    //         requests: 12,
-    //         favorites: 10,
-    //         image: 'https://plus.unsplash.com/premium_photo-1674676471104-3c4017645e6f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8YXBhcnRtZW50fGVufDB8fDB8fHww',
-    //     },
-    //     {
-    //         id: 2,
-    //         title: '3BHK Apartment',
-    //         location: 'Koramangala, Bangalore',
-    //         rating: 4.2,
-    //         price: '₹ 25000',
-    //         requests: 12,
-    //         favorites: 10,
-    //         image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXBhcnRtZW50fGVufDB8fDB8fHww',
-    //     },
-    //     {
-    //         id: 3,
-    //         title: 'Luxury Villa',
-    //         location: 'HSR Layout, Bangalore',
-    //         rating: 4.8,
-    //         price: '₹ 25000',
-    //         requests: 12,
-    //         favorites: 10,
-    //         image: 'https://plus.unsplash.com/premium_photo-1684175656320-5c3f701c082c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YXBhcnRtZW50fGVufDB8fDB8fHww',
-    //     },
-    // ];
+
+    const transformData = (data: any[]): Listing[] => {
+        const sortedData = data.sort((a, b) => b.id - a.id);
+        return sortedData.map((property) => ({
+            id: property.id,
+            title: property.title,
+            location: property.options.address || "Unknown Location",
+            rating: "New",
+            price: `₹ ${property.options.rent || "N/A"}`,
+            requests: 0,
+            favorites: 0,
+            image: property.options.images.length > 0 ? property.options.images[0] : "https://www.multisolutionofneedindia.com/media/no-image-found.png",
+            status: property.is_active,
+        }));
+    };
+
+    const handleDelete = (id: number) => {
+        Alert.alert(
+            "Delete Property",
+            "Are you sure you want to delete this property?",
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: async () => {
+                        const token = await AsyncStorage.getItem('token');
+                        if (token) {
+                            const response = await fetchAPI(`${constants.API_URL}/user-services/${id}/`, {
+                                method: "DELETE",
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                },
+                            });
+                            setListings((prev) => prev.filter((listing) => listing.id !== id));
+                            Alert.alert("Success", "Property deleted successfully.");
+                        }
+                    },
+                },
+            ]
+        );
+    };
+
+    const handleEdit = async (id: number) => {
+        try {
+            await AsyncStorage.setItem("passServiceId", id.toString());
+            router.push(`/add-property`);
+        } catch (error) {
+            console.error("Error saving service ID to AsyncStorage:", error);
+            Alert.alert("Error", "Failed to save service ID. Please try again.");
+        }
+    };
+
+    // const handleView = (id: number) => {
+    //     router.push(`/add-property?passServiceId=${id}`);
+    // };
+
+    const handleChangeStatus = (id: number) => {
+        Alert.alert(
+            "Change Status",
+            "Are you sure you want to change the status of this property?",
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Change",
+                    onPress: async () => {
+                        const token = await AsyncStorage.getItem('token');
+                        if (token) {
+                            const response = await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, {
+                                method: "PATCH",
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                },
+                            });
+                            Alert.alert("Success", "Property status updated successfully.");
+                            setListings((prevListings) =>
+                                prevListings.map((listing) =>
+                                    listing.id === id
+                                        ? { ...listing, status: !listing.status }
+                                        : listing
+                                )
+                            );
+                        }
+                    },
+                },
+            ]
+        );
+    };
 
     return (
         <>
@@ -65,7 +127,7 @@ const Home = () => {
                 <TouchableOpacity
                     className="absolute top-5 right-5 bg-green-500 rounded-full p-5 shadow-lg"
                     onPress={() => router.push('/add-property')}
-                    style={{ zIndex: 1000 }} // Ensures it stays on top of other elements
+                    style={{ zIndex: 1000 }}
                 >
                     <Text className="text-white text-2xl font-bold">+</Text>
                 </TouchableOpacity>
@@ -97,12 +159,42 @@ const Home = () => {
                                     </View>
 
                                     {/* Requests and Favorites Row */}
-                                    <View className="flex-row justify-between items-center">
+                                    <View className="flex-row justify-between items-center mb-3">
                                         <Text className="text-gray-500">{listing.requests} request</Text>
                                         <View className="flex-row items-center">
                                             <Text className="text-red-500 mr-1">❤</Text>
                                             <Text className="text-gray-500">{listing.favorites}</Text>
                                         </View>
+                                    </View>
+
+                                    {/* Action Buttons */}
+                                    <View className="flex-row justify-between">
+                                        {/* <TouchableOpacity
+                                            className="bg-blue-500 py-2 px-4 rounded-lg"
+                                            onPress={() => handleView(listing.id)}
+                                        >
+                                            <Text className="text-white font-bold">View</Text>
+                                        </TouchableOpacity> */}
+                                        <TouchableOpacity
+                                            className="bg-yellow-500 py-2 px-4 rounded-lg"
+                                            onPress={() => handleEdit(listing.id)}
+                                        >
+                                            <Text className="text-white font-bold">Edit</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            className="bg-green-500 py-2 px-4 rounded-lg"
+                                            onPress={() => handleChangeStatus(listing.id)}
+                                        >
+                                            <Text className="text-white font-bold">
+                                                {listing.status ? "Deactivate" : "Activate"}
+                                            </Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            className="bg-red-500 py-2 px-4 rounded-lg"
+                                            onPress={() => handleDelete(listing.id)}
+                                        >
+                                            <Text className="text-white font-bold">Delete</Text>
+                                        </TouchableOpacity>
                                     </View>
                                 </View>
                             ))
@@ -110,7 +202,7 @@ const Home = () => {
                             <View className="flex-1 items-center justify-center bg-white p-5">
                                 <View className="bg-gray-200 rounded-full p-5 mb-5">
                                     <Image
-                                        source={icons.lock} // Replace with your icon URL or local image
+                                        source={icons.lock}
                                         className="w-12 h-12"
                                     />
                                 </View>

@@ -39,19 +39,18 @@ const GoogleTextInput = ({
               alignItems: "center",
               justifyContent: "center",
               shadowColor: "#000",
-              borderWidth: 1, // border
-              borderColor: '#D1D5DB', // gray-300 in Tailwind
-              borderRadius: 10, // rounded-lg (approx. 10px)
-              padding: 12, // p-3 (approx. 12px)
-              backgroundColor: '#FFFFFF', // bg-white
+              borderWidth: 1,
+              borderColor: '#D1D5DB',
+              borderRadius: 10,
+              padding: 12,
+              backgroundColor: '#FFFFFF',
             },
             textInput: {
               backgroundColor: "white",
               fontSize: 16,
               fontWeight: "600",
-              marginTop: 5,
               width: "100%",
-              borderRadius: 200,
+              borderRadius: 10,
             },
             listView: {
               backgroundColor: "white",
@@ -95,11 +94,11 @@ const GoogleTextInput = ({
       </View>
 
       {/* MapView with Selected Location */}
-      <View className="flex-1 mt-4 border h-[100px]">
+      <View className="flex-1 mt-4 border h-[100px] rounded-lg overflow-hidden">
         {selectedLocation ? (
           <MapView
             provider={PROVIDER_GOOGLE}
-            className="w-full h-full rounded-lg"
+            className="w-full h-full"
             region={{
               latitude: selectedLocation.latitude,
               longitude: selectedLocation.longitude,
@@ -107,6 +106,8 @@ const GoogleTextInput = ({
               longitudeDelta: 0.01,
             }}
             showsUserLocation={true}
+            onMapReady={() => console.log("Map is ready")}
+            onLayout={() => console.log("Map layout completed")}
           >
             <Marker
               coordinate={{
