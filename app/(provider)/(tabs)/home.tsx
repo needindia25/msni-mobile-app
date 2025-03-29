@@ -20,7 +20,7 @@ const Home = () => {
             await AsyncStorage.setItem("passServiceId", "");
             console.log(`token: ${token}`);
             if (!!token) {
-                const response: any = await fetchAPI(`${constants.API_URL}/user-services/list_my_active/`, {
+                const response: any = await fetchAPI(`${constants.API_URL}/user-services/my_property/`, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`,
@@ -152,20 +152,20 @@ const Home = () => {
                                         <Text className="text-blue-500 text-lg font-bold">
                                             {listing.price} <Text className="text-sm text-gray-500">/month</Text>
                                         </Text>
-                                        <View className="flex-row items-center">
+                                        {/* <View className="flex-row items-center">
                                             <Text className="text-yellow-500 mr-1">★</Text>
                                             <Text className="text-gray-500">{listing.rating}</Text>
-                                        </View>
+                                        </View> */}
                                     </View>
 
                                     {/* Requests and Favorites Row */}
-                                    <View className="flex-row justify-between items-center mb-3">
+                                    {/* <View className="flex-row justify-between items-center mb-3">
                                         <Text className="text-gray-500">{listing.requests} request</Text>
                                         <View className="flex-row items-center">
                                             <Text className="text-red-500 mr-1">❤</Text>
                                             <Text className="text-gray-500">{listing.favorites}</Text>
                                         </View>
-                                    </View>
+                                    </View> */}
 
                                     {/* Action Buttons */}
                                     <View className="flex-row justify-between">
