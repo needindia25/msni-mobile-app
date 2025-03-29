@@ -13,8 +13,6 @@ const googlePlacesApiKey = constants.EXPO_PUBLIC_PLACES_API_KEY;
 const GoogleTextInput = ({
   icon,
   initialLocation,
-  containerStyle,
-  textInputBackgroundColor,
   handlePress,
 }: GoogleInputProps) => {
   
@@ -31,7 +29,7 @@ const GoogleTextInput = ({
     <View className="flex-1 bg-gray-100">
       
       {/* Google Places Input */}
-      <View className={`px-4 pt-4 z-50 ${containerStyle}`}>
+      <View className="z-50">
         <GooglePlacesAutocomplete
           fetchDetails={true}
           placeholder="Search"
@@ -40,12 +38,15 @@ const GoogleTextInput = ({
             textInputContainer: {
               alignItems: "center",
               justifyContent: "center",
-              borderRadius: 20,
-              marginHorizontal: 20,
-              shadowColor: "#d4d4d4",
+              shadowColor: "#000",
+              borderWidth: 1, // border
+              borderColor: '#D1D5DB', // gray-300 in Tailwind
+              borderRadius: 10, // rounded-lg (approx. 10px)
+              padding: 12, // p-3 (approx. 12px)
+              backgroundColor: '#FFFFFF', // bg-white
             },
             textInput: {
-              backgroundColor: textInputBackgroundColor || "white",
+              backgroundColor: "white",
               fontSize: 16,
               fontWeight: "600",
               marginTop: 5,
@@ -53,7 +54,7 @@ const GoogleTextInput = ({
               borderRadius: 200,
             },
             listView: {
-              backgroundColor: textInputBackgroundColor || "white",
+              backgroundColor: "white",
               position: "absolute",
               top: 50,
               width: "100%",
@@ -64,14 +65,12 @@ const GoogleTextInput = ({
           }}
           onPress={(data, details = null) => {
             if (!details) return;
-
             const locationData = {
               latitude: details.geometry.location.lat,
               longitude: details.geometry.location.lng,
               address: data.description,
               address_components: details.address_components,
             };
-
             setSelectedLocation(locationData);
             handlePress(locationData);
           }}

@@ -5,7 +5,7 @@ import { constants, icons } from "@/constants";
 import { fetchAPI } from "@/lib/fetch";
 import { DropdownProps } from "@/types/type";
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, ScrollView, SafeAreaView, ActivityIndicator, Alert, KeyboardAvoidingView, FlatList, Platform } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, SafeAreaView, ActivityIndicator, Alert, KeyboardAvoidingView, FlatList, Platform } from "react-native";
 import { Formik, FormikProps } from "formik";
 import * as yup from "yup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -65,7 +65,6 @@ const MultiStepForm = () => {
       propertyType: yup.string().required("Property type is required"),
       description: yup.string().min(10, "Description should be at least 10 characters").required("Description is required"),
       address: yup.string().required("Address is required"),
-      // location: yup.string().required("Location is required"),
       state: yup.number().min(1, "Select a valid state").required("State is required"),
       zip: yup.string().matches(/^\d{6}$/, "Enter a valid 6-digit ZIP code").required("ZIP is required"),
     }),
@@ -111,12 +110,6 @@ const MultiStepForm = () => {
           service_id: 1,
         }),
       });
-
-      // if (response.success) {
-      //   Alert.alert("Success", "Property details saved successfully!");
-      // } else {
-      //   Alert.alert("Error", "Something went wrong. Please try again.");
-      // }
       console.log(response)
       if (method === "POST") {
         setServiceId(response.id)
@@ -172,11 +165,6 @@ const MultiStepForm = () => {
           onSubmit={(values) => {
             console.log("step:", step);
             handleSubmit(values);
-            // if (step === validationSchemas.length) {
-            //   handleSubmit(values);
-            // } else {
-            //   setStep(step + 1);
-            // }
           }}
         >
           {({
@@ -283,12 +271,11 @@ const MultiStepForm = () => {
                         <CustomTextarea value={values.description} onChangeText={handleChange("description")} />
                         {touched.description && errors.description && <Text className="text-red-500">{errors.description}</Text>}
 
-                        <View className="my-3">
+                        <Text className="text-lg font-bold mt-3 mb-3">Address</Text>
+                        <View>
                           <GoogleTextInput
                             icon={icons.target}
                             initialLocation={userAddress!}
-                            containerStyle="bg-neutral-100"
-                            textInputBackgroundColor="#f5f5f5"
                             handlePress={async (location) => {
                               setUserLocation(location);
                               values.latitude = location.latitude;
@@ -301,7 +288,8 @@ const MultiStepForm = () => {
                               const totalAddComponents = addressComponents.length - 1;
                               values.state = 0;
                               values.city = 0;
-                            
+                              values.address = ""
+                              values.zip = ""
                               for (let index = totalAddComponents; index >= 0; index--) {
                                 const element = addressComponents[index];
                             
@@ -333,12 +321,9 @@ const MultiStepForm = () => {
                                   }
                                 }
                               }
-                            }}
-                            
+                            }}                            
                           />
                         </View>
-                        <Text className="text-lg font-bold mt-3  mb-3">Address</Text>
-                        <CustomTextarea value={values.address} onChangeText={handleChange("address")} />
                         {touched.address && errors.address && <Text className="text-red-500">{errors.address}</Text>}
 
                         <CustomDropdown
