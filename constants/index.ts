@@ -36,8 +36,8 @@ import check from "@/assets/images/check.png";
 import getStarted from "@/assets/images/get-started.png";
 import message from "@/assets/images/message.png";
 import noResult from "@/assets/images/no-result.png";
-import niOnBoarding1 from "@/assets/images/ni-on-boarding1.png";
-import niOnBoarding2 from "@/assets/images/ni-on-boarding2.png";
+// import niOnBoarding1 from "@/assets/images/ni-on-boarding1.png";
+// import niOnBoarding2 from "@/assets/images/ni-on-boarding2.png";
 import niOnBoarding3 from "@/assets/images/ni-on-boarding5.png";
 import niOnBoarding4 from "@/assets/images/ni-on-boarding4.png";
 import niOnBoarding5 from "@/assets/images/ni-on-boarding5.png";
@@ -46,8 +46,8 @@ import HorizontalLogo from "@/assets/images/horizontal-logo.png";
 import adaptiveIcon from "@/assets/images/adaptive-icon.png";
 
 export const images = {
-  niOnBoarding1,
-  niOnBoarding2,
+  // niOnBoarding1,
+  // niOnBoarding2,
   niOnBoarding3,
   niOnBoarding4,
   niOnBoarding5,

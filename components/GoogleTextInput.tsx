@@ -95,7 +95,7 @@ const GoogleTextInput = ({
       </View>
 
       {/* MapView with Selected Location */}
-      <View className="flex-1 mt-4 border h-[100px] rounded-lg overflow-hidden">
+      {/* <View className="flex-1 mt-4 border h-[100px] rounded-lg overflow-hidden">
         {selectedLocation ? (
           <MapView
             provider={PROVIDER_GOOGLE}
@@ -122,10 +122,10 @@ const GoogleTextInput = ({
         ) : (
           <View className="flex-1 items-center justify-center">
             <Image source={icons.map} className="w-20 h-20 opacity-50" />
-            <Text className="text-gray-400 mt-2">{t("selectLocation")}</Text> {/* Use translation key */}
+            <Text className="text-gray-400 mt-2">{t("selectLocation")}</Text>
           </View>
         )}
-      </View>
+      </View> */}
     </View>
   );
 };

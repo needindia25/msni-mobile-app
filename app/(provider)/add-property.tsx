@@ -84,7 +84,7 @@ const MultiStepForm = () => {
         const token = await AsyncStorage.getItem('token');
         const passServiceId = await AsyncStorage.getItem('passServiceId');
         console.log(`token: ${token}`);
-        if (!!token) {
+        if (token) {
           setToken(token);
         }
 
@@ -92,9 +92,9 @@ const MultiStepForm = () => {
         const response = await fetchAPI(`${constants.API_URL}/master/states`);
         setStates(response);
 
-        if (!!passServiceId) {
+        if (passServiceId) {
           console.log("passServiceId", passServiceId);
-          setServiceId(parseInt(passServiceId as string, 10));
+          setServiceId(parseInt(passServiceId, 10));
 
           const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}`, {
             headers: {
@@ -110,7 +110,7 @@ const MultiStepForm = () => {
 
           // Fetch cities based on the state from the service response
           if (serviceResponse["options"].state) {
-            fetchCities(serviceResponse["options"].state); // Pass the state ID directly
+            await fetchCities(serviceResponse["options"].state); // Pass the state ID directly
           }
         }
       } catch (error) {
@@ -269,18 +269,18 @@ const MultiStepForm = () => {
                         <View className="flex-row flex-wrap justify-between mt-5">
                           {staticData.propertyForOptions.map((pref) => (
                             <TouchableOpacity
-                              key={pref}
-                              className={`rounded-lg p-3 flex-1 mr-2 ${values.propertyFor === pref ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-                              onPress={() => setFieldValue("propertyFor", pref)}
+                              key={pref.value}
+                              className={`rounded-lg p-3 flex-1 mr-2 ${values.propertyFor === pref.value ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
+                              onPress={() => setFieldValue("propertyFor", pref.value)}
                             >
                               <View className="flex-row items-center justify-center">
                                 <Image
-                                  source={values.propertyFor === pref ? icons.radioChecked : icons.radioUnchecked}
+                                  source={values.propertyFor === pref.value ? icons.radioChecked : icons.radioUnchecked}
                                   className="w-6 h-6 mr-2"
                                   style={{ tintColor: "white" }} // Apply white tint color
                                 />
                                 <Text className="text-center text-2xl font-bold text-white">
-                                  {t(pref.toLowerCase())}
+                                  {t(pref.label)}
                                 </Text>
                               </View>
                             </TouchableOpacity>

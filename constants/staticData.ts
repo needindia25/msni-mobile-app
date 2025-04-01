@@ -1,13 +1,16 @@
 import { TFunction } from "i18next";
 
 export const getStaticData = (t: TFunction) => ({
-    propertyForOptions: [t("rent"), t("lease")],
+    propertyForOptions: [
+        { label: t("rent"), value: "Rent" },
+        { label: t("lease"), value: "Lease" }
+    ],
     propertyTypeOptions: {
-        "lease": [
+        "Lease": [
             { label: t("fullHouse"), value: "Full House" },
             { label: t("commercial"), value: "Commercial" },
         ],
-        "rent": [
+        "Rent": [
             { label: t("fullHouse"), value: "Full House" },
             { label: t("pgHostel"), value: "PG/Hostel" },
             { label: t("commercial"), value: "Commercial" },
@@ -137,19 +140,19 @@ export const getStaticData = (t: TFunction) => ({
         { label: t("apartment"), value: "Apartment" },
         { label: t("gatedCommunityVilla"), value: "Gated Community Villa" },
         { label: t("independentHouseVilla"), value: "Independent House/Villa" },
-      ],
-      bhkTypeOptions: [
+    ],
+    bhkTypeOptions: [
         { label: t("1rhk"), value: "1 RHK" },
         { label: t("1bhk"), value: "1 BHK" },
         { label: t("2bhk"), value: "2 BHK" },
         { label: t("3bhk"), value: "3 BHK" },
         { label: t("4bhk"), value: "4 BHK" },
         { label: t("4plusbhk"), value: "4+ BHK" },
-      ],
-      familyPreferenceOptions: [
+    ],
+    familyPreferenceOptions: [
         { label: t("family"), value: "Family" },
         { label: t("bachelor"), value: "Bachelor" },
         { label: t("female"), value: "Female" },
         { label: t("any"), value: "Any" },
-      ]
+    ]
 });
