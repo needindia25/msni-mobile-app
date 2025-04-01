@@ -41,7 +41,7 @@ const Page = () => {
     }
   }
 
-  return <Redirect href="/(auth)/welcome" />;
+  return <Redirect href="/(auth)/language" />;
 };
 
 export default Page;

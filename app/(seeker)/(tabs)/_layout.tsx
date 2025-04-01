@@ -1,6 +1,7 @@
 import { Tabs } from "expo-router";
 import { Image, ImageSourcePropType, View, Text } from "react-native";
 import { icons } from "@/constants";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 const TabIcon = ({
     source,
@@ -27,6 +28,8 @@ const TabIcon = ({
 );
 
 export default function Layout() {
+    const { t } = useTranslation(); // Initialize translation hook
+
     return (
         <Tabs
             screenOptions={{
@@ -46,40 +49,40 @@ export default function Layout() {
             <Tabs.Screen
                 name="home"
                 options={{
-                    title: "Home",
+                    title: t("home"), // Use translation key
                     headerShown: false,
                     tabBarIcon: ({ focused }) => (
-                        <TabIcon source={focused ? icons.homeActive : icons.home} focused={focused} label="Home" />
+                        <TabIcon source={focused ? icons.homeActive : icons.home} focused={focused} label={t("home")} />
                     ),
                 }}
             />
             <Tabs.Screen
                 name="requests"
                 options={{
-                    title: "Requests",
+                    title: t("requests"), // Use translation key
                     headerShown: false,
                     tabBarIcon: ({ focused }) => (
-                        <TabIcon source={focused ? icons.requestActive : icons.request} focused={focused} label="Requests" />
+                        <TabIcon source={focused ? icons.requestActive : icons.request} focused={focused} label={t("requests")} />
                     ),
                 }}
             />
             <Tabs.Screen
                 name="profile"
                 options={{
-                    title: "Profile",
+                    title: t("profile"), // Use translation key
                     headerShown: false,
                     tabBarIcon: ({ focused }) => (
-                        <TabIcon source={focused ? icons.profileActive : icons.profile} focused={focused} label="Profile" />
+                        <TabIcon source={focused ? icons.profileActive : icons.profile} focused={focused} label={t("profile")} />
                     ),
                 }}
             />
             <Tabs.Screen
                 name="support"
                 options={{
-                    title: "Support",
+                    title: t("support"), // Use translation key
                     headerShown: false,
                     tabBarIcon: ({ focused }) => (
-                        <TabIcon source={focused ? icons.supportActive : icons.support} focused={focused} label="Support" />
+                        <TabIcon source={focused ? icons.supportActive : icons.support} focused={focused} label={t("support")} />
                     ),
                 }}
             />

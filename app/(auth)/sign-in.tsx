@@ -1,26 +1,28 @@
 import { Link, router } from "expo-router";
 import { ActivityIndicator, Alert, Image, ScrollView, Text, View } from "react-native";
-import React, { useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import CustomButton from "@/components/CustomButton";
 import InputField from "@/components/InputField";
 import { icons, images, constants } from "@/constants";
 import VerificationUsingOTP from "@/components/VerificationUsingOTP";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 const SignIn = () => {
+  const { t } = useTranslation(); // Initialize translation hook
 
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [showVerificationModal, setVerificationModal] = useState(false);
 
   const validateForm = () => {
     if (!username) {
-      Alert.alert("Error", "Phone number is required");
+      Alert.alert("Error", t("errorPhoneRequired")); // Use translation key
       return false;
     }
     if (!/^\d{10}$/.test(username)) {
-      Alert.alert("Error", "Phone number must be 10 digits");
+      Alert.alert("Error", t("errorPhoneInvalid")); // Use translation key
       return false;
     }
     return true;
@@ -47,7 +49,7 @@ const SignIn = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null); // Handle JSON parsing errors
-        const errorMessage = errorData?.detail || "Invalid credentials. Please try again.";
+        const errorMessage = errorData?.detail || t("invalidCredentials");
         Alert.alert("Error", errorMessage);
         return;
       }
@@ -56,7 +58,7 @@ const SignIn = () => {
       const { refresh, access, user_info } = data;
 
       if (!refresh || !access || !user_info) {
-        Alert.alert("Error", "Unexpected response from server.");
+        Alert.alert("Error", t("unexpectedResponse"));
         return;
       }
 
@@ -75,7 +77,7 @@ const SignIn = () => {
       }
     } catch (err) {
       console.error("Login error:", err);
-      Alert.alert("Error", "Log in failed. Please try again.");
+      Alert.alert("Error", t("loginFailed"));
     } finally {
       setLoading(false);
     }
@@ -84,60 +86,55 @@ const SignIn = () => {
   return (
     <ScrollView className="flex-1 bg-white">
       <View className="flex-1 bg-white">
-        {/* <View className="w-full justify-center items-center mt-10"> */}
-        {/* <Image source={images.VerticalLogo} className="z-0 w-[200px] h-[120px]" /> */}
-        {/* <Image source={require("../../assets/images/vertical-logo-02.png")} className="z-0 w-[300px] h-[250px]" /> */}
-        {/* </View> */}
         <View className="w-full justify-center items-center mt-10">
           <Image source={images.HorizontalLogo} className="z-0 w-[250px] h-[100px]" />
         </View>
         {loading ? (
           <View className="flex-1 justify-center mt-[60%] items-center">
             <ActivityIndicator size="large" color="#00ff00" />
-            <Text className="mt-2 text-xl">Loading...</Text>
+            <Text className="mt-2 text-xl">{t("loading")}</Text> {/* Use translation key */}
           </View>
         ) : (
           <>
-            {
-              showVerificationModal ? (
-                <VerificationUsingOTP
-                  onPress={handleLogin}
-                  onBack={() => setVerificationModal(false)}
-                  number={username} />
-              ) :
-                (
-                  <>
-                    <View className="w-full mt-5">
-                      <Text className="text-2xl text-black font-JakartaSemiBold bottom-2 left-5">
-                        Welcome to Need India
-                      </Text>
-                    </View>
+            {showVerificationModal ? (
+              <VerificationUsingOTP
+                onPress={handleLogin}
+                onBack={() => setVerificationModal(false)}
+                number={username}
+              />
+            ) : (
+              <>
+                <View className="w-full mt-5">
+                  <Text className="text-2xl text-black font-JakartaSemiBold bottom-2 left-5">
+                    {t("welcome")} {/* Use translation key */}
+                  </Text>
+                </View>
 
-                    <View className="p-5">
-                      <InputField
-                        label="Mobile Number (without +91)"
-                        placeholder="Enter Mobile Number"
-                        icon={icons.phone}
-                        keyboardType="phone-pad"
-                        textContentType="none"
-                        value={username}
-                        onChangeText={(value) => setUsername(value)}
-                      />
-                      <CustomButton
-                        title="Verify"
-                        onPress={onVerficationPress}
-                        className="mt-6"
-                      />
-                      <Link
-                        href="/sign-up"
-                        className="text-lg text-center text-general-200 mt-10"
-                      >
-                        Don't have an account?{" "}
-                        <Text className="text-blue-500">Sign Up</Text>
-                      </Link>
-                    </View>
-                  </>
-                )}
+                <View className="p-5">
+                  <InputField
+                    label={t("phoneLabel")} // Use translation key
+                    placeholder={t("phonePlaceholder")} // Use translation key
+                    icon={icons.phone}
+                    keyboardType="phone-pad"
+                    textContentType="none"
+                    value={username}
+                    onChangeText={(value) => setUsername(value)}
+                  />
+                  <CustomButton
+                    title={t("verify")} // Use translation key
+                    onPress={onVerficationPress}
+                    className="mt-6"
+                  />
+                  <Link
+                    href="/sign-up"
+                    className="text-lg text-center text-general-200 mt-10"
+                  >
+                    {t("noAccount")}{" "}
+                    <Text className="text-blue-500">{t("signUp")}</Text> {/* Use translation key */}
+                  </Link>
+                </View>
+              </>
+            )}
           </>
         )}
       </View>

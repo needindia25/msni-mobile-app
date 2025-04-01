@@ -1,5 +1,6 @@
+import { icons } from '@/constants';
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 
 interface CustomRadioButtonProps {
   label: string;
@@ -15,9 +16,14 @@ const CustomRadioButton: React.FC<CustomRadioButtonProps> = ({ label, value, sel
         }`}
       onPress={() => onPress(value)}
     >
-      <Text className="text-center text-xs text-white">
-        {label}
-      </Text>
+      <View className="flex-row items-center justify-center">
+        <Image
+          source={selected ? icons.radioChecked : icons.radioUnchecked}
+          className="w-6 h-6 mr-2"
+          style={{ tintColor: "white" }} // Apply white tint color
+        />
+        <Text className="text-center text-2xl font-bold text-white">{label}</Text>
+      </View>
     </TouchableOpacity>
   );
 };

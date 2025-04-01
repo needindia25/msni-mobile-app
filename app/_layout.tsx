@@ -5,6 +5,12 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
+import { AppRegistry } from 'react-native';
+import App from '../app';
+import appConfig from "../app.json";
+import './i18n'; // Import i18n configuration
+
+AppRegistry.registerComponent(appConfig.expo.name, () => App);
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -37,8 +43,8 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      {/* <Stack.Screen name="(provider)" options={{ headerShown: false }} />
-      <Stack.Screen name="(seeker)" options={{ headerShown: false }} /> */}
+      <Stack.Screen name="(provider)" options={{ headerShown: false }} />
+      <Stack.Screen name="(seeker)" options={{ headerShown: false }} />
       <Stack.Screen name="no-subscription" options={{ headerShown: false }} />
       <Stack.Screen name="choose-subscription" options={{ headerShown: false }} />
       <Stack.Screen name="+not-found" />

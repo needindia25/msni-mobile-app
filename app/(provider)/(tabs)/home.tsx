@@ -4,11 +4,12 @@ import { Listing } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, SafeAreaView } from 'react-native';
-
-import { Alert } from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Alert } from 'react-native';
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const Home = () => {
+    const { t } = useTranslation(); // Initialize translation hook
+    const screenWidth = Dimensions.get('window').width;
     const router = useRouter();
 
     const [loading, setLoading] = useState(true);
@@ -18,7 +19,6 @@ const Home = () => {
         const checkAuth = async () => {
             const token = await AsyncStorage.getItem('token');
             await AsyncStorage.setItem("passServiceId", "");
-            console.log(`token: ${token}`);
             if (!!token) {
                 const response: any = await fetchAPI(`${constants.API_URL}/user-services/my_property/`, {
                     headers: {
@@ -43,31 +43,31 @@ const Home = () => {
             price: `₹ ${property.options.rent || "N/A"}`,
             requests: 0,
             favorites: 0,
-            image: property.options.images.length > 0 ? property.options.images[0] : "https://www.multisolutionofneedindia.com/media/no-image-found.png",
+            images: property.options.images.length > 0 ? property.options.images : ["https://www.multisolutionofneedindia.com/media/no-image-found.png"],
             status: property.is_active,
         }));
     };
 
     const handleDelete = (id: number) => {
         Alert.alert(
-            "Delete Property",
-            "Are you sure you want to delete this property?",
+            t("deleteProperty"), // Use translation key
+            t("deleteConfirmation"), // Use translation key
             [
-                { text: "Cancel", style: "cancel" },
+                { text: t("cancel"), style: "cancel" }, // Use translation key
                 {
-                    text: "Delete",
+                    text: t("delete"), // Use translation key
                     style: "destructive",
                     onPress: async () => {
                         const token = await AsyncStorage.getItem('token');
                         if (token) {
-                            const response = await fetchAPI(`${constants.API_URL}/user-services/${id}/`, {
+                            await fetchAPI(`${constants.API_URL}/user-services/${id}/`, {
                                 method: "DELETE",
                                 headers: {
                                     'Authorization': `Bearer ${token}`,
                                 },
                             });
                             setListings((prev) => prev.filter((listing) => listing.id !== id));
-                            Alert.alert("Success", "Property deleted successfully.");
+                            Alert.alert(t("success"), t("propertyDeleted")); // Use translation key
                         }
                     },
                 },
@@ -81,32 +81,28 @@ const Home = () => {
             router.push(`/add-property`);
         } catch (error) {
             console.error("Error saving service ID to AsyncStorage:", error);
-            Alert.alert("Error", "Failed to save service ID. Please try again.");
+            Alert.alert("Error", t("errorSavingServiceId")); // Use translation key
         }
     };
 
-    // const handleView = (id: number) => {
-    //     router.push(`/add-property?passServiceId=${id}`);
-    // };
-
     const handleChangeStatus = (id: number) => {
         Alert.alert(
-            "Change Status",
-            "Are you sure you want to change the status of this property?",
+            t("changeStatus"), // Use translation key
+            t("changeStatusConfirmation"), // Use translation key
             [
-                { text: "Cancel", style: "cancel" },
+                { text: t("cancel"), style: "cancel" }, // Use translation key
                 {
-                    text: "Change",
+                    text: t("change"), // Use translation key
                     onPress: async () => {
                         const token = await AsyncStorage.getItem('token');
                         if (token) {
-                            const response = await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, {
+                            await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, {
                                 method: "PATCH",
                                 headers: {
                                     'Authorization': `Bearer ${token}`,
                                 },
                             });
-                            Alert.alert("Success", "Property status updated successfully.");
+                            Alert.alert(t("success"), t("statusUpdated")); // Use translation key
                             setListings((prevListings) =>
                                 prevListings.map((listing) =>
                                     listing.id === id
@@ -136,69 +132,47 @@ const Home = () => {
                 {loading ? (
                     <View className="flex-1 justify-center mt-[60%] items-center">
                         <ActivityIndicator size="large" color="#00ff00" />
-                        <Text className="mt-2 text-xl">Loading...</Text>
+                        <Text className="mt-2 text-xl">{t("loading")}</Text> {/* Use translation key */}
                     </View>
                 ) : (
                     <>
                         {listings.length > 0 ? (
                             listings.map((listing: any) => (
                                 <View key={listing.id} className="bg-white rounded-lg shadow-md mb-5 p-5">
-                                    <Image
-                                        source={{ uri: listing.image }}
-                                        className="w-[200px] h-[200px] rounded-lg mb-3 justify-between items-center"
-                                        onError={() => console.log(`Failed to load image for listing ID: ${listing.id}`)}
-                                        defaultSource={{ uri: "https://www.multisolutionofneedindia.com/media/no-image-found.png" }}
-                                    />
+                                    <ScrollView horizontal pagingEnabled className="flex-row mb-3">
+                                        {listing.images.map((image: string, index: number) => (
+                                            <Image key={index} source={{ uri: image }} style={{ width: screenWidth - 40 }} className="h-48 rounded-lg mr-1" />
+                                        ))}
+                                    </ScrollView>
                                     <Text className="text-xl font-bold mb-1">{listing.title}</Text>
                                     <Text className="text-gray-500 mb-1">{listing.location}</Text>
 
-                                    {/* Rating and Price Row */}
                                     <View className="flex-row justify-between items-center mb-1">
                                         <Text className="text-blue-500 text-lg font-bold">
                                             {listing.price} <Text className="text-sm text-gray-500">/month</Text>
                                         </Text>
-                                        {/* <View className="flex-row items-center">
-                                            <Text className="text-yellow-500 mr-1">★</Text>
-                                            <Text className="text-gray-500">{listing.rating}</Text>
-                                        </View> */}
                                     </View>
 
-                                    {/* Requests and Favorites Row */}
-                                    {/* <View className="flex-row justify-between items-center mb-3">
-                                        <Text className="text-gray-500">{listing.requests} request</Text>
-                                        <View className="flex-row items-center">
-                                            <Text className="text-red-500 mr-1">❤</Text>
-                                            <Text className="text-gray-500">{listing.favorites}</Text>
-                                        </View>
-                                    </View> */}
-
-                                    {/* Action Buttons */}
                                     <View className="flex-row justify-between">
-                                        {/* <TouchableOpacity
-                                            className="bg-blue-500 py-2 px-4 rounded-lg"
-                                            onPress={() => handleView(listing.id)}
-                                        >
-                                            <Text className="text-white font-bold">View</Text>
-                                        </TouchableOpacity> */}
                                         <TouchableOpacity
                                             className="bg-yellow-500 py-2 px-4 rounded-lg"
                                             onPress={() => handleEdit(listing.id)}
                                         >
-                                            <Text className="text-white font-bold">Edit</Text>
+                                            <Text className="text-white font-bold">{t("edit")}</Text> {/* Use translation key */}
                                         </TouchableOpacity>
                                         <TouchableOpacity
                                             className="bg-green-500 py-2 px-4 rounded-lg"
                                             onPress={() => handleChangeStatus(listing.id)}
                                         >
                                             <Text className="text-white font-bold">
-                                                {listing.status ? "Deactivate" : "Activate"}
+                                                {listing.status ? t("deactivate") : t("activate")} {/* Use translation key */}
                                             </Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity
                                             className="bg-red-500 py-2 px-4 rounded-lg"
                                             onPress={() => handleDelete(listing.id)}
                                         >
-                                            <Text className="text-white font-bold">Delete</Text>
+                                            <Text className="text-white font-bold">{t("delete")}</Text> {/* Use translation key */}
                                         </TouchableOpacity>
                                     </View>
                                 </View>
@@ -211,15 +185,15 @@ const Home = () => {
                                         className="w-12 h-12"
                                     />
                                 </View>
-                                <Text className="text-xl font-bold text-black mb-2">No Property Found</Text>
+                                <Text className="text-xl font-bold text-black mb-2">{t("noPropertyFound")}</Text> {/* Use translation key */}
                                 <Text className="text-base text-gray-600 text-center mb-10">
-                                    You currently don't have an active Property listing. Click below to add a new Property.
+                                    {t("noPropertyMessage")} {/* Use translation key */}
                                 </Text>
                                 <TouchableOpacity
                                     className="bg-green-500 py-3 px-10 rounded-full mb-5"
                                     onPress={() => router.push('/add-property')}
                                 >
-                                    <Text className="text-white text-lg font-bold">Add New Property</Text>
+                                    <Text className="text-white text-lg font-bold">{t("addNewProperty")}</Text> {/* Use translation key */}
                                 </TouchableOpacity>
                             </View>
                         )}

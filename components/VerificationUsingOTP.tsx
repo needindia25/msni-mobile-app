@@ -1,6 +1,7 @@
 import { icons } from '@/constants';
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 interface VerificationUsingOTPProps {
     onPress: () => void;
@@ -13,10 +14,10 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
     onBack,
     number,
 }) => {
+    const { t } = useTranslation(); // Initialize translation hook
     const OTP_LENGTH = 6; // Adjust OTP length as needed
     const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
     const [timeRemaining, setTimeRemaining] = useState(59);
-    const [whatsappChecked, setWhatsappChecked] = useState(false);
     const [generatedOtp, setGeneratedOtp] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const inputRefs = useRef<(TextInput | null)[]>([]);
@@ -32,7 +33,7 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
         const fetchOtp = async () => {
             const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
             setGeneratedOtp(randomOtp);
-            Alert.alert('Generated OTP:', randomOtp);
+            Alert.alert(t("generatedOtp"), randomOtp); // Use translation key
         };
         fetchOtp();
     }, []);
@@ -53,7 +54,7 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
         setTimeRemaining(59);
         const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
         setGeneratedOtp(randomOtp);
-        Alert.alert('Generated OTP:', randomOtp);
+        Alert.alert(t("generatedOtp"), randomOtp); // Use translation key
         setErrorMessage('');
     };
 
@@ -66,7 +67,7 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
         } else {
             console.log('Invalid OTP');
             setOtp(Array(OTP_LENGTH).fill(""));
-            setErrorMessage('Invalid OTP. Please try again.');
+            setErrorMessage(t("invalidOtp")); // Use translation key
         }
     };
 
@@ -89,9 +90,9 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
                         className={`w-6 h-6`}
                     />
                 </TouchableOpacity>
-                <Text className="text-2xl font-bold mb-2">Verify Number</Text>
+                <Text className="text-2xl font-bold mb-2">{t("verifyNumber")}</Text> {/* Use translation key */}
             </View>
-            <Text className="text-gray-500 mb-5">Enter verification code sent to</Text>
+            <Text className="text-gray-500 mb-5">{t("enterVerificationCode")}</Text> {/* Use translation key */}
             <Text className="text-black font-bold mb-5">+91 {number}</Text>
             <View className="flex-row justify-center mb-5">
                 {otp.map((digit, index) => (
@@ -110,23 +111,15 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
             {errorMessage ? (
                 <Text className="text-red-500 mb-2">{errorMessage}</Text>
             ) : null}
-            <Text className="text-gray-500 mb-2">Time remaining: 00:{timeRemaining < 10 ? `0${timeRemaining}` : timeRemaining}</Text>
+            <Text className="text-gray-500 mb-2">
+                {t("timeRemaining")}: 00:{timeRemaining < 10 ? `0${timeRemaining}` : timeRemaining} {/* Use translation key */}
+            </Text>
             <TouchableOpacity onPress={handleResendCode}>
-                <Text className="text-blue-500 font-bold">Resend Code</Text>
+                <Text className="text-blue-500 font-bold">{t("resendCode")}</Text> {/* Use translation key */}
             </TouchableOpacity>
-            {/* <View className="flex-row items-center mt-5">
-                <CheckBox
-                    value={whatsappChecked}
-                    onValueChange={setWhatsappChecked}
-                />
-                <Text className="text-gray-500 ml-2">WhatsApp Message</Text>
-            </View>
-            <Text className="text-gray-500 text-center mt-2">
-                I agree to receive important updates via WhatsApp
-            </Text> */}
             {otp.every((digit) => digit) && (
                 <TouchableOpacity onPress={handleVerify} className="bg-green-500 rounded-lg p-3 mt-5 w-full">
-                    <Text className="text-white text-center font-bold">Verify</Text>
+                    <Text className="text-white text-center font-bold">{t("verify")}</Text> {/* Use translation key */}
                 </TouchableOpacity>
             )}
         </View>

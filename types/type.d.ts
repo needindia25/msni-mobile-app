@@ -8,7 +8,7 @@ type Listing = {
   price: string;
   requests: number;
   favorites: number;
-  image: string;
+  images: string[];
   status: boolean;
 };
 

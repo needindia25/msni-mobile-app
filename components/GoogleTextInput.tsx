@@ -4,6 +4,7 @@ import 'react-native-get-random-values'; // Polyfill for crypto.getRandomValues
 import { v4 as uuidv4 } from 'uuid';
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { useState } from "react";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 import { constants, icons } from "@/constants";
 import { GoogleInputProps } from "@/types/type";
@@ -15,24 +16,24 @@ const GoogleTextInput = ({
   initialLocation,
   handlePress,
 }: GoogleInputProps) => {
-  
+  const { t } = useTranslation(); // Initialize translation hook
+
   interface LocationData {
     latitude: number;
     longitude: number;
     address: string;
     address_components: Array<any> | undefined;
   }
-  
+
   const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(null);
 
   return (
     <View className="flex-1 bg-gray-100">
-      
       {/* Google Places Input */}
       <View className="z-50">
         <GooglePlacesAutocomplete
           fetchDetails={true}
-          placeholder="Search"
+          placeholder={t("searchPlaceholder")} // Use translation key
           debounce={200}
           styles={{
             textInputContainer: {
@@ -88,7 +89,7 @@ const GoogleTextInput = ({
           )}
           textInputProps={{
             placeholderTextColor: "gray",
-            placeholder: initialLocation ?? "Where is your property?",
+            placeholder: t("searchPlaceholder"), // Use translation key
           }}
         />
       </View>
@@ -114,14 +115,14 @@ const GoogleTextInput = ({
                 latitude: selectedLocation.latitude,
                 longitude: selectedLocation.longitude,
               }}
-              title="Selected Location"
+              title={t("selectedLocationTitle")} // Use translation key
               description={selectedLocation.address}
             />
           </MapView>
         ) : (
           <View className="flex-1 items-center justify-center">
             <Image source={icons.map} className="w-20 h-20 opacity-50" />
-            <Text className="text-gray-400 mt-2">Select a location</Text>
+            <Text className="text-gray-400 mt-2">{t("selectLocation")}</Text> {/* Use translation key */}
           </View>
         )}
       </View>

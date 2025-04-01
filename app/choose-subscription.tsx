@@ -7,24 +7,23 @@ import { Subscription, UserInfo } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchAPI } from '@/lib/fetch';
 import { constants, icons, images } from "@/constants";
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const ChooseSubscription = () => {
+    const { t } = useTranslation(); // Initialize translation hook
     const router = useRouter();
-    // const API_URL = "http://192.168.0.110:8000/api"
-    // console.log("API_URL", process.env.API_URL!)
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
     const [loading, setLoading] = useState(true);
+    const [subscriptions, setSubscription] = useState<Subscription[]>([]);
 
     useEffect(() => {
         const getUserInfo = async () => {
             const userInfo = await AsyncStorage.getItem('user_info');
-            console.log(`userInfo: ${userInfo}`)
-            setUserInfo(userInfo ? JSON.parse(userInfo) : null)
+            console.log(`userInfo: ${userInfo}`);
+            setUserInfo(userInfo ? JSON.parse(userInfo) : null);
         };
         getUserInfo();
     }, []);
-
-    const [subscriptions, setSubscription] = useState<Subscription[]>([]);
 
     useEffect(() => {
         const fetchSubscriptions = async () => {
@@ -34,7 +33,7 @@ const ChooseSubscription = () => {
                 const token = await AsyncStorage.getItem('token');
                 const refresh = await AsyncStorage.getItem('refresh');
                 if (!token || !refresh) {
-                    Alert.alert("Error", "No token found. Please log in again.");
+                    Alert.alert("Error", t("noTokenError")); // Use translation key
                     return;
                 }
                 const response = await fetchAPI(
@@ -45,12 +44,13 @@ const ChooseSubscription = () => {
                             'Authorization': `Bearer ${token}`,
                         },
                     }
-                ); // Replace with your API endpoint
+                );
                 console.log(response);
                 setSubscription(response);
             } catch (error) {
                 setSubscription([]);
-                console.error('Error fetching states:', error);
+                Alert.alert("Error", t("subscriptionError")); // Use translation key
+                console.error('Error fetching subscriptions:', error);
             } finally {
                 setLoading(false);
             }
@@ -68,7 +68,6 @@ const ChooseSubscription = () => {
     })) || [];
 
     return (
-
         <StripeProvider
             publishableKey={constants.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!}
             merchantIdentifier="merchant.com.msni"
@@ -81,7 +80,7 @@ const ChooseSubscription = () => {
                 {loading ? (
                     <View className="flex-1 justify-center mt-[60%] items-center">
                         <ActivityIndicator size="large" color="#00ff00" />
-                        <Text className="mt-2 text-xl">Loading...</Text>
+                        <Text className="mt-2 text-xl">{t("loading")}</Text> {/* Use translation key */}
                     </View>
                 ) : (
                     <>
@@ -98,7 +97,7 @@ const ChooseSubscription = () => {
                                     />
                                 </TouchableOpacity>
                                 <Text className="text-2xl font-bold text-center flex-1">
-                                    Choose Your Plan
+                                    {t("choosePlan")} {/* Use translation key */}
                                 </Text>
                             </View>
                             <FlatList

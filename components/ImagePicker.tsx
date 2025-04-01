@@ -3,6 +3,7 @@ import { View, Image, TouchableOpacity, Text, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { constants } from '@/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 interface ImagePickerProps {
   images: string[];
@@ -11,6 +12,7 @@ interface ImagePickerProps {
 }
 
 const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], serviceId, onImageSelect }) => {
+  const { t } = useTranslation(); // Initialize translation hook
   const [selectedImages, setSelectedImages] = useState<string[]>(images);
 
   const getMimeType = (uri: string) => {
@@ -28,7 +30,7 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Please allow access to the gallery.');
+        Alert.alert(t("permissionDenied"), t("allowGalleryAccess")); // Use translation keys
         return;
       }
 
@@ -36,7 +38,7 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
       if (mode === 'camera') {
         const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
         if (cameraStatus !== 'granted') {
-          Alert.alert('Permission Denied', 'Please allow access to the camera.');
+          Alert.alert(t("permissionDenied"), t("allowCameraAccess")); // Use translation keys
           return;
         }
         result = await ImagePicker.launchCameraAsync({
@@ -57,7 +59,7 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const token = await AsyncStorage.getItem('token');
         if (!token) {
-          Alert.alert("Error", "No token found. Please log in again.");
+          Alert.alert("Error", t("noTokenError")); // Use translation key
           return;
         }
         const imageUri = result.assets[0].uri;
@@ -73,12 +75,12 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
             onImageSelect(fullPath);
           }
         } else {
-          Alert.alert('Error', 'Failed to process the image.');
+          Alert.alert('Error', t("imageProcessError")); // Use translation key
         }
       }
     } catch (error) {
       console.error('Image picker error:', error);
-      Alert.alert('Error', 'Something went wrong while selecting the image.');
+      Alert.alert('Error', t("imageUploadError")); // Use translation key
     }
   };
 
@@ -100,24 +102,24 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
         const data = await response.json();
         return data.filePath;
       } else {
-        Alert.alert('Error', 'Failed to upload the image.');
+        Alert.alert('Error', t("imageUploadError")); // Use translation key
         return null;
       }
     } catch (error) {
       console.error('Error uploading image:', error);
-      Alert.alert('Error', 'Something went wrong while uploading the image.');
+      Alert.alert('Error', t("imageUploadError")); // Use translation key
       return null;
     }
   };
 
   const handleDeleteImage = (imageUri: string) => {
     Alert.alert(
-      'Delete Image',
-      'Are you sure you want to delete this image?',
+      t("deleteImage"), // Use translation key
+      t("deleteImageConfirmation"), // Use translation key
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t("cancel"), style: 'cancel' }, // Use translation key
         {
-          text: 'Delete',
+          text: t("delete"), // Use translation key
           style: 'destructive',
           onPress: () => {
             setSelectedImages((prev) => prev.filter((img) => img !== imageUri));
@@ -153,14 +155,14 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
           className="bg-blue-500 p-3 rounded-lg mr-3"
           onPress={() => handleImagePick('camera')}
         >
-          <Text className="text-white font-bold">Use Camera</Text>
+          <Text className="text-white font-bold">{t("useCamera")}</Text> {/* Use translation key */}
         </TouchableOpacity>
 
         <TouchableOpacity
           className="bg-green-500 p-3 rounded-lg"
           onPress={() => handleImagePick('gallery')}
         >
-          <Text className="text-white font-bold">Select from Gallery</Text>
+          <Text className="text-white font-bold">{t("selectFromGallery")}</Text> {/* Use translation key */}
         </TouchableOpacity>
       </View>
     </View>

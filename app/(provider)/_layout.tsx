@@ -1,39 +1,42 @@
 import React from 'react';
 import { Stack } from 'expo-router';
-import { View, Image, TouchableOpacity, Text, Alert } from 'react-native';
+import { View, Image, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { images, constants, icons } from "@/constants"; // Adjust the import path according to your project structure
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchAPI } from '@/lib/fetch';
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const Layout = () => {
   const router = useRouter();
+  const { t } = useTranslation(); // Initialize translation hook
 
-    const handleLogout = async () => {
+  const handleLogout = async () => {
     try {
-        const token = await AsyncStorage.getItem('token');
-        const refresh = await AsyncStorage.getItem('refresh');
-        if (!token || !refresh) {
-            Alert.alert("Error", "No token found. Please log in again.");
-            return;
-        }
+      const token = await AsyncStorage.getItem('token');
+      const refresh = await AsyncStorage.getItem('refresh');
+      if (!token || !refresh) {
+        Alert.alert("Error", t("logoutError")); // Use translation key
+        return;
+      }
 
-        const response = await fetchAPI(`${constants.API_URL}/auth/logout/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-            },
-            body: JSON.stringify({ refresh: refresh }),
-        });
-        console.log(response)
-        await AsyncStorage.clear();
-        Alert.alert("Success", "You have been logged out.");
-        router.replace("/(auth)/sign-in");
+      const response = await fetchAPI(`${constants.API_URL}/auth/logout/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ refresh: refresh }),
+      });
+
+      console.log(response);
+      await AsyncStorage.clear();
+      Alert.alert("Success", t("logoutSuccess")); // Use translation key
+      router.replace("/(auth)/sign-in");
     } catch (err) {
-        Alert.alert("Error", "Log out failed. Please try again.");
+      Alert.alert("Error", t("logoutFailed")); // Use translation key
     }
-};
+  };
 
   return (
     <>
@@ -47,7 +50,7 @@ const Layout = () => {
             source={icons.out}
             resizeMode="contain"
             className={`w-6 h-6`}
-        />
+          />
         </TouchableOpacity>
       </View>
       <Stack>
