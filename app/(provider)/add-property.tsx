@@ -166,36 +166,38 @@ const MultiStepForm = () => {
       zip: "",
     };
 
-    if (!formData.propertyFor) {
-      newErrors.city = t("selectValidCity"); // Use translation key
-    }
+    if (step === 1) {
+      if (!formData.propertyFor) {
+        newErrors.city = t("selectValidCity"); // Use translation key
+      }
 
-    if (!formData.title) {
-      newErrors.title = t("titleRequired"); // Use translation key
-    }
+      if (!formData.title) {
+        newErrors.title = t("titleRequired"); // Use translation key
+      }
 
-    if (!formData.propertyType) {
-      newErrors.propertyType = t("propertyTypeRequired"); // Use translation key
-    }
+      if (!formData.propertyType) {
+        newErrors.propertyType = t("propertyTypeRequired"); // Use translation key
+      }
+    } else if (step === 2) {
+      if (!formData.address || formData.address.length < 4) {
+        newErrors.address = t("addressError"); // Use translation key
+      }
 
-    if (!formData.address || formData.address.length < 4) {
-      newErrors.address = t("addressError"); // Use translation key
-    }
+      if (!formData.description || formData.description.length < 4) {
+        newErrors.description = t("descriptionError"); // Use translation key
+      }
 
-    if (!formData.description || formData.description.length < 4) {
-      newErrors.description = t("descriptionError"); // Use translation key
-    }
+      if (!formData.state || formData.state < 1) {
+        newErrors.state = t("selectValidState"); // Use translation key
+      }
 
-    if (!formData.state || formData.state < 1) {
-      newErrors.state = t("selectValidState"); // Use translation key
-    }
+      if (!formData.city || formData.city < 1) {
+        newErrors.city = t("selectValidCity"); // Use translation key
+      }
 
-    if (!formData.city || formData.city < 1) {
-      newErrors.city = t("selectValidCity"); // Use translation key
-    }
-
-    if (!formData.zip || !/^\d{6}$/.test(formData.zip)) {
-      newErrors.zip = t("zipError"); // Use translation key
+      if (!formData.zip || !/^\d{6}$/.test(formData.zip)) {
+        newErrors.zip = t("zipError"); // Use translation key
+      }
     }
 
     setErrors(newErrors);
@@ -348,7 +350,95 @@ const MultiStepForm = () => {
                       }}
                     />
                     {errors.description && <Text className="text-red-500">{errors.description}</Text>} {/* Display error message */}
+                  </View>
+                )}
 
+                {step === 1 && formData.propertyType === "Full House" && (
+                  <View>
+                    {/* Housing Type Dropdown */}
+                    <CustomDropdown
+                      label={t("housingType")}
+                      data={staticData.housingTypeOptions}
+                      value={formData.housingType}
+                      placeholder={t("selectHousingType")}
+                      onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", selectedItem.value)}
+                    />
+
+                    {/* BHK Type Dropdown */}
+                    <CustomDropdown
+                      label={t("bhkType")}
+                      data={staticData.bhkTypeOptions}
+                      value={formData.bhkType}
+                      placeholder={t("selectBhkType")}
+                      onChange={(selectedItem: DropdownProps) => handleInputChange("bhkType", selectedItem.value)}
+                    />
+
+                    {/* Family Preference Dropdown */}
+                    <CustomDropdown
+                      label={t("familyPreference")}
+                      data={staticData.familyPreferenceOptions}
+                      value={formData.familyPreference}
+                      placeholder={t("selectFamilyPreference")}
+                      onChange={(selectedItem: DropdownProps) => handleInputChange("familyPreference", selectedItem.value)}
+                    />
+
+                    {/* Food Preference Dropdown */}
+                    <CustomDropdown
+                      label={t("foodPreference")}
+                      data={staticData.foodPreferenceOptions}
+                      value={formData.foodPreference}
+                      placeholder={t("selectFoodPreference")}
+                      onChange={(selectedItem: DropdownProps) => handleInputChange("foodPreference", selectedItem.value)}
+                    />
+                  </View>
+                )}
+
+                {step === 1 && formData.propertyType === "PG/Hostel" && (
+                  <View>
+                    {/* Room Type Dropdown */}
+                    <CustomDropdown
+                      label={t("roomType")}
+                      data={staticData.roomTypeOptions}
+                      value={formData.housingType}
+                      placeholder={t("selectRoomType")}
+                      onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", selectedItem.value)}
+                    />
+
+                    {/* Gender Preference Dropdown */}
+                    <CustomDropdown
+                      label={t("genderPreference")}
+                      data={staticData.genderPreferenceOptions}
+                      value={formData.familyPreference}
+                      placeholder={t("selectGenderPreference")}
+                      onChange={(selectedItem: DropdownProps) => handleInputChange("familyPreference", selectedItem.value)}
+                    />
+
+                    {/* Food Preference Dropdown */}
+                    <CustomDropdown
+                      label={t("foodPreference")}
+                      data={staticData.foodPreferenceOptions}
+                      value={formData.foodPreference}
+                      placeholder={t("selectFoodPreference")}
+                      onChange={(selectedItem: DropdownProps) => handleInputChange("foodPreference", selectedItem.value)}
+                    />
+                  </View>
+                )}
+
+                {step === 1 && formData.propertyType === "Commercial" && (
+                  <View>
+                    {/* Commercial Type Dropdown */}
+                    <CustomDropdown
+                      label={t("commercialType")}
+                      data={staticData.commercialTypeOptions}
+                      value={formData.housingType}
+                      placeholder={t("selectCommercialType")}
+                      onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", selectedItem.value)}
+                    />
+                  </View>
+                )}
+
+                {step === 2 && (
+                  <View>
                     <Text className="text-lg font-bold mt-3 mb-3">{t("address")}</Text>
                     <View>
                       <GoogleTextInput
@@ -446,7 +536,7 @@ const MultiStepForm = () => {
                       onChange={(selectedItem: DropdownProps) => handleInputChange("city", selectedItem.value)}
                     />
                     {errors.city && <Text className="text-red-500">{errors.city}</Text>}
-                    
+
 
                     <Text className="text-lg font-bold mt-3 mb-3">{t("pincode")}</Text>
                     <TextInput
@@ -466,93 +556,8 @@ const MultiStepForm = () => {
                       }}
                     />
                     {errors.zip && <Text className="text-red-500">{errors.zip}</Text>} {/* Display error message */}
-                    
-                    <View className="mb-[200px]">
-                    </View>
-                  </View>
-                )}
 
-                {step === 2 && formData.propertyType === "Full House" && (
-                  <View>
-                    {/* Housing Type Dropdown */}
-                    <CustomDropdown
-                      label={t("housingType")}
-                      data={staticData.housingTypeOptions}
-                      value={formData.housingType}
-                      placeholder={t("selectHousingType")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", selectedItem.value)}
-                    />
-
-                    {/* BHK Type Dropdown */}
-                    <CustomDropdown
-                      label={t("bhkType")}
-                      data={staticData.bhkTypeOptions}
-                      value={formData.bhkType}
-                      placeholder={t("selectBhkType")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("bhkType", selectedItem.value)}
-                    />
-
-                    {/* Family Preference Dropdown */}
-                    <CustomDropdown
-                      label={t("familyPreference")}
-                      data={staticData.familyPreferenceOptions}
-                      value={formData.familyPreference}
-                      placeholder={t("selectFamilyPreference")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("familyPreference", selectedItem.value)}
-                    />
-
-                    {/* Food Preference Dropdown */}
-                    <CustomDropdown
-                      label={t("foodPreference")}
-                      data={staticData.foodPreferenceOptions}
-                      value={formData.foodPreference}
-                      placeholder={t("selectFoodPreference")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("foodPreference", selectedItem.value)}
-                    />
-                  </View>
-                )}
-
-                {step === 2 && formData.propertyType === "PG/Hostel" && (
-                  <View>
-                    {/* Room Type Dropdown */}
-                    <CustomDropdown
-                      label={t("roomType")}
-                      data={staticData.roomTypeOptions}
-                      value={formData.housingType}
-                      placeholder={t("selectRoomType")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", selectedItem.value)}
-                    />
-
-                    {/* Gender Preference Dropdown */}
-                    <CustomDropdown
-                      label={t("genderPreference")}
-                      data={staticData.genderPreferenceOptions}
-                      value={formData.familyPreference}
-                      placeholder={t("selectGenderPreference")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("familyPreference", selectedItem.value)}
-                    />
-
-                    {/* Food Preference Dropdown */}
-                    <CustomDropdown
-                      label={t("foodPreference")}
-                      data={staticData.foodPreferenceOptions}
-                      value={formData.foodPreference}
-                      placeholder={t("selectFoodPreference")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("foodPreference", selectedItem.value)}
-                    />
-                  </View>
-                )}
-
-                {step === 2 && formData.propertyType === "Commercial" && (
-                  <View>
-                    {/* Commercial Type Dropdown */}
-                    <CustomDropdown
-                      label={t("commercialType")}
-                      data={staticData.commercialTypeOptions}
-                      value={formData.housingType}
-                      placeholder={t("selectCommercialType")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", selectedItem.value)}
-                    />
+                    {/* <View className="mb-[200px]"></View> */}
                   </View>
                 )}
 
