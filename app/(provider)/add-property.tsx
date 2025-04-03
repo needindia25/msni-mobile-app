@@ -78,24 +78,20 @@ const MultiStepForm = () => {
   let cityOptions = cities.map((city) => ({ label: city.name, value: city.id }));
 
   useEffect(() => {
+    console.log("Component re-rendered");
     const fetchData = async () => {
       try {
-        // Fetch token
         const token = await AsyncStorage.getItem('token');
         const passServiceId = await AsyncStorage.getItem('passServiceId');
-        console.log(`token: ${token}`);
         if (token) {
           setToken(token);
         }
 
-        // Fetch states
         const response = await fetchAPI(`${constants.API_URL}/master/states`);
         setStates(response);
 
         if (passServiceId) {
-          console.log("passServiceId", passServiceId);
           setServiceId(parseInt(passServiceId, 10));
-
           const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}`, {
             headers: {
               'Content-Type': 'application/json',
@@ -108,9 +104,8 @@ const MultiStepForm = () => {
             ...serviceResponse["options"],
           }));
 
-          // Fetch cities based on the state from the service response
           if (serviceResponse["options"].state) {
-            await fetchCities(serviceResponse["options"].state); // Pass the state ID directly
+            await fetchCities(serviceResponse["options"].state);
           }
         }
       } catch (error) {
@@ -128,7 +123,12 @@ const MultiStepForm = () => {
     if (!stateId) return;
     try {
       const response = await fetchAPI(`${constants.API_URL}/master/state/${stateId}/cities`);
-      setCities(response);
+      setCities((prevCities) => {
+        if (JSON.stringify(prevCities) !== JSON.stringify(response)) {
+          return response;
+        }
+        return prevCities;
+      });
     } catch (error) {
       console.error("Error fetching cities:", error);
     }
@@ -139,11 +139,15 @@ const MultiStepForm = () => {
     yup.object().shape({
       title: yup.string().required("Title is required"),
       propertyType: yup.string().required("Property type is required"),
-      description: yup.string().min(10, "Description should be at least 10 characters").required("Description is required"),
+      description: yup.string().min(4, "Description should be at least 4 characters").required("Description is required"),
       state: yup.number().min(1, "Select a valid state").required("State is required"),
       zip: yup.string().matches(/^\d{6}$/, "Enter a valid 6-digit ZIP code").required("ZIP is required"),
     }),
   ];
+
+  const handleCancel = () => {
+    router.push("/(provider)/(tabs)/home");
+  };
 
   // Handle Form Submission
   const handleSubmit = async (values: any) => {
@@ -198,6 +202,7 @@ const MultiStepForm = () => {
       ) : (
         <Formik
           initialValues={formData}
+          enableReinitialize={false} // Prevent reinitialization
           validationSchema={step == 1 ? validationSchemas[0] : null}
           onSubmit={(values) => {
             console.log("111 step:", step);
@@ -690,6 +695,9 @@ const MultiStepForm = () => {
                       {step > 1 && <TouchableOpacity onPress={() => { handleSubmit(); setStep(step - 1); }} className="bg-gray-500 py-3 px-5 rounded-lg">
                         <Text className="text-white text-2xl font-bold">{t("back")}</Text>
                       </TouchableOpacity>}
+                      <TouchableOpacity onPress={() => handleCancel()} className="bg-gray-500 py-3 px-5 mx-3 rounded-lg">
+                        <Text className="text-white text-2xl font-bold">{t("cancel")}</Text>
+                      </TouchableOpacity>
                       {step < 5 ? (
                         <TouchableOpacity disabled={!!Object.keys(errors).length} onPress={() => { handleSubmit(); setStep(step + 1); }} className="bg-blue-500 py-3 px-5 rounded-lg">
                           <Text className="text-white text-2xl font-bold">{t("saveNext")}</Text>
