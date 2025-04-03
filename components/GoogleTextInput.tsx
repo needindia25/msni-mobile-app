@@ -1,8 +1,7 @@
-import { View, Image, Text } from "react-native";
+import { View, Image, TouchableOpacity } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import 'react-native-get-random-values'; // Polyfill for crypto.getRandomValues
 import { v4 as uuidv4 } from 'uuid';
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { useState } from "react";
 import { useTranslation } from "react-i18next"; // Import useTranslation
 
@@ -27,6 +26,7 @@ const GoogleTextInput = ({
 
   const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(null);
 
+  
   return (
     <View className="flex-1 bg-gray-100">
       {/* Google Places Input */}
@@ -87,45 +87,26 @@ const GoogleTextInput = ({
               />
             </View>
           )}
+          // renderRightButton={() => (
+          //   <TouchableOpacity
+          //     onPress={() => {
+          //       setSelectedLocation(null); // Reset selected location
+          //     }}
+          //     className="justify-center items-center w-6 h-6"
+          //   >
+          //     <Image
+          //       source={icons.close}
+          //       className="w-6 h-6"
+          //       resizeMode="contain"
+          //     />
+          //   </TouchableOpacity>
+          // )}
           textInputProps={{
             placeholderTextColor: "gray",
             placeholder: t("searchPlaceholder"), // Use translation key
           }}
         />
       </View>
-
-      {/* MapView with Selected Location */}
-      {/* <View className="flex-1 mt-4 border h-[100px] rounded-lg overflow-hidden">
-        {selectedLocation ? (
-          <MapView
-            provider={PROVIDER_GOOGLE}
-            className="w-full h-full"
-            region={{
-              latitude: selectedLocation.latitude,
-              longitude: selectedLocation.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            }}
-            showsUserLocation={true}
-            onMapReady={() => console.log("Map is ready")}
-            onLayout={() => console.log("Map layout completed")}
-          >
-            <Marker
-              coordinate={{
-                latitude: selectedLocation.latitude,
-                longitude: selectedLocation.longitude,
-              }}
-              title={t("selectedLocationTitle")} // Use translation key
-              description={selectedLocation.address}
-            />
-          </MapView>
-        ) : (
-          <View className="flex-1 items-center justify-center">
-            <Image source={icons.map} className="w-20 h-20 opacity-50" />
-            <Text className="text-gray-400 mt-2">{t("selectLocation")}</Text>
-          </View>
-        )}
-      </View> */}
     </View>
   );
 };

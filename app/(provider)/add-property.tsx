@@ -73,7 +73,7 @@ const MultiStepForm = () => {
     label: state.name,
     value: state.id,
   }));
-  const cityOptions = cities.map((city) => ({
+  let cityOptions = cities.map((city) => ({
     label: city.name,
     value: city.id,
   }));
@@ -124,12 +124,11 @@ const MultiStepForm = () => {
     if (!stateId) return;
     try {
       const response = await fetchAPI(`${constants.API_URL}/master/state/${stateId}/cities`);
-      setCities((prevCities) => {
-        if (JSON.stringify(prevCities) !== JSON.stringify(response)) {
-          return response;
-        }
-        return prevCities;
-      });
+      setCities(response)
+      cityOptions = response.map((city: any) => ({
+        label: city.name,
+        value: city.id,
+      }));
     } catch (error) {
       console.error("Error fetching cities:", error);
     }
@@ -273,7 +272,7 @@ const MultiStepForm = () => {
             renderItem={() => (
               <View className="p-5 bg-gray-100">
                 <Text className="text-2xl font-bold text-center mb-5">
-                  {serviceId ? t("editProperty") : t("addProperty")} {/* Use translation key */}
+                  {serviceId ? t("editProperty") : t("addProperty")}
                 </Text>
                 {/* Step Indicator */}
                 <View className="flex-row justify-between mb-5">
@@ -357,6 +356,7 @@ const MultiStepForm = () => {
                         initialLocation={userAddress!}
                         handlePress={async (location) => {
                           setUserLocation(location);
+                          console.log("location", location)
                           formData.latitude = location.latitude;
                           formData.longitude = location.longitude;
                           formData.address = location.address;
@@ -376,6 +376,7 @@ const MultiStepForm = () => {
                           formData.zip = ""
                           for (let index = totalAddComponents; index >= 0; index--) {
                             const element = addressComponents[index];
+                            console.log(index, " => ", element)
 
                             // ✅ Extract ZIP Code
                             if (index === totalAddComponents && parseInt(element.long_name, 10)) {
@@ -389,8 +390,9 @@ const MultiStepForm = () => {
                               const selectedState = stateOptions.find((state) => state.label === element.long_name);
                               if (selectedState) {
                                 formData.state = selectedState.value;
-                                console.log(selectedState)
+                                console.log("selectedState =>", selectedState)
                                 await fetchCities(formData.state); // ✅ Awaiting city fetch
+                                console.log("cityOptions", formData.state, cityOptions)
                                 continue;
                               }
                             }
@@ -398,7 +400,7 @@ const MultiStepForm = () => {
                             // ✅ Extract City
                             if (!formData.city) {
                               const selectedCity = cityOptions.find((city) => city.label === element.long_name);
-                              console.log(selectedCity)
+                              console.log("selectedCity => ", selectedCity)
                               if (selectedCity) {
                                 formData.city = selectedCity.value;
                                 break;
@@ -424,27 +426,7 @@ const MultiStepForm = () => {
                         }}
                       />
                     </View>
-                    {errors.address && <Text className="text-red-500">{errors.address}</Text>}
-
-                    <Text className="text-lg font-bold mt-3 mb-3">{t("pincode")}</Text>
-                    <TextInput
-                      placeholder={t("enterPincode")}
-                      className={`border rounded-lg p-3 bg-white ${errors.zip ? "border-red-500" : "border-gray-300"
-                        }`} // Highlight border in red if there's an error
-                      keyboardType="numeric"
-                      value={formData.zip}
-                      onChangeText={(value) => handleInputChange("zip", value)} // Update formData on change
-                      onBlur={(value) => {
-                        if (!formData.zip || !/^\d{6}$/.test(formData.zip)) {
-                          setErrors((prev) => ({
-                            ...prev,
-                            zip: t("zipError"), // Use translation key for error message
-                          }));
-                        }
-                      }}
-                    />
-                    {errors.zip && <Text className="text-red-500">{errors.zip}</Text>} {/* Display error message */}
-                    <CustomDropdown
+                    {errors.address && <Text className="text-red-500">{errors.address}</Text>}<CustomDropdown
                       label={t("state")}
                       data={stateOptions}
                       value={formData.state}
@@ -464,7 +446,29 @@ const MultiStepForm = () => {
                       onChange={(selectedItem: DropdownProps) => handleInputChange("city", selectedItem.value)}
                     />
                     {errors.city && <Text className="text-red-500">{errors.city}</Text>}
+                    
 
+                    <Text className="text-lg font-bold mt-3 mb-3">{t("pincode")}</Text>
+                    <TextInput
+                      placeholder={t("enterPincode")}
+                      className={`border rounded-lg p-3 bg-white ${errors.zip ? "border-red-500" : "border-gray-300"
+                        }`} // Highlight border in red if there's an error
+                      keyboardType="numeric"
+                      value={formData.zip}
+                      onChangeText={(value) => handleInputChange("zip", value)} // Update formData on change
+                      onBlur={(value) => {
+                        if (!formData.zip || !/^\d{6}$/.test(formData.zip)) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            zip: t("zipError"), // Use translation key for error message
+                          }));
+                        }
+                      }}
+                    />
+                    {errors.zip && <Text className="text-red-500">{errors.zip}</Text>} {/* Display error message */}
+                    
+                    <View className="mb-[200px]">
+                    </View>
                   </View>
                 )}
 
