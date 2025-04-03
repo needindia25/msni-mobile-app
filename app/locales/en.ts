@@ -232,6 +232,7 @@ const en = {
         propertyTypeRequired: "Property type is required",
         addressError: "Address should be at least 4 characters long",
         selectValidState: "Select a valid state",
+        enterAddressManually: "Enter address manually",
     },
   };
   

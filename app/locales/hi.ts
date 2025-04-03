@@ -232,6 +232,7 @@ const hi = {
         propertyTypeRequired: "संपत्ति प्रकार आवश्यक है",
         addressError: "पता कम से कम 4 वर्ण लंबा होना चाहिए",
         selectValidState: "कृपया एक मान्य राज्य चुनें",
+        enterAddressManually: "पता मैन्युअल रूप से दर्ज करें",
     },
   };
   
