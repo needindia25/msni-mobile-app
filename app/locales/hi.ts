@@ -223,6 +223,15 @@ const hi = {
         back: "वापस",
         saveNext: "सहेजें और आगे बढ़ें",
         submit: "जमा करें",
+        selectLanguage: "भाषा चुनें",
+        pleaseFixErrors: "कृपया फॉर्म में त्रुटियों को ठीक करें।",
+        titleRequired: "शीर्षक आवश्यक है",
+        descriptionError: "विवरण कम से कम 4 वर्ण लंबा होना चाहिए।",
+        zipError: "कृपया एक मान्य 6-अंकीय पिन कोड दर्ज करें।",
+        selectValidCity: "कृपया एक मान्य शहर चुनें",
+        propertyTypeRequired: "संपत्ति प्रकार आवश्यक है",
+        addressError: "पता कम से कम 4 वर्ण लंबा होना चाहिए",
+        selectValidState: "कृपया एक मान्य राज्य चुनें",
     },
   };
   

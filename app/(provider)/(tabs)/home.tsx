@@ -125,14 +125,14 @@ const Home = () => {
                     onPress={() => router.push('/add-property')}
                     style={{ zIndex: 1000 }}
                 >
-                    <Text className="text-white text-2xl font-bold">+</Text>
+                    <Text className="text-white text-2xl font-bold">+</Text> {/* Wrap "+" in <Text> */}
                 </TouchableOpacity>
             )}
             <ScrollView className="bg-gray-100 p-5">
                 {loading ? (
                     <View className="flex-1 justify-center mt-[60%] items-center">
                         <ActivityIndicator size="large" color="#00ff00" />
-                        <Text className="mt-2 text-xl">{t("loading")}</Text> {/* Use translation key */}
+                        <Text className="mt-2 text-xl">{t("loading")}</Text> {/* Wrap text in <Text> */}
                     </View>
                 ) : (
                     <>
@@ -144,12 +144,12 @@ const Home = () => {
                                             <Image key={index} source={{ uri: image }} style={{ width: screenWidth - 40 }} className="h-48 rounded-lg mr-1" />
                                         ))}
                                     </ScrollView>
-                                    <Text className="text-xl font-bold mb-1">{listing.title}</Text>
-                                    <Text className="text-gray-500 mb-1">{listing.location}</Text>
+                                    <Text className="text-xl font-bold mb-1">{listing.title}</Text> {/* Wrap text in <Text> */}
+                                    <Text className="text-gray-500 mb-1">{listing.location}</Text> {/* Wrap text in <Text> */}
 
                                     <View className="flex-row justify-between items-center mb-1">
                                         <Text className="text-blue-500 text-lg font-bold">
-                                            {listing.price} <Text className="text-sm text-gray-500">/month</Text>
+                                            {listing.price} <Text className="text-sm text-gray-500">/month</Text> {/* Wrap text in <Text> */}
                                         </Text>
                                     </View>
 
@@ -158,21 +158,21 @@ const Home = () => {
                                             className="bg-yellow-500 py-2 px-4 rounded-lg"
                                             onPress={() => handleEdit(listing.id)}
                                         >
-                                            <Text className="text-white font-bold">{t("edit")}</Text> {/* Use translation key */}
+                                            <Text className="text-white font-bold">{t("edit")}</Text> {/* Wrap text in <Text> */}
                                         </TouchableOpacity>
                                         <TouchableOpacity
                                             className="bg-green-500 py-2 px-4 rounded-lg"
                                             onPress={() => handleChangeStatus(listing.id)}
                                         >
                                             <Text className="text-white font-bold">
-                                                {listing.status ? t("deactivate") : t("activate")} {/* Use translation key */}
+                                                {listing.status ? t("deactivate") : t("activate")} {/* Wrap text in <Text> */}
                                             </Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity
                                             className="bg-red-500 py-2 px-4 rounded-lg"
                                             onPress={() => handleDelete(listing.id)}
                                         >
-                                            <Text className="text-white font-bold">{t("delete")}</Text> {/* Use translation key */}
+                                            <Text className="text-white font-bold">{t("delete")}</Text> {/* Wrap text in <Text> */}
                                         </TouchableOpacity>
                                     </View>
                                 </View>
@@ -185,15 +185,15 @@ const Home = () => {
                                         className="w-12 h-12"
                                     />
                                 </View>
-                                <Text className="text-xl font-bold text-black mb-2">{t("noPropertyFound")}</Text> {/* Use translation key */}
+                                <Text className="text-xl font-bold text-black mb-2">{t("noPropertyFound")}</Text> {/* Wrap text in <Text> */}
                                 <Text className="text-base text-gray-600 text-center mb-10">
-                                    {t("noPropertyMessage")} {/* Use translation key */}
+                                    {t("noPropertyMessage")} {/* Wrap text in <Text> */}
                                 </Text>
                                 <TouchableOpacity
                                     className="bg-green-500 py-3 px-10 rounded-full mb-5"
                                     onPress={() => router.push('/add-property')}
                                 >
-                                    <Text className="text-white text-lg font-bold">{t("addNewProperty")}</Text> {/* Use translation key */}
+                                    <Text className="text-white text-lg font-bold">{t("addNewProperty")}</Text> {/* Wrap text in <Text> */}
                                 </TouchableOpacity>
                             </View>
                         )}

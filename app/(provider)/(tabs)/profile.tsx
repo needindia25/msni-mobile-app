@@ -10,11 +10,12 @@ import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const Profile = () => {
-    const { t } = useTranslation(); // Initialize translation hook
+    const { t, i18n } = useTranslation(); // Initialize translation hook
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
     const [subscriptions, setSubscription] = useState<Subscription[]>([]);
+    const [selectedLanguage, setSelectedLanguage] = useState<string>(i18n.language); // Track selected language
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -76,6 +77,16 @@ const Profile = () => {
         expiryDate: subscription.expired_on ? format(new Date(subscription.expired_on), 'dd-MMM-yyyy') : 'N/A',
     })) || [];
 
+    const changeLanguage = async (language: string) => {
+        try {
+            await AsyncStorage.setItem('language', language); // Save selected language
+            i18n.changeLanguage(language); // Change app language
+            setSelectedLanguage(language); // Update state
+        } catch (error) {
+            console.error('Error changing language:', error);
+        }
+    };
+
     return (
         <SafeAreaView className="flex h-full items-center justify-between bg-white">
             {loading ? (
@@ -83,6 +94,7 @@ const Profile = () => {
             ) : (
                 <View className="flex-1 w-full bg-white p-5">
                     <Text className="text-2xl font-bold text-center mb-5">{t("profile")}</Text> {/* Use translation key */}
+
                     <View className="items-center mb-5">
                         <View className="bg-gray-300 rounded-full w-20 h-20 items-center justify-center mb-3">
                             <Text className="text-2xl text-white">{userInfo?.full_name ? getInitialURL(userInfo.full_name) : 'NI'}</Text>
@@ -90,6 +102,27 @@ const Profile = () => {
                         <Text className="text-lg font-semibold">{userInfo?.full_name}</Text>
                         <Text className="text-gray-500">+91 {userInfo?.email.split('@')[0]}</Text>
                         <Text className="text-gray-500">{userInfo?.code}</Text>
+                    </View>
+
+                    {/* Language Selector Heading */}
+                    <Text className="text-lg font-bold text-center mb-3">{t("selectLanguage")}</Text> {/* Use translation key */}
+
+                    {/* Language Selector */}
+                    <View className="flex-row justify-center mb-5">
+                        {[
+                            { code: "en", name: "English" },
+                            { code: "hi", name: "हिंदी" },
+                        ].map((lang) => (
+                            <TouchableOpacity
+                                key={lang.code}
+                                className={`rounded-lg p-3 mx-2 ${
+                                    selectedLanguage === lang.code ? "bg-green-500" : "bg-gray-300"
+                                }`}
+                                onPress={() => changeLanguage(lang.code)}
+                            >
+                                <Text className="text-white font-bold">{lang.name}</Text>
+                            </TouchableOpacity>
+                        ))}
                     </View>
                     {subscriptionPlans.length > 0 ? (
                         <FlatList

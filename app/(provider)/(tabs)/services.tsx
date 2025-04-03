@@ -55,7 +55,7 @@ const Services = () => {
         {loading ? (
           <View className="flex-1 justify-center mt-[60%] items-center">
             <ActivityIndicator size="large" color="#00ff00" />
-            <Text className="mt-2 text-xl">{t("loading")}</Text> {/* Use translation key */}
+            <Text className="mt-2 text-xl">{t("loading")}</Text> {/* Wrap text in <Text> */}
           </View>
         ) : (
           <>
@@ -67,26 +67,26 @@ const Services = () => {
                       <Image key={index} source={{ uri: image }} style={{ width: screenWidth - 40 }} className="h-48 rounded-lg mr-1" />
                     ))}
                   </ScrollView>
-                  <Text className="text-xl font-bold mb-1">{listing.title}</Text>
-                  <Text className="text-gray-500 mb-1">{listing.location}</Text>
+                  <Text className="text-xl font-bold mb-1">{listing.title}</Text> {/* Wrap text in <Text> */}
+                  <Text className="text-gray-500 mb-1">{listing.location}</Text> {/* Wrap text in <Text> */}
 
                   {/* Rating and Price Row */}
                   <View className="flex-row justify-between items-center mb-1">
                     <Text className="text-blue-500 text-lg font-bold">
-                      {listing.price} <Text className="text-sm text-gray-500">{t("pricePerMonth")}</Text> {/* Use translation key */}
+                      {listing.price} <Text className="text-sm text-gray-500">{t("pricePerMonth")}</Text> {/* Wrap text in <Text> */}
                     </Text>
                     <View className="flex-row items-center">
-                      <Text className="text-yellow-500 mr-1">★</Text>
-                      <Text className="text-gray-500">{listing.rating}</Text>
+                      <Text className="text-yellow-500 mr-1">★</Text> {/* Wrap text in <Text> */}
+                      <Text className="text-gray-500">{listing.rating}</Text> {/* Wrap text in <Text> */}
                     </View>
                   </View>
 
                   {/* Requests and Favorites Row */}
                   <View className="flex-row justify-between items-center mb-3">
-                    <Text className="text-gray-500">{listing.requests} {t("requests")}</Text> {/* Use translation key */}
+                    <Text className="text-gray-500">{listing.requests} {t("requests")}</Text> {/* Wrap text in <Text> */}
                     <View className="flex-row items-center">
-                      <Text className="text-red-500 mr-1">❤</Text>
-                      <Text className="text-gray-500">{listing.favorites} {t("favorites")}</Text> {/* Use translation key */}
+                      <Text className="text-red-500 mr-1">❤</Text> {/* Wrap text in <Text> */}
+                      <Text className="text-gray-500">{listing.favorites} {t("favorites")}</Text> {/* Wrap text in <Text> */}
                     </View>
                   </View>
                 </View>
@@ -99,15 +99,15 @@ const Services = () => {
                     className="w-12 h-12"
                   />
                 </View>
-                <Text className="text-xl font-bold text-black mb-2">{t("noPropertyFound")}</Text> {/* Use translation key */}
+                <Text className="text-xl font-bold text-black mb-2">{t("noPropertyFound")}</Text> {/* Wrap text in <Text> */}
                 <Text className="text-base text-gray-600 text-center mb-10">
-                  {t("noPropertyMessage")} {/* Use translation key */}
+                  {t("noPropertyMessage")} {/* Wrap text in <Text> */}
                 </Text>
                 <TouchableOpacity
                   className="bg-green-500 py-3 px-10 rounded-full mb-5"
                   onPress={() => router.push('/add-property')}
                 >
-                  <Text className="text-white text-lg font-bold">{t("addNewProperty")}</Text> {/* Use translation key */}
+                  <Text className="text-white text-lg font-bold">{t("addNewProperty")}</Text> {/* Wrap text in <Text> */}
                 </TouchableOpacity>
               </View>
             )}

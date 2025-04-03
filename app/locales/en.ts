@@ -223,6 +223,15 @@ const en = {
         back: "Back",
         saveNext: "Save & Next",
         submit: "Submit",
+        selectLanguage: "Select Language",
+        pleaseFixErrors: "Please fix the errors in the form.",
+        titleRequired: "Title is required",
+        descriptionError: "Description should be at least 4 characters long.",
+        zipError: "Enter a valid 6-digit ZIP code",
+        selectValidCity: "Select a valid city",
+        propertyTypeRequired: "Property type is required",
+        addressError: "Address should be at least 4 characters long",
+        selectValidState: "Select a valid state",
     },
   };
   
