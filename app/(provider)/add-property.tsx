@@ -174,7 +174,9 @@ const MultiStepForm = () => {
       if (!formData.title) {
         newErrors.title = t("titleRequired"); // Use translation key
       }
-
+      if (!formData.description || formData.description.length < 4) {
+        newErrors.description = t("descriptionError"); // Use translation key
+      }
       if (!formData.propertyType) {
         newErrors.propertyType = t("propertyTypeRequired"); // Use translation key
       }
@@ -183,9 +185,7 @@ const MultiStepForm = () => {
         newErrors.address = t("addressError"); // Use translation key
       }
 
-      if (!formData.description || formData.description.length < 4) {
-        newErrors.description = t("descriptionError"); // Use translation key
-      }
+      
 
       if (!formData.state || formData.state < 1) {
         newErrors.state = t("selectValidState"); // Use translation key
@@ -261,7 +261,7 @@ const MultiStepForm = () => {
       {loading ? (
         <View className="flex-1 justify-center mt-[5%] items-center">
           <ActivityIndicator size="large" color="#00ff00" />
-          <Text className="mt-2 text-xl">{t("loading")}</Text>
+          <Text className="mt-2 text-base">{t("loading")}</Text>
         </View>
       ) : (
 
@@ -273,13 +273,13 @@ const MultiStepForm = () => {
             data={[{ key: "form" }]} // Dummy data to render the form
             renderItem={() => (
               <View className="p-5 bg-gray-100">
-                <Text className="text-2xl font-bold text-center mb-5">
+                <Text className="text-base font-bold text-center mb-5">
                   {serviceId ? t("editProperty") : t("addProperty")}
                 </Text>
                 {/* Step Indicator */}
                 <View className="flex-row justify-between mb-5">
                   {[1, 2, 3, 4, 5].map((num) => (
-                    <Text key={num} className={`text-lg font-bold ${step === num ? "text-blue-500" : "text-gray-400"}`}>
+                    <Text key={num} className={`text-base font-bold ${step === num ? "text-blue-500" : "text-gray-400"}`}>
                       {t("step")} {num}
                     </Text>
                   ))}
@@ -300,7 +300,7 @@ const MultiStepForm = () => {
                               className="w-6 h-6 mr-2"
                               style={{ tintColor: "white" }} // Apply white tint color
                             />
-                            <Text className="text-center text-2xl font-bold text-white">
+                            <Text className="text-center text-base font-bold text-white">
                               {t(pref.label)}
                             </Text>
                           </View>
@@ -318,7 +318,7 @@ const MultiStepForm = () => {
                     />
                     {errors.propertyType && <Text className="text-red-500">{errors.propertyType}</Text>}
 
-                    <Text className="text-lg font-bold mt-3">{t("title")}</Text>
+                    <Text className="text-base font-bold mt-3">{t("title")}</Text>
                     <TextInput
                       placeholder={t("enterTitle")}
                       className={`border rounded-lg p-3 bg-white ${errors.title ? "border-red-500" : "border-gray-300"
@@ -336,7 +336,7 @@ const MultiStepForm = () => {
                     />
                     {errors.title && <Text className="text-red-500">{errors.title}</Text>}
 
-                    <Text className="text-lg font-bold mt-3 mb-3">{t("description")}</Text>
+                    <Text className="text-base font-bold mt-3 mb-3">{t("description")}</Text>
                     <CustomTextarea
                       value={formData.description}
                       onChangeText={(value) => handleInputChange("description", value)}
@@ -439,7 +439,7 @@ const MultiStepForm = () => {
 
                 {step === 2 && (
                   <View>
-                    <Text className="text-lg font-bold mt-3 mb-3">{t("address")}</Text>
+                    <Text className="text-base font-bold mt-3 mb-3">{t("address")}</Text>
                     <View>
                       <GoogleTextInput
                         icon={icons.target}
@@ -538,7 +538,7 @@ const MultiStepForm = () => {
                     {errors.city && <Text className="text-red-500">{errors.city}</Text>}
 
 
-                    <Text className="text-lg font-bold mt-3 mb-3">{t("pincode")}</Text>
+                    <Text className="text-base font-bold mt-3 mb-3">{t("pincode")}</Text>
                     <TextInput
                       placeholder={t("enterPincode")}
                       className={`border rounded-lg p-3 bg-white ${errors.zip ? "border-red-500" : "border-gray-300"
@@ -557,13 +557,13 @@ const MultiStepForm = () => {
                     />
                     {errors.zip && <Text className="text-red-500">{errors.zip}</Text>} {/* Display error message */}
 
-                    {/* <View className="mb-[200px]"></View> */}
+                    <View className="mb-[120px]"></View>
                   </View>
                 )}
 
                 {step === 3 && (
                   <View>
-                    <Text className="text-lg font-bold mt-3 mb-3">{t("rentAmount")}</Text>
+                    <Text className="text-base font-bold mt-3 mb-3">{t("rentAmount")}</Text>
                     <TextInput
                       placeholder={t("enterRentAmount")}
                       className="border border-gray-300 rounded-lg p-3 bg-white"
@@ -571,7 +571,7 @@ const MultiStepForm = () => {
                       value={String(formData.rent)}
                       onChangeText={(value) => handleInputChange("rent", value)}
                     />
-                    <Text className="text-lg font-bold mt-3 mb-3">{t("advanceAmount")}</Text>
+                    <Text className="text-base font-bold mt-3 mb-3">{t("advanceAmount")}</Text>
                     <TextInput
                       placeholder={t("enterAdvanceAmount")}
                       className="border border-gray-300 rounded-lg p-3 bg-white"
@@ -579,7 +579,7 @@ const MultiStepForm = () => {
                       value={String(formData.advance)}
                       onChangeText={(value) => handleInputChange("advance", value)}
                     />
-                    <Text className="text-lg font-bold mb-3 mt-3">{t("isRentNegotiable")}</Text>
+                    <Text className="text-base font-bold mb-3 mt-3">{t("isRentNegotiable")}</Text>
                     <View className="flex-row flex-wrap justify-between">
                       {['Yes', 'No'].map((pref) => (
                         <TouchableOpacity
@@ -593,7 +593,7 @@ const MultiStepForm = () => {
                               className="w-6 h-6 mr-2"
                               style={{ tintColor: "white" }} // Apply white tint color
                             />
-                            <Text className="text-center text-2xl font-bold text-white">
+                            <Text className="text-center text-base font-bold text-white">
                               {t(pref.toLowerCase())}
                             </Text>
                           </View>
@@ -601,7 +601,7 @@ const MultiStepForm = () => {
                       ))}
                     </View>
 
-                    <Text className="text-lg font-bold mt-3 mb-3">{t("areaInSize")}</Text>
+                    <Text className="text-base font-bold mt-3 mb-3">{t("areaInSize")}</Text>
                     <TextInput
                       placeholder={t("enterAreaInSize")}
                       className="border border-gray-300 rounded-lg p-3 bg-white"
@@ -698,7 +698,7 @@ const MultiStepForm = () => {
 
                 {step === 5 && (
                   <View className="mb-5">
-                    <Text className="text-xl font-bold mb-4">{t("uploadImage")}</Text>
+                    <Text className="text-base font-bold mb-4">{t("uploadImage")}</Text>
                     <ImagePickerComponent
                       images={formData.images}
                       serviceId={serviceId}
@@ -708,6 +708,7 @@ const MultiStepForm = () => {
                         console.log(formData);
                       }}
                     />
+                    <View className="mb-[120px]"></View>
                   </View>
                 )}
                 {step === 6 && (<ComingSoon />)}
@@ -715,18 +716,18 @@ const MultiStepForm = () => {
                 {/* Navigation Buttons */}
                 <View className={`flex-row ${step > 1 ? "justify-between" : "justify-end"} mt-5 mb-10`}>
                   {step > 1 && <TouchableOpacity onPress={() => { handleSubmit(formData, -1); }} className="bg-gray-500 py-3 px-5 rounded-lg">
-                    <Text className="text-white text-2xl font-bold">{t("back")}</Text>
+                    <Text className="text-white text-base font-bold">{t("back")}</Text>
                   </TouchableOpacity>}
                   <TouchableOpacity onPress={() => handleCancel()} className="bg-gray-500 py-3 px-5 mx-3 rounded-lg">
-                    <Text className="text-white text-2xl font-bold">{t("cancel")}</Text>
+                    <Text className="text-white text-base font-bold">{t("cancel")}</Text>
                   </TouchableOpacity>
                   {step < 5 ? (
                     <TouchableOpacity onPress={() => { handleSubmit(formData, 1); }} className="bg-blue-500 py-3 px-5 rounded-lg">
-                      <Text className="text-white text-2xl font-bold">{t("saveNext")}</Text>
+                      <Text className="text-white text-base font-bold">{t("saveNext")}</Text>
                     </TouchableOpacity>
                   ) : (
                     <TouchableOpacity onPress={() => handleSubmit(formData)} className="bg-green-500 py-3 px-5 rounded-lg">
-                      <Text className="text-white text-2xl font-bold">{t("submit")}</Text>
+                      <Text className="text-white text-base font-bold">{t("submit")}</Text>
                     </TouchableOpacity>
                   )}
                 </View>
