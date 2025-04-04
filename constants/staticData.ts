@@ -9,11 +9,13 @@ export const getStaticData = (t: TFunction) => ({
         "Lease": [
             { label: t("fullHouse"), value: "Full House" },
             { label: t("commercial"), value: "Commercial" },
+            { label: t("Land"), value: "Land" },
         ],
         "Rent": [
             { label: t("fullHouse"), value: "Full House" },
             { label: t("pgHostel"), value: "PG/Hostel" },
             { label: t("commercial"), value: "Commercial" },
+            { label: t("land"), value: "Land" },
         ],
     },
     roomTypeOptions: [
@@ -61,6 +63,7 @@ export const getStaticData = (t: TFunction) => ({
         { label: t("swimmingPool"), value: "Swimming Pool" },
         { label: t("playArea"), value: "Play Area" },
         { label: t("security"), value: "Security" },
+        { label: t("none"), value: "None" },
     ],
     additionalAmenitiesOptions: [
         { label: t("washingMachine"), value: "Washing Machine" },
@@ -74,10 +77,12 @@ export const getStaticData = (t: TFunction) => ({
         { label: t("roWater"), value: "RO Water" },
         { label: t("bed"), value: "Bed" },
         { label: t("diningTable"), value: "Dining table" },
+        { label: t("none"), value: "None" },
     ],
     sourceOfWaterOptions: [
         { label: t("supplyWater"), value: "Supply Water" },
         { label: t("borewell"), value: "Borewell" },
+        { label: t("handPump"), value: "Hand Pump" },
         { label: t("bothWater"), value: "Both" },
         { label: t("other"), value: "Other" },
     ],
@@ -142,7 +147,7 @@ export const getStaticData = (t: TFunction) => ({
         { label: t("independentHouseVilla"), value: "Independent House/Villa" },
     ],
     bhkTypeOptions: [
-        { label: t("1rhk"), value: "1 RHK" },
+        { label: t("1rk"), value: "1 RK" },
         { label: t("1bhk"), value: "1 BHK" },
         { label: t("2bhk"), value: "2 BHK" },
         { label: t("3bhk"), value: "3 BHK" },

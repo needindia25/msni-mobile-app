@@ -125,7 +125,7 @@ const Home = () => {
                     onPress={() => router.push('/add-property')}
                     style={{ zIndex: 1000 }}
                 >
-                    <Text className="text-white text-2xl font-bold">+</Text> {/* Wrap "+" in <Text> */}
+                    <Text className="text-white text-base font-bold">+ Add Next Property</Text> {/* Wrap "+" in <Text> */}
                 </TouchableOpacity>
             )}
             <ScrollView className="bg-gray-100 p-5">

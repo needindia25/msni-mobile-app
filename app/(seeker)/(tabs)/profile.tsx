@@ -90,6 +90,7 @@ const Profile = () => {
                         <Text className="text-lg font-semibold">{userInfo?.full_name}</Text>
                         <Text className="text-gray-500">+91 {userInfo?.email.split('@')[0]}</Text>
                         <Text className="text-gray-500">{userInfo?.code}</Text>
+                        <Text className="text-gray-500">{userInfo?.user_type_id === 1 ? "Seeker":"Provider"}</Text>
                     </View>
                     {subscriptionPlans.length > 0 ? (
                         <FlatList

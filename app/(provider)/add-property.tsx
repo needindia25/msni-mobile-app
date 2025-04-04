@@ -177,6 +177,9 @@ const MultiStepForm = () => {
       if (!formData.description || formData.description.length < 4) {
         newErrors.description = t("descriptionError"); // Use translation key
       }
+      if (!formData.description || formData.description.length > 200) {
+        newErrors.description = t("descriptionMaxLenError"); // Use translation key
+      }
       if (!formData.propertyType) {
         newErrors.propertyType = t("propertyTypeRequired"); // Use translation key
       }
@@ -236,7 +239,7 @@ const MultiStepForm = () => {
           title: formData.title,
           options: formData,
           service_id: 1,
-          is_active: false
+          is_active: true
         } : {
           title: formData.title,
           options: formData,
@@ -247,6 +250,7 @@ const MultiStepForm = () => {
         setServiceId(response.id)
       }
       if (stepIndex === 0) {
+        Alert.alert("Success", "Property details saved succesfully.");
         router.push("/(provider)/(tabs)/home");
       }
       setStep(step + stepIndex);
@@ -345,6 +349,11 @@ const MultiStepForm = () => {
                           setErrors((prev) => ({
                             ...prev,
                             description: t("descriptionError"), // Use translation key for error message
+                          }));
+                        }else if (!formData.description || formData.description.length > 200) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            description: t("descriptionMaxLenError"), // Use translation key for error message
                           }));
                         }
                       }}
