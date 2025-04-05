@@ -12,12 +12,12 @@ const OAuth = () => {
     // const result = await googleOAuth(startOAuthFlow);
 
     // if (result.code === "session_exists") {
-    //   Alert.alert("Success", "Session exists. Redirecting to home screen.");
+    //   Alert.alert(t("success"), "Session exists. Redirecting to home screen.");
     //   router.replace("/(seeker)/(tabs)/home");
     // }
 
     // Alert.alert(result.success ? "Success" : "Error", result.message);
-    Alert.alert("Success", "Session exists. Redirecting to home screen.");
+    Alert.alert(t("success"), "Session exists. Redirecting to home screen.");
   };
 
   return (

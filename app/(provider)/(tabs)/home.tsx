@@ -43,7 +43,9 @@ const Home = () => {
             price: `₹ ${property.options.rent || "N/A"}`,
             requests: 0,
             favorites: 0,
-            images: property.options.images.length > 0 ? property.options.images : ["https://www.multisolutionofneedindia.com/media/no-image-found.png"],
+            images: property.options.images.length > 0
+                ? property.options.images.map((image: string) => image.replace("www.", "admin.")) // Replace "www." with "admin."
+                : [`${constants.BASE_URL}/media/no-image-found.png`],
             status: property.is_active,
         }));
     };
@@ -81,7 +83,7 @@ const Home = () => {
             router.push(`/add-property`);
         } catch (error) {
             console.error("Error saving service ID to AsyncStorage:", error);
-            Alert.alert("Error", t("errorSavingServiceId")); // Use translation key
+            Alert.alert(t("error"), t("errorSavingServiceId")); // Use translation key
         }
     };
 

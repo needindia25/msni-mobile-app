@@ -27,6 +27,7 @@ const Services = () => {
             'Authorization': `Bearer ${token}`,
           },
         });
+        console.log(response);
         setListings(transformData(response));
       }
       setLoading(false);
@@ -44,7 +45,9 @@ const Services = () => {
       price: `₹ ${property.options.rent || "N/A"}`,
       requests: 0,
       favorites: 0,
-      images: property.options.images.length > 0 ? property.options.images : ["https://www.multisolutionofneedindia.com/media/no-image-found.png"],
+      images: property.options.images.length > 0
+        ? property.options.images.map((image: string) => image.replace("www.", "admin.")) // Replace "www." with "admin."
+        : [`${constants.BASE_URL}/media/no-image-found.png`],
       status: property.is_active,
     }));
   };

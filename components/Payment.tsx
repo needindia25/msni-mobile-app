@@ -86,7 +86,7 @@ const Payment = ({
               console.log(`1-userInfo: ${userInfo}`)
               let userInfoJson = userInfo ? JSON.parse(userInfo) : null
               if (!token || !refresh) {
-                Alert.alert("Error", "No token found. Please log in again.");
+                Alert.alert(t("error"), "No token found. Please log in again.");
                 return;
               }
               const response = await fetchAPI(

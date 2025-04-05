@@ -16,7 +16,7 @@ const Layout = () => {
       const token = await AsyncStorage.getItem('token');
       const refresh = await AsyncStorage.getItem('refresh');
       if (!token || !refresh) {
-        Alert.alert("Error", t("logoutError")); // Use translation key
+        Alert.alert(t("error"), t("logoutError")); // Use translation key
         return;
       }
 
@@ -31,10 +31,10 @@ const Layout = () => {
 
       console.log(response);
       await AsyncStorage.clear();
-      Alert.alert("Success", t("logoutSuccess")); // Use translation key
+      Alert.alert(t("success"), t("logoutSuccess")); // Use translation key
       router.replace("/(auth)/sign-in");
     } catch (err) {
-      Alert.alert("Error", t("logoutFailed")); // Use translation key
+      Alert.alert(t("error"), t("logoutFailed")); // Use translation key
     }
   };
 

@@ -59,7 +59,7 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const token = await AsyncStorage.getItem('token');
         if (!token) {
-          Alert.alert("Error", t("noTokenError")); // Use translation key
+          Alert.alert(t("error"), t("noTokenError")); // Use translation key
           return;
         }
         const imageUri = result.assets[0].uri;
@@ -97,7 +97,7 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
           id: serviceId,
         }),
       });
-
+      console.log("imge upload response:", response);
       if (response.ok) {
         const data = await response.json();
         return data.filePath;

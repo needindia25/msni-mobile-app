@@ -35,7 +35,8 @@ const MultiStepForm = () => {
     address: "",
     location: "",
     state: 0,
-    city: 0,
+    district: 0,
+    city: "",
     zip: "",
     housingType: "",
     bhkType: "",
@@ -60,7 +61,7 @@ const MultiStepForm = () => {
 
   const [serviceId, setServiceId] = useState<number | null>(null);
   const [states, setStates] = useState<{ id: number; name: string; code: string }[]>([]);
-  const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
+  const [districts, setDistricts] = useState<{ id: number; name: string }[]>([]);
   const staticData = getStaticData(t); // Get static data with translations
 
   const {
@@ -73,9 +74,9 @@ const MultiStepForm = () => {
     label: state.name,
     value: state.id,
   }));
-  let cityOptions = cities.map((city) => ({
-    label: city.name,
-    value: city.id,
+  let districtOptions = districts.map((district: any) => ({
+    label: district.name,
+    value: district.id,
   }));
 
   useEffect(() => {
@@ -93,7 +94,8 @@ const MultiStepForm = () => {
 
         if (passServiceId) {
           setServiceId(parseInt(passServiceId, 10));
-          const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}`, {
+          console.log(`URL : ${constants.API_URL}`)
+          const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/`, {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${token}`,
@@ -106,7 +108,7 @@ const MultiStepForm = () => {
           }));
 
           if (serviceResponse["options"].state) {
-            await fetchCities(serviceResponse["options"].state);
+            await fetchDistricts(serviceResponse["options"].state);
           }
         }
       } catch (error) {
@@ -120,17 +122,17 @@ const MultiStepForm = () => {
   }, []); // Empty dependency array ensures this runs only once
 
   // Fetch Cities when state changes
-  const fetchCities = async (stateId: number) => {
+  const fetchDistricts = async (stateId: number) => {
     if (!stateId) return;
     try {
-      const response = await fetchAPI(`${constants.API_URL}/master/state/${stateId}/cities`);
-      setCities(response)
-      cityOptions = response.map((city: any) => ({
-        label: city.name,
-        value: city.id,
+      const response = await fetchAPI(`${constants.API_URL}/master/state/${stateId}/districts`);
+      setDistricts(response)
+      districtOptions = response.map((district: any) => ({
+        label: district.name,
+        value: district.id,
       }));
     } catch (error) {
-      console.error("Error fetching cities:", error);
+      console.error("Error fetching districts:", error);
     }
   };
 
@@ -140,6 +142,7 @@ const MultiStepForm = () => {
     description: "",
     address: "",
     state: "",
+    district: "",
     city: "",
     zip: "",
   });
@@ -153,6 +156,17 @@ const MultiStepForm = () => {
       ...prev,
       [field]: "", // Clear the error when the user starts typing
     }));
+
+    if (field === "propertyFor" || field === "propertyType") {
+      setFormData((prev) => ({
+        ...prev,
+        title: prev["propertyType"] + " for " + prev["propertyFor"],
+      }));
+      setErrors((prev) => ({
+        ...prev,
+        title: "", // Clear the error when the user starts typing
+      }));
+    }
   };
 
   const validateForm = () => {
@@ -162,6 +176,7 @@ const MultiStepForm = () => {
       description: "",
       address: "",
       state: "",
+      district: "",
       city: "",
       zip: "",
     };
@@ -174,10 +189,13 @@ const MultiStepForm = () => {
       if (!formData.title) {
         newErrors.title = t("titleRequired"); // Use translation key
       }
-      if (!formData.description || formData.description.length < 4) {
+      if (!formData.description) {
         newErrors.description = t("descriptionError"); // Use translation key
       }
-      if (!formData.description || formData.description.length > 200) {
+      if (formData.description && formData.description.length < 4) {
+        newErrors.description = t("descriptionMinError"); // Use translation key
+      }
+      if (formData.description && formData.description.length > 200) {
         newErrors.description = t("descriptionMaxLenError"); // Use translation key
       }
       if (!formData.propertyType) {
@@ -188,14 +206,23 @@ const MultiStepForm = () => {
         newErrors.address = t("addressError"); // Use translation key
       }
 
-      
-
       if (!formData.state || formData.state < 1) {
         newErrors.state = t("selectValidState"); // Use translation key
+      }     
+
+      if (!formData.district || formData.district < 1) {
+        newErrors.state = t("selectValidDistrict"); // Use translation key
       }
 
-      if (!formData.city || formData.city < 1) {
-        newErrors.city = t("selectValidCity"); // Use translation key
+      if (!formData.city) {
+        newErrors.city = t("cityError"); // Use translation key
+      }
+    
+      if (formData.city && formData.city.length < 2) {
+        newErrors.city = t("cityMinError"); // Use translation key
+      }
+      if (formData.city && formData.city.length > 30) {
+        newErrors.city = t("cityMaxLenError"); // Use translation key
       }
 
       if (!formData.zip || !/^\d{6}$/.test(formData.zip)) {
@@ -217,7 +244,7 @@ const MultiStepForm = () => {
   const handleSubmit = async (formData: any, stepIndex: number = 0) => {
     console.log("Form values:", formData);
     if (!validateForm()) {
-      Alert.alert("Error", t("pleaseFixErrors"));
+      Alert.alert(t("error"), t("pleaseFixErrors"));
       return;
     }
     try {
@@ -245,17 +272,27 @@ const MultiStepForm = () => {
           options: formData,
         }),
       });
-      console.log(response)
       if (method === "POST") {
         setServiceId(response.id)
       }
       if (stepIndex === 0) {
-        Alert.alert("Success", "Property details saved succesfully.");
-        router.push("/(provider)/(tabs)/home");
+        Alert.alert(
+          t("success"), 
+          t("propertyDetailsSaved"), 
+          [
+            {
+              text: t("ok"),
+              onPress: () => {
+                // Perform the action when "OK" is pressed
+                router.push("/(provider)/(tabs)/home");
+              },
+            },
+          ]
+        ); // Use translation keys
       }
       setStep(step + stepIndex);
     } catch (error) {
-      Alert.alert("Error", "Failed to save property details.");
+      Alert.alert(t("error"), t("failedToSaveProperty")); // Use translation keys
       console.error("Error saving data:", error);
     }
   };
@@ -350,7 +387,7 @@ const MultiStepForm = () => {
                             ...prev,
                             description: t("descriptionError"), // Use translation key for error message
                           }));
-                        }else if (!formData.description || formData.description.length > 200) {
+                        } else if (!formData.description || formData.description.length > 200) {
                           setErrors((prev) => ({
                             ...prev,
                             description: t("descriptionMaxLenError"), // Use translation key for error message
@@ -447,104 +484,38 @@ const MultiStepForm = () => {
                 )}
 
                 {step === 2 && (
-                  <View>
-                    <Text className="text-base font-bold mt-3 mb-3">{t("address")}</Text>
-                    <View>
-                      <GoogleTextInput
-                        icon={icons.target}
-                        initialLocation={userAddress!}
-                        handlePress={async (location) => {
-                          setUserLocation(location);
-                          console.log("location", location)
-                          formData.latitude = location.latitude;
-                          formData.longitude = location.longitude;
-                          formData.address = location.address;
-                          formData.location = location.address;
-                          errors.address = "";
-                          errors.zip = "";
-                          errors.address = "";
-                          errors.state = "";
-                          errors.city = "";
-
-                          const addressComponents = location.address_components;
-                          if (!addressComponents || addressComponents.length === 0) return; // ✅ Check for undefined components
-
-                          const totalAddComponents = addressComponents.length - 1;
-                          formData.state = 0;
-                          formData.city = 0;
-                          formData.zip = ""
-                          for (let index = totalAddComponents; index >= 0; index--) {
-                            const element = addressComponents[index];
-                            console.log(index, " => ", element)
-
-                            // ✅ Extract ZIP Code
-                            if (index === totalAddComponents && parseInt(element.long_name, 10)) {
-                              console.log("zip", index, "=>", typeof element.long_name, "=>", element.long_name);
-                              formData.zip = element.long_name;
-                              continue;
-                            }
-
-                            // ✅ Extract State
-                            if (!formData.state) {
-                              const selectedState = stateOptions.find((state) => state.label === element.long_name);
-                              if (selectedState) {
-                                formData.state = selectedState.value;
-                                console.log("selectedState =>", selectedState)
-                                await fetchCities(formData.state); // ✅ Awaiting city fetch
-                                console.log("cityOptions", formData.state, cityOptions)
-                                continue;
-                              }
-                            }
-
-                            // ✅ Extract City
-                            if (!formData.city) {
-                              const selectedCity = cityOptions.find((city) => city.label === element.long_name);
-                              console.log("selectedCity => ", selectedCity)
-                              if (selectedCity) {
-                                formData.city = selectedCity.value;
-                                break;
-                              }
-                            }
-                          }
-                        }}
-                      />
-                      {/* TextInput for manually entering address */}
-                      <TextInput
-                        placeholder={t("enterAddressManually")} // Translation key for "Enter address manually"
-                        className={`border rounded-lg p-3 bg-white mt-3 ${errors.address ? "border-red-500" : "border-gray-300"
-                          }`} // Highlight border in red if there's an error
-                        value={formData.address}
-                        onChangeText={(value) => handleInputChange("address", value)} // Update formData on change
-                        onBlur={() => {
-                          if (!formData.address || formData.address.length < 4) {
-                            setErrors((prev) => ({
-                              ...prev,
-                              address: t("addressError"), // Use translation key for error message
-                            }));
-                          }
-                        }}
-                      />
-                    </View>
-                    {errors.address && <Text className="text-red-500">{errors.address}</Text>}<CustomDropdown
+                  <View>                    
+                    <CustomDropdown
                       label={t("state")}
                       data={stateOptions}
                       value={formData.state}
                       placeholder={t("selectState")}
                       onChange={(selectedItem: DropdownProps) => {
                         handleInputChange("state", selectedItem.value);
-                        fetchCities(selectedItem.value as number)
+                        fetchDistricts(selectedItem.value as number)
                       }}
                     />
                     {errors.state && <Text className="text-red-500">{errors.state}</Text>}
 
                     <CustomDropdown
-                      label={t("city")}
-                      data={cityOptions}
-                      value={formData.city}
-                      placeholder={t("selectCity")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("city", selectedItem.value)}
+                      label={t("district")}
+                      data={districtOptions}
+                      value={formData.district}
+                      placeholder={t("selectDistrict")}
+                      onChange={(selectedItem: DropdownProps) => handleInputChange("district", selectedItem.value)}
                     />
-                    {errors.city && <Text className="text-red-500">{errors.city}</Text>}
+                    {errors.district && <Text className="text-red-500">{errors.district}</Text>}
+
+                    <Text className="text-base font-bold mt-3 mb-3">{t("city")}</Text>
+                    <TextInput
+                      placeholder={t("enterCity")}
+                      className={`border rounded-lg p-3 bg-white ${errors.city ? "border-red-500" : "border-gray-300"
+                        }`} // Highlight border in red if there's an error
+                      value={formData.city}
+                      onChangeText={(value) => handleInputChange("city", value)} // Update formData on change
+                    />
+                    {errors.city && <Text className="text-red-500">{errors.city}</Text>} {/* Display error message */}
+
 
 
                     <Text className="text-base font-bold mt-3 mb-3">{t("pincode")}</Text>
@@ -565,6 +536,87 @@ const MultiStepForm = () => {
                       }}
                     />
                     {errors.zip && <Text className="text-red-500">{errors.zip}</Text>} {/* Display error message */}
+
+                    
+                    <Text className="text-base font-bold mt-3 mb-3">{t("address")}</Text>
+                    <View>
+                      {/* <GoogleTextInput
+                        icon={icons.target}
+                        initialLocation={userAddress!}
+                        handlePress={async (location) => {
+                          setUserLocation(location);
+                          console.log("location", location)
+                          formData.latitude = location.latitude;
+                          formData.longitude = location.longitude;
+                          formData.address = location.address;
+                          formData.location = location.address;
+                          errors.address = "";
+                          errors.zip = "";
+                          errors.address = "";
+                          errors.state = "";
+                          errors.district = "";
+                          errors.city = "";
+
+                          const addressComponents = location.address_components;
+                          if (!addressComponents || addressComponents.length === 0) return; // ✅ Check for undefined components
+
+                          const totalAddComponents = addressComponents.length - 1;
+                          formData.state = 0;
+                          formData.district = 0;
+                          formData.city = "";
+                          formData.zip = ""
+                          for (let index = totalAddComponents; index >= 0; index--) {
+                            const element = addressComponents[index];
+                            console.log(index, " => ", element)
+
+                            // ✅ Extract ZIP Code
+                            if (index === totalAddComponents && parseInt(element.long_name, 10)) {
+                              console.log("zip", index, "=>", typeof element.long_name, "=>", element.long_name);
+                              formData.zip = element.long_name;
+                              continue;
+                            }
+
+                            // ✅ Extract State
+                            if (!formData.state) {
+                              const selectedState = stateOptions.find((state) => state.label === element.long_name);
+                              if (selectedState) {
+                                formData.state = selectedState.value;
+                                console.log("selectedState =>", selectedState)
+                                await fetchDistricts(formData.state); // ✅ Awaiting city fetch
+                                console.log("districtOptions", formData.state, districtOptions)
+                                continue;
+                              }
+                            }
+
+                            // ✅ Extract City
+                            if (!formData.district) {
+                              const selectedDistrict = districtOptions.find((district) => district.label === element.long_name);
+                              console.log("selectedDistrict => ", selectedDistrict)
+                              if (selectedDistrict) {
+                                formData.district = selectedDistrict.value;
+                                break;
+                              }
+                            }
+                          }
+                        }}
+                      /> */}
+                      <TextInput
+                        placeholder={t("enterAddressManually")} // Translation key for "Enter address manually"
+                        className={`border rounded-lg p-3 bg-white mt-3 ${errors.address ? "border-red-500" : "border-gray-300"
+                          }`} // Highlight border in red if there's an error
+                        value={formData.address}
+                        onChangeText={(value) => handleInputChange("address", value)} // Update formData on change
+                        onBlur={() => {
+                          if (!formData.address || formData.address.length < 4) {
+                            setErrors((prev) => ({
+                              ...prev,
+                              address: t("addressError"), // Use translation key for error message
+                            }));
+                          }
+                        }}
+                      />
+                    </View>
+                    {errors.address && <Text className="text-red-500">{errors.address}</Text>}
 
                     <View className="mb-[120px]"></View>
                   </View>
@@ -618,13 +670,15 @@ const MultiStepForm = () => {
                       value={String(formData.areaInSize)}
                       onChangeText={(value) => handleInputChange("areaInSize", value)}
                     />
-                    <CustomDropdown
-                      label={t("floorNumber")}
-                      data={staticData.floors}
-                      value={formData.floorNumber}
-                      placeholder={t("selectFloorNumber")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("floorNumber", selectedItem.value)}
-                    />
+                    {formData.propertyType !== "Land" && (
+                      <CustomDropdown
+                        label={t("floorNumber")}
+                        data={staticData.floors}
+                        value={formData.floorNumber}
+                        placeholder={t("selectFloorNumber")}
+                        onChange={(selectedItem: DropdownProps) => handleInputChange("floorNumber", selectedItem.value)}
+                      />
+                    )}
                     {formData.propertyType === "Full House" && (
                       <>
                         <CustomDropdown
@@ -650,26 +704,29 @@ const MultiStepForm = () => {
                         />
                       </>
                     )}
-
-                    <CustomDropdown
-                      label={t("ageOfProperty")}
-                      data={staticData.ageOfProperty}
-                      value={formData.ageOfProperty}
-                      placeholder={t("selectAgeOfProperty")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("ageOfProperty", selectedItem.value)}
-                    />
+                    {formData.propertyType !== "Land" && (
+                      <CustomDropdown
+                        label={t("ageOfProperty")}
+                        data={staticData.ageOfProperty}
+                        value={formData.ageOfProperty}
+                        placeholder={t("selectAgeOfProperty")}
+                        onChange={(selectedItem: DropdownProps) => handleInputChange("ageOfProperty", selectedItem.value)}
+                      />
+                    )}
                   </View>
                 )}
 
                 {step === 4 && (
                   <View>
-                    <CustomDropdown
-                      label={t("furnishing")}
-                      data={staticData.furnishingOptions}
-                      value={formData.furnishing}
-                      placeholder={t("selectFurnishingType")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("furnishing", selectedItem.value)}
-                    />
+                    {formData.propertyType !== "Land" && (
+                      <CustomDropdown
+                        label={t("furnishing")}
+                        data={staticData.furnishingOptions}
+                        value={formData.furnishing}
+                        placeholder={t("selectFurnishingType")}
+                        onChange={(selectedItem: DropdownProps) => handleInputChange("furnishing", selectedItem.value)}
+                      />
+                    )}
 
                     <CustomDropdown
                       label={t("parking")}

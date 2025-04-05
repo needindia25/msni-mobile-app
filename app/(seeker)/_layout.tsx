@@ -14,7 +14,7 @@ const Layout = () => {
         const token = await AsyncStorage.getItem('token');
         const refresh = await AsyncStorage.getItem('refresh');
         if (!token || !refresh) {
-            Alert.alert("Error", "No token found. Please log in again.");
+            Alert.alert(t("error"), "No token found. Please log in again.");
             return;
         }
 
@@ -28,10 +28,10 @@ const Layout = () => {
         });
         console.log(response)
         await AsyncStorage.clear();
-        Alert.alert("Success", "You have been logged out.");
+        Alert.alert(t("success"), "You have been logged out.");
         router.replace("/(auth)/sign-in");
     } catch (err) {
-        Alert.alert("Error", "Log out failed. Please try again.");
+        Alert.alert(t("error"), "Log out failed. Please try again.");
     }
 };
 
