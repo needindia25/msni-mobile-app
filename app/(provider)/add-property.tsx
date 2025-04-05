@@ -211,7 +211,7 @@ const MultiStepForm = () => {
       }     
 
       if (!formData.district || formData.district < 1) {
-        newErrors.state = t("selectValidDistrict"); // Use translation key
+        newErrors.district = t("selectValidDistrict"); // Use translation key
       }
 
       if (!formData.city) {
@@ -397,6 +397,10 @@ const MultiStepForm = () => {
                     />
                     {errors.description && <Text className="text-red-500">{errors.description}</Text>} {/* Display error message */}
                   </View>
+                )}
+
+                {step === 1 && formData.propertyType === "Land" && (
+                <View className="mb-[120px]"></View>
                 )}
 
                 {step === 1 && formData.propertyType === "Full House" && (
