@@ -236,6 +236,8 @@ const en = {
         addressError: "Address should be at least 4 characters long",
         selectValidState: "Select a valid state",
         enterAddressManually: "Enter address manually",
+        commercialType: "Commercial Type",
+        selectCommercialType: "Select Commercial Type",
     },
   };
   

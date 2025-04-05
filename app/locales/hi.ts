@@ -235,6 +235,8 @@ const hi = {
         addressError: "पता कम से कम 4 वर्ण लंबा होना चाहिए",
         selectValidState: "कृपया एक मान्य राज्य चुनें",
         enterAddressManually: "पता मैन्युअल रूप से दर्ज करें",
+        commercialType: "वाणिज्यिक प्रकार",
+        selectCommercialType: "वाणिज्यिक प्रकार चुनें",
     },
   };
   
