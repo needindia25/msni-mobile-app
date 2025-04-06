@@ -19,8 +19,8 @@ const PropertyDetails = () => {
             'https://plus.unsplash.com/premium_photo-1684175656320-5c3f701c082c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YXBhcnRtZW50fGVufDB8fDB8fHww',
             'https://images.unsplash.com/photo-1523192193543-6e7296d960e4?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YXBhcnRtZW50fGVufDB8fDB8fHww',
         ],
-        services: ['Estimate Moving Cost', 'Create Agreement', 'Painting'],
-        nearby: ['ICICI Bank ATM', 'Bus Stop', 'Varthur market'],
+      //  services: ['Estimate Moving Cost', 'Create Agreement', 'Painting'],
+       // nearby: ['ICICI Bank ATM', 'Bus Stop', 'Varthur market'],
         overview: {
             parking: 'Car & Bike',
             furnishing: 'Semi Furnished',
@@ -77,25 +77,8 @@ const PropertyDetails = () => {
                 <Text className="text-2xl font-bold mb-1">{property.title}</Text>
                 <Text className="text-gray-500 mb-1">{property.location}</Text>
                 <Text className="text-lg font-bold mb-1">Deposit: {property.deposit}</Text>
-
-                <View className="flex-row flex-wrap mb-3">
-                    {property.services.map((service, index) => (
-                        <View key={index} className="bg-gray-200 rounded-full px-3 py-1 mr-2 mb-2">
-                            <Text className="text-gray-700">{service}</Text>
-                        </View>
-                    ))}
-                </View>
-
                 <Text className="text-lg font-bold mb-1">Description</Text>
                 <Text className="text-gray-500 mb-3">{property.description}</Text>
-
-                <View className="flex-row flex-wrap mb-3">
-                    {property.nearby.map((place, index) => (
-                        <View key={index} className="bg-gray-200 rounded-full px-3 py-1 mr-2 mb-2">
-                            <Text className="text-gray-700">{place}</Text>
-                        </View>
-                    ))}
-                </View>
 
                 <Text className="text-lg font-bold mb-1">Overview</Text>
                 <View className="flex-row justify-between mb-3">
@@ -118,6 +101,7 @@ const PropertyDetails = () => {
                         <Text className="text-black">{property.overview.age}</Text>
                     </View>
                 </View>
+                
                 <View className="flex-row justify-between mb-3">
                     <View>
                         <Text className="text-gray-500">Bathroom</Text>
@@ -139,10 +123,10 @@ const PropertyDetails = () => {
                     </View>
                 </View>
 
-                <Text className="text-gray-500 mb-1">Last Updated: {property.lastUpdated}</Text>
+                {/* <Text className="text-gray-500 mb-1">Last Updated: {property.lastUpdated}</Text> */}
                 <Text className="text-gray-500 mb-5">Posted On: {property.postedOn}</Text>
 
-                <Text className="text-lg font-bold mb-1">Similar Properties</Text>
+                {/* <Text className="text-lg font-bold mb-1">Similar Properties</Text>
                 <ScrollView horizontal className="flex-row mb-5">
                     {property.similarProperties.map((similarProperty) => (
                         <View key={similarProperty.id} className="bg-white rounded-lg shadow-md mr-5 p-3">
@@ -152,7 +136,7 @@ const PropertyDetails = () => {
                             <Text className="text-blue-500 font-bold">{similarProperty.price} <Text className="text-lg text-gray-500">/month</Text></Text>
                         </View>
                     ))}
-                </ScrollView>
+                </ScrollView> */}
 
                 {showContactInfo ? (
                     <View className="border border-gray-300 rounded-lg p-3 mt-5">

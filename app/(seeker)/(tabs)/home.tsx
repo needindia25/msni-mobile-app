@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, TextInput, Modal, Dimensions } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import {Alert, View, Text, TouchableOpacity, SafeAreaView, ScrollView, TextInput, Modal, Dimensions } from 'react-native';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import CustomCheckBox from '@/components/CustomCheckBox';
 import CustomRadioGroup from '@/components/CustomRadioGroup';
 import { useRouter } from 'expo-router';
-import ComingSoon from '@/components/ComingSoon';
+// import ComingSoon from '@/components/ComingSoon';
+import { fetchAPI } from "@/lib/fetch";
+import { Dropdown } from 'react-native-element-dropdown';
+import { constants, icons, images } from "@/constants";
+
 
 const Home = () => {
   const router = useRouter();
@@ -19,7 +23,7 @@ const Home = () => {
   const [selectedCommercialTypes, setSelectedCommercialTypes] = useState<string[]>([]);
   const [preference, setPreference] = useState('Any');
 
-  const bhkTypes = ['1 RHK', '1 BHK', '2 BHK', '3 BHK', '4 BHK', '4+ BHK'];
+  const bhkTypes = ['1 RK', '1 BHK', '2 BHK', '3 BHK', '4 BHK', '4+ BHK'];
   const roomTypes = ['Single', 'Sharing (2)', 'Sharing (3)', 'Sharing (4)'];
   const commercialTypes = ['Office Space', 'Co-Working', 'Shop', 'Showroom', 'Godown', 'Warehouse', 'Industrial Shed', 'Industrial Building', 'Restaurant/Cafe/Others'];
   const preferences = ['Family', 'Bachelor', 'Female', 'Any'];
@@ -48,15 +52,133 @@ const Home = () => {
     }
   };
 
-  const screenWidth = Dimensions.get('screen').width;
-  return (
-    <SafeAreaView className="flex h-full bg-white">
-      <ScrollView className="flex-1 bg-white p-5">
-        <ComingSoon />
-      </ScrollView>
-    </SafeAreaView>
-  )
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showVerificationModal, setVerificationModal] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  const [form, setForm] = useState<{
+    state: number;
+    city: number;
+    locality: string;
+    lookingFor: string;
+    BHKType: string | null;
+    rentRange: number|null;    
+  }>({
+    state: 5,
+    city: 0,
+    locality: "",
+    lookingFor: "fullHouse", 
+    BHKType: null,
+    rentRange: null,
+  });
+
+  const validateForm = () => {
+    console.log("Form data:", form);
+    if (!form.state) {
+      Alert.alert("Error", "State is required");
+      return false;
+    }
+    if (!form.city) {
+      Alert.alert("Error", "City is required");
+      return false;
+    }
+    if (!form.locality) {
+      Alert.alert("Error", "Locality is required");
+      return false;
+    }
+    return true;
+  };
+
+  const onVerficationPress = async () => {
+    if (!validateForm()) {
+      return;
+    }
+    setVerificationModal(true);
+  };
+
+  const onProprtySearchPress = async () => {
+    setLoading(true);
+    setVerificationModal(false);
+    try {
+      const response = await fetch(`${constants.API_URL}/getPropertyList/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          state: form.state,
+          city: form.city,
+          locality: form.locality,
+          lookingFor: form.lookingFor,
+          BHKType: form.BHKType,
+          rentRange: form.rentRange,
+        }),
+      });
+      console.log(response)
+
+      if (response.ok) {
+        //setShowSuccessModal(true);
+        console.log(response)
+
+      } else {
+        const errorData = await response.json();
+        Alert.alert("Error", errorData.error || "No Property Found for the selected options!");
+      }
+    } catch (err) {
+      Alert.alert("Error", "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+const [states, setStates] = useState<{ id: number; name: string; code: string }[]>([]);
+const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
+
+  useEffect(() => {
+    const fetchStates = async () => {
+      try {
+        const response = await fetchAPI(`${constants.API_URL}/master/states`); // Replace with your API endpoint
+        setStates(response);
+      } catch (error) {
+        console.error('Error fetching states--:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStates();
+  }, []);
+
+  useEffect(() => {
+    // Fetch cities when a state is selected
+    const fetchCities = async () => {
+      if (form.state) {
+        try {
+          const response = await fetchAPI(
+            `${constants.API_URL}/master/state/${form.state}/cities`
+          );
+          setCities(response);
+        } catch (error) {
+          console.error('Error fetching citiess:', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    fetchCities();
+  }, [form.state]);
+
+  const stateOptions = states?.map(state => ({
+    label: state.name,
+    value: state.id
+  })) || [];
+
+  const cityOptions = cities?.map(city => ({
+    label: city.name,
+    value: city.id
+  })) || [];
+
+  const screenWidth = Dimensions.get('screen').width;
+  
   return (
     <SafeAreaView className="flex h-full bg-white">
       <ScrollView className="flex-1 bg-white p-5">
@@ -88,20 +210,60 @@ const Home = () => {
               options={[
                 { label: "RENT", value: "RENT" },
                 { label: "LEASE", value: "LEASE" },
-                { label: "BUY", value: "BUY" },
+               // { label: "BUY", value: "BUY" },
               ]}
               selectedValue={selectedCategory}
               onValueChange={(value: string) => setSelectedCategory(value)}
             />
           </View>
         </View>
-
-        <View className="mb-5">
+        <View className="mt-4">
+          <Text className="text-lg mb-2">State</Text>
+          <Dropdown
+            data={stateOptions}
+            labelField="label"
+            valueField="value"
+            placeholder="Select a state"
+            value={form.state}
+            onChange={(item) => {
+              console.log("Selected state:", item);
+              setForm({ ...form, state: item.value });
+            }}
+            style={{
+              padding: 10,
+              borderColor: 'gray',
+              borderWidth: 1,
+              borderRadius: 5,
+            }}
+          />
+        </View>
+        <View className="mt-4">
+          <Text className="text-lg mb-2">City</Text>
+          <Dropdown
+            data={cityOptions}
+            labelField="label"
+            valueField="value"
+            placeholder="Select your City"
+            value={form.city}
+            onChange={(item) => {
+              console.log("Selected city:", item);
+              setForm({ ...form, city: item.value });
+            }}
+            style={{
+              padding: 10,
+              borderColor: 'gray',
+              borderWidth: 1,
+              borderRadius: 5,
+            }}
+            disable={!form.state}
+          />
+        </View>
+        {/* <View className="mb-5">
           <Text className="text-lg font-bold mb-3">City</Text>
           <TouchableOpacity className="bg-gray-100 rounded-lg p-3 mb-3 w-full">
             <Text className="text-center">Bangalore</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
         <View className="mb-5">
           <Text className="text-lg font-bold mb-3">Locality</Text>
@@ -146,7 +308,6 @@ const Home = () => {
                   options={[
                     { label: "Full House", value: "Full House" },
                     { label: "PG/Hostel", value: "PG/Hostel" },
-                    { label: "Flatmates", value: "Flatmates" },
                     { label: "Commercial", value: "Commercial" },
                   ]}
                   selectedValue={lookingFor}
@@ -157,20 +318,25 @@ const Home = () => {
 
             {lookingFor === 'Full House' && (
               <>
-                <View className="mb-5">
-                  <Text className="text-lg font-bold mb-3">Preference</Text>
-                  <View className="flex-row justify-between mb-3">
-                    {preferences.map((pref) => (
-                      <TouchableOpacity
-                        key={pref}
-                        className={`rounded-lg p-3 flex-1 mr-2 ${preference === pref ? 'bg-teal-500' : 'bg-gray-100'}`}
-                        onPress={() => setPreference(pref)}
-                      >
-                        <Text className={`text-center ${preference === pref ? 'text-white' : 'text-black'}`}>{pref}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
+              <View className="mb-5">
+                <Text className="text-lg font-bold mb-3">Preference</Text>
+                <View className="flex-row flex-wrap justify-between">
+                  {preferences.map((pref) => (
+                    <TouchableOpacity
+                      key={pref}
+                      className={`rounded-lg p-3 mb-3 ${preference === pref ? 'bg-teal-500' : 'bg-gray-100'}`}
+                      style={{
+                        width: '48%', // Ensures two items fit per row
+                        marginRight: preferences.indexOf(pref) % 2 === 0 ? '2%' : 0, // Adds margin to the right for the first item in the row
+                      }}
+                      onPress={() => setPreference(pref)}
+                    >
+                      <Text className={`text-center ${preference === pref ? 'text-white' : 'text-black'}`}>{pref}</Text>
+                    </TouchableOpacity>
+                  ))}
                 </View>
+              </View>
+
 
                 <View className="mb-5">
                   <Text className="text-lg font-bold mb-3">BHK Type</Text>
@@ -184,7 +350,7 @@ const Home = () => {
               </>
             )}
 
-            {(lookingFor === 'PG/Hostel' || lookingFor === 'Flatmates') && (
+            {(lookingFor === 'PG/Hostel') && (
               <>
                 <View className="mb-5">
                   <Text className="text-lg font-bold mb-3">Preference</Text>
@@ -519,7 +685,7 @@ const Home = () => {
           </View>
         </View>
 
-        <TouchableOpacity className="bg-teal-500 rounded-lg p-3 mt-5 w-full"
+        <TouchableOpacity className="bg-teal-500 rounded-lg p-3 mt-5 mb-10 w-full"
           onPress={() => router.push('/(seeker)/search-list')}>
           <Text className="text-white text-center text-lg">SEARCH</Text>
         </TouchableOpacity>
