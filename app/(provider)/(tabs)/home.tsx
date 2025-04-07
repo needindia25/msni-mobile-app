@@ -77,6 +77,16 @@ const Home = () => {
         );
     };
 
+    const handleView = async (id: number) => {
+        try {
+            await AsyncStorage.setItem("passServiceId", id.toString());
+            router.push(`/property-details`);
+        } catch (error) {
+            console.error("Error saving service ID to AsyncStorage:", error);
+            Alert.alert(t("error"), t("errorSavingServiceId")); // Use translation key
+        }
+    };
+
     const handleEdit = async (id: number) => {
         try {
             await AsyncStorage.setItem("passServiceId", id.toString());
@@ -157,11 +167,19 @@ const Home = () => {
 
                                     <View className="flex-row justify-between">
                                         <TouchableOpacity
+                                            className="bg-blue-500 py-2 px-4 rounded-lg"
+                                            onPress={() => handleView(listing.id)}
+                                        >
+                                        <Text className="text-white font-bold">{t("View")}</Text> {/* Wrap text in <Text> */}
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity
                                             className="bg-yellow-500 py-2 px-4 rounded-lg"
                                             onPress={() => handleEdit(listing.id)}
                                         >
-                                            <Text className="text-white font-bold">{t("edit")}</Text> {/* Wrap text in <Text> */}
+                                        <Text className="text-white font-bold">{t("edit")}</Text> {/* Wrap text in <Text> */}
                                         </TouchableOpacity>
+
                                         <TouchableOpacity
                                             className="bg-green-500 py-2 px-4 rounded-lg"
                                             onPress={() => handleChangeStatus(listing.id)}
@@ -170,6 +188,7 @@ const Home = () => {
                                                 {listing.status ? t("deactivate") : t("activate")} {/* Wrap text in <Text> */}
                                             </Text>
                                         </TouchableOpacity>
+
                                         <TouchableOpacity
                                             className="bg-red-500 py-2 px-4 rounded-lg"
                                             onPress={() => handleDelete(listing.id)}
