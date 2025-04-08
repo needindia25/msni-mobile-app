@@ -16,7 +16,13 @@ const Layout = () => {
       const token = await AsyncStorage.getItem('token');
       const refresh = await AsyncStorage.getItem('refresh');
       if (!token || !refresh) {
-        Alert.alert(t("error"), t("logoutError")); // Use translation key
+        Alert.alert(t("error"), t("logoutError"),
+          [
+            {
+              text: t("ok"),
+            },
+          ]
+        ); // Use translation key
         return;
       }
 
@@ -31,10 +37,29 @@ const Layout = () => {
 
       console.log(response);
       await AsyncStorage.clear();
-      Alert.alert(t("success"), t("logoutSuccess")); // Use translation key
-      router.replace("/(auth)/sign-in");
+      Alert.alert(
+        t("success"),
+        t("logoutSuccess"),
+        [
+          {
+            text: t("ok"),
+            onPress: () => {
+              // Perform the action when "OK" is pressed
+              router.replace("/(auth)/sign-in");
+            },
+          },
+        ]
+      ); // Use translation keys      
     } catch (err) {
-      Alert.alert(t("error"), t("logoutFailed")); // Use translation key
+      Alert.alert(
+        t("error"),
+        t("logoutFailed"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      ); // Use translation keys
     }
   };
 

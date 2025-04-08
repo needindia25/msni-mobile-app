@@ -221,7 +221,7 @@ const hi = {
         district: "जिला",
         selectDistrict: "जिला चुनें",
         city: "शहर/कस्बा/गांव",
-        enterCity:"शहर/कस्बा/गांव दर्ज करें",
+        enterCity: "शहर/कस्बा/गांव दर्ज करें",
         pincode: "पिनकोड",
         enterPincode: "पिनकोड दर्ज करें",
         back: "वापस",
@@ -249,7 +249,14 @@ const hi = {
         error: "त्रुटि",
         failedToSaveProperty: "संपत्ति विवरण सहेजने में विफल।",
         ok: "ठीक है",
+        deposit: "जमा राशि",
+        area: "क्षेत्रफल",
+        amenities: "सुविधाएं",
+        lastUpdated: "अंतिम अपडेट",
+        postedOn: "प्रकाशित तिथि",
+        notAvailable: "उपलब्ध नहीं",
+        addNextProperty: "अगली संपत्ति जोड़ें",
     },
-  };
-  
-  export default hi;
+};
+
+export default hi;

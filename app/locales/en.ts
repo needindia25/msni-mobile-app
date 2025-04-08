@@ -183,7 +183,7 @@ const en = {
         foodPreference: "Food Preference",
         selectFoodPreference: "Select Food Preference",
         housingType: "Housing Type",
-        selectHousingType: "Select Housing Type",            
+        selectHousingType: "Select Housing Type",
         bhkType: "BHK Type",
         selectBhkType: "Select BHK Type",
         "1rk": "1 RK",
@@ -232,11 +232,11 @@ const en = {
         titleRequired: "Title is required",
         descriptionError: "Enter a Description",
         descriptionMinError: "Description should be at least 4 characters long.",
-        descriptionMaxLenError:"Description should be less than 200 characters.",
+        descriptionMaxLenError: "Description should be less than 200 characters.",
         zipError: "Enter a valid 6-digit ZIP code",
         cityError: "Enter a City/Town/Village",
         cityMinError: "City/Town/Village should be at least 2 characters long.",
-        cityMaxLenError:"City/Town/Village should be less than 30 characters.",
+        cityMaxLenError: "City/Town/Village should be less than 30 characters.",
         propertyTypeRequired: "Property type is required",
         addressError: "Address should be at least 4 characters long",
         selectValidState: "Select a valid state",
@@ -248,7 +248,14 @@ const en = {
         error: "Error",
         failedToSaveProperty: "Failed to save property details.",
         ok: "OK",
+        deposit: "Deposit",
+        area: "Area",
+        amenities: "Amenities",
+        lastUpdated: "Last Updated On",
+        postedOn: "Posted On",
+        notAvailable: "N/A",
+        addNextProperty: "Add Next Property",
     },
-  };
-  
-  export default en;
+};
+
+export default en;

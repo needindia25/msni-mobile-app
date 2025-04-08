@@ -37,7 +37,13 @@ const Profile = () => {
                 const token = await AsyncStorage.getItem('token');
                 const refresh = await AsyncStorage.getItem('refresh');
                 if (!token || !refresh) {
-                    Alert.alert(t("error"), t("noTokenError")); // Use translation key
+                    Alert.alert(t("error"), t("noTokenError"),
+                        [
+                            {
+                                text: t("ok"),
+                            },
+                        ]
+                    ); // Use translation key
                     return;
                 }
                 const response = await fetchAPI(
@@ -52,7 +58,13 @@ const Profile = () => {
                 setSubscription(response);
             } catch (error) {
                 setSubscription([]);
-                Alert.alert(t("error"), t("subscriptionError")); // Use translation key
+                Alert.alert(t("error"), t("subscriptionError"),
+                    [
+                        {
+                            text: t("ok"),
+                        },
+                    ]
+                ); // Use translation key
                 console.error('Error fetching subscriptions:', error);
             } finally {
                 setLoading(false);
@@ -102,7 +114,7 @@ const Profile = () => {
                         <Text className="text-lg font-semibold">{userInfo?.full_name}</Text>
                         <Text className="text-gray-500">+91 {userInfo?.email.split('@')[0]}</Text>
                         <Text className="text-gray-500">{userInfo?.code}</Text>
-                        <Text className="text-gray-500">{userInfo?.user_type_id === 1 ? "Seeker":"Provider"}</Text>
+                        <Text className="text-gray-500">{userInfo?.user_type_id === 1 ? "Seeker" : "Provider"}</Text>
                     </View>
 
                     {/* Language Selector Heading */}
@@ -116,9 +128,8 @@ const Profile = () => {
                         ].map((lang) => (
                             <TouchableOpacity
                                 key={lang.code}
-                                className={`rounded-lg p-3 mx-2 ${
-                                    selectedLanguage === lang.code ? "bg-green-500" : "bg-gray-300"
-                                }`}
+                                className={`rounded-lg p-3 mx-2 ${selectedLanguage === lang.code ? "bg-green-500" : "bg-gray-300"
+                                    }`}
                                 onPress={() => changeLanguage(lang.code)}
                             >
                                 <Text className="text-white font-bold">{lang.name}</Text>

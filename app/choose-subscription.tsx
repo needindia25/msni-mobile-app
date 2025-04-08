@@ -33,7 +33,13 @@ const ChooseSubscription = () => {
                 const token = await AsyncStorage.getItem('token');
                 const refresh = await AsyncStorage.getItem('refresh');
                 if (!token || !refresh) {
-                    Alert.alert(t("error"), t("noTokenError")); // Use translation key
+                    Alert.alert(t("error"), t("noTokenError"),
+                        [
+                            {
+                                text: t("ok"),
+                            },
+                        ]
+                    ); // Use translation key
                     return;
                 }
                 const response = await fetchAPI(
@@ -49,7 +55,13 @@ const ChooseSubscription = () => {
                 setSubscription(response);
             } catch (error) {
                 setSubscription([]);
-                Alert.alert(t("error"), t("subscriptionError")); // Use translation key
+                Alert.alert(t("error"), t("subscriptionError"),
+                    [
+                        {
+                            text: t("ok"),
+                        },
+                    ]
+                ); // Use translation key
                 console.error('Error fetching subscriptions:', error);
             } finally {
                 setLoading(false);

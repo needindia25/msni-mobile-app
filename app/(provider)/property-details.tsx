@@ -1,297 +1,314 @@
 import { useRouter } from 'expo-router';
-import React, { useEffect,useState } from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { format } from "date-fns";
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, ScrollView, TouchableOpacity, Dimensions, Alert, ActivityIndicator } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { constants, icons } from "@/constants";
+import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons"; // Import icons
+import { constants } from "@/constants";
 import { fetchAPI } from "@/lib/fetch";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 const PropertyDetails = () => {
+    const { t } = useTranslation(); // Initialize translation hook
     const screenWidth = Dimensions.get('window').width;
-    const [showContactInfo, setShowContactInfo] = useState(false);
     const router = useRouter();
-    const [serviceId, setServiceId] = useState<string | null>(null); // Allow both null and string
-    const [token, setToken] = useState<string | null>(null);
-
+    const [id, setId] = useState<number | null>(null);
+    const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({
         propertyFor: "Rent",
         title: "",
         propertyType: "",
         description: "",
-        latitude: 0,
-        longitude: 0,
         address: "",
-        location: "",
-        state: 0,
-        stateName:"",
-        district: 0,
-        districtName:"",
         city: "",
+        districtName: "",
+        stateName: "",
         zip: "",
-        housingType: "",
-        bhkType: "",
-        familyPreference: "",
-        foodPreference: "",
-        genderPreference:"",
-        roomType:"",
-        commercialType:"",
         rent: 0,
         advance: 0,
-        rentNegotiable: "No",
         areaInSize: 0,
-        floorNumber: 0,
-        numberOfBedRooms: 1,
-        numberOfBalconies: 0,
-        numberOfBathRooms: 0,
-        ageOfProperty: 0,
         furnishing: "",
         parking: "",
         basicAmenities: [] as string[],
         additionalAmenities: [] as string[],
-        sourceOfWater: "",
         images: [] as string[],
         date_updated: "",
-        date_created:"",
-      });
-      
+        date_created: "",
+        status: false,
+    });
+
     useEffect(() => {
         const fetchDetails = async () => {
-          try {
-            const token = await AsyncStorage.getItem('token')
-            if (token) {
-                setToken(token);
-            }
-            
-            const id = await AsyncStorage.getItem("passServiceId");
-            if (id) {
-              setServiceId(id);
-              console.log("serviceId::->",id);
-              const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${id}/`, {
-                headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-                },
-            });
+            try {
+                const passServiceId = await AsyncStorage.getItem("passServiceId");
+                if (passServiceId) {
+                    setId(parseInt(passServiceId, 10));
+                }
+                const token = await AsyncStorage.getItem('token');
+                if (id && token) {
+                    const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${id}/`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
 
-            setFormData((prevFormData: any) => ({
-                ...prevFormData,
-                ...serviceResponse["options"],
-              
-              }));
-              console.log(formData);
+                    setFormData((prevFormData: any) => ({
+                        ...prevFormData,
+                        ...serviceResponse["options"],
+                        ...{
+                            date_updated: serviceResponse["date_updated"],
+                            date_created: serviceResponse["date_created"],
+                            status: serviceResponse["is_active"],
+                            images: serviceResponse["options"].images.length > 0
+                                ? serviceResponse["options"].images.map((image: string) => image.replace("www.", "admin.")) // Replace "www." with "admin."
+                                : [`${constants.BASE_URL}/media/no-image-found.png`],
+                        }
+                    }));
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
             }
-          } catch (error) {
-            console.error("Error fetching data:", error);
-        }
         };
-    
         fetchDetails();
-      }, []);
-    
+    }, []);
 
-    
+    const formatDate = (dateString: string) => {
+        if (!dateString) return t("notAvailable");
+        const date = new Date(dateString);
+        return format(date, "do MMMM yyyy HH:mm");
+    };
+
+    const handleDelete = (id: number) => {
+        Alert.alert(
+            t("deleteProperty"), // Use translation key
+            t("deleteConfirmation"), // Use translation key
+            [
+                { text: t("cancel"), style: "cancel" }, // Use translation key
+                {
+                    text: t("delete"), // Use translation key
+                    style: "destructive",
+                    onPress: async () => {
+                        const token = await AsyncStorage.getItem('token');
+                        if (token) {
+                            await fetchAPI(`${constants.API_URL}/user-services/${id}/`, {
+                                method: "DELETE",
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                },
+                            });
+                            Alert.alert(
+                                t("success"),
+                                t("propertyDeleted"),
+                                [
+                                    {
+                                        text: t("ok"),
+                                        onPress: () => {
+                                            // Perform the action when "OK" is pressed
+                                            router.back()
+                                        },
+                                    },
+                                ]
+                            ); // Use translation keys
+                        }
+                    },
+                },
+            ]
+        );
+    };
+
+    const handleEdit = async (id: number) => {
+        try {
+            await AsyncStorage.setItem("passServiceId", id.toString());
+            router.push(`/add-property`);
+        } catch (error) {
+            console.error("Error saving service ID to AsyncStorage:", error);
+            Alert.alert(t("error"), t("errorSavingServiceId"),
+                [
+                    {
+                        text: t("ok"),
+                    },
+                ]
+            ); // Use translation key
+        }
+    };
+
+    const handleChangeStatus = (id: number) => {
+        Alert.alert(
+            t("changeStatus"), // Use translation key
+            t("changeStatusConfirmation"), // Use translation key
+            [
+                { text: t("cancel"), style: "cancel" }, // Use translation key
+                {
+                    text: t("changeStatus"), // Use translation key
+                    onPress: async () => {
+                        const token = await AsyncStorage.getItem('token');
+                        if (token) {
+                            await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, {
+                                method: "PATCH",
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                },
+                            });
+
+                            Alert.alert(
+                                t("success"),
+                                t("statusUpdated"),
+                                [
+                                    {
+                                        text: t("ok"),
+                                        onPress: () => {
+                                            // Perform the action when "OK" is pressed
+                                            setFormData((prevFormData: any) => ({
+                                                ...prevFormData,
+                                                status: !prevFormData.status,
+                                            }));
+                                        },
+                                    },
+                                ]
+                            ); // Use translation keys
+                        }
+                    },
+                },
+            ]
+        );
+    };
+
     return (
         <ScrollView className="bg-gray-100 p-5">
-            <TouchableOpacity onPress={() => router.back()} className="mb-5">
-                <Text className="text-blue-500">Back</Text>
-            </TouchableOpacity>
-            <View className="bg-white rounded-lg shadow-md mb-5 p-5">
-                <ScrollView horizontal pagingEnabled className="flex-row mb-3">
-                    {formData.images.map((image, index) => (
-                         <Image key={index} source={{ uri: image }} style={{ width: screenWidth - 40 }} className="h-48 rounded-lg mr-1" />
-
-                    ))}
-                    
-                </ScrollView>
-                <Text className="text-2xl font-bold mb-1">{formData.title}</Text>
-                <Text className="text-gray-500 mb-1">{formData.address}</Text>
-                <View className="flex-row justify-between mb-3">
-                    <View>
-                    </View>
-                    <View>
-                    </View>
+            {loading ? (
+                <View className="flex-1 justify-center mt-[5%] items-center">
+                    <ActivityIndicator size="large" color="#00ff00" />
+                    <Text className="mt-2 text-base">{t("loading")}</Text>
                 </View>
-                
-                <View className="flex-row justify-between mb-3">
-                    <View>
-                         <Text className="text-lg font-bold mb-1">Rent: {formData.rent}</Text>
-                    </View>
-                    <View>
-                        <Text className="text-lg font-bold mb-1">Deposit: {formData.advance}</Text>
-                    </View>
-                </View>
-                
-                <Text className="text-lg font-bold mb-1">Area(in Sq. Ft.): {formData.areaInSize}</Text>
-                   
-                <Text className="text-lg font-bold mb-1">Description</Text>
-                <Text className="text-gray-500 mb-3">{formData.description}</Text>
+            ) : (
+                <>
+                    <TouchableOpacity onPress={() => router.back()} className="mb-5">
+                        <MaterialIcons name="arrow-back" size={24} color="blue" />
+                    </TouchableOpacity>
 
-                <Text className="text-lg font-bold mb-1">Overview</Text>
-                <View className="flex-row justify-between mb-3">
-                    <View>
-                        <Text className="text-gray-500">Available For</Text>
-                        <Text className="text-black">{formData.propertyFor}</Text>
-                    </View>
-                    <View>
-                        <Text className="text-gray-500">Property Type</Text>
-                        <Text className="text-black">{formData.propertyType}</Text>
-                    </View>
-                </View>
+                    <View className="bg-white rounded-lg shadow-md mb-5 p-5">
+                        {/* Image Carousel */}
+                        <ScrollView horizontal pagingEnabled className="flex-row mb-3">
+                            {formData.images.map((image, index) => (
+                                <Image
+                                    key={index}
+                                    source={{ uri: image }}
+                                    style={{ width: screenWidth - 40 }}
+                                    className="h-48 rounded-lg mr-2"
+                                />
+                            ))}
+                        </ScrollView>
 
-                {formData.propertyType === "Full House" && (
-                <View>
-                <View className="flex-row justify-between mb-3">
-                    <View>
-                        <Text className="text-gray-500">Housing Type</Text>
-                        <Text className="text-black">{formData.housingType}</Text>
-                    </View>
-                    <View>
-                        <Text className="text-gray-500">BHK Type        </Text>
-                        <Text className="text-black">{formData.bhkType}</Text>
-                    </View>
-                </View>
+                        {/* Title and Address */}
+                        <Text className="text-2xl font-bold mb-2">{formData.title}</Text>
+                        <View className="flex-row items-center mb-3">
+                            <MaterialIcons name="location-on" size={20} color="gray" />
+                            <Text className="text-gray-500 ml-1">
+                                {formData.address}, {formData.city}, {formData.districtName}, {formData.stateName} - {formData.zip}
+                            </Text>
+                        </View>
 
-                
-                
-                <View className="flex-row justify-between mb-3">
-                    <View>
-                        <Text className="text-gray-500">Preferred Tenancy</Text>
-                        <Text className="text-black">{formData.familyPreference}</Text>
-                    </View>
-                    
-                </View>
-                </View> )}
-
-                {formData.propertyType === "PG/Hostel" && (
-                    <View>
+                        {/* Rent and Deposit */}
                         <View className="flex-row justify-between mb-3">
-                            <View>
-                                <Text className="text-gray-500">Room Type</Text>
-                                <Text className="text-black">{formData.roomType}</Text>
+                            <View className="flex-row items-center">
+                                <FontAwesome5 name="rupee-sign" size={16} color="black" />
+                                <Text className="text-lg font-bold ml-1">{t("rent")}: {formData.rent}</Text>
                             </View>
-                            <View>
-                                <Text className="text-gray-500">Gender Preference</Text>
-                                <Text className="text-black">{formData.genderPreference}</Text>
+                            <View className="flex-row items-center">
+                                <FontAwesome5 name="rupee-sign" size={16} color="black" />
+                                <Text className="text-lg font-bold ml-1">{t("deposit")}: {formData.advance}</Text>
                             </View>
                         </View>
-                    </View>
-                    )}
 
-                    {(formData.propertyType === "Full House" || formData.propertyType === "PG/Hostel") && (
-                     <View>
+                        {/* Area */}
+                        <View className="flex-row items-center mb-3">
+                            <MaterialIcons name="square-foot" size={20} color="black" />
+                            <Text className="text-lg font-bold ml-2">{t("area")}: {formData.areaInSize} Sq. Ft.</Text>
+                        </View>
+
+                        {/* Description */}
+                        <Text className="text-lg font-bold mb-1">{t("description")}</Text>
+                        <Text className="text-gray-500 mb-3">{formData.description}</Text>
+
+                        {/* Amenities */}
+                        <Text className="text-lg font-bold mb-1">{t("amenities")}</Text>
+                        <View className="flex-row flex-wrap mb-3">
+                            {formData.basicAmenities.length > 0 ? (
+                                formData.basicAmenities.map((amenity, index) => (
+                                    <View key={index} className="flex-row items-center bg-gray-200 rounded-full px-3 py-1 mr-2 mb-2">
+                                        <MaterialIcons name="check" size={16} color="green" />
+                                        <Text className="ml-1 text-black">{amenity}</Text>
+                                    </View>
+                                ))
+                            ) : (
+                                <Text className="text-gray-500">{t("notAvailable")}</Text>
+                            )}
+                        </View>
+
+                        {/* Additional Amenities */}
+                        <Text className="text-lg font-bold mb-1">{t("additionalAmenities")}</Text>
+                        <View className="flex-row flex-wrap mb-3">
+                            {formData.additionalAmenities.length > 0 ? (
+                                formData.additionalAmenities.map((amenity, index) => (
+                                    <View key={index} className="flex-row items-center bg-gray-200 rounded-full px-3 py-1 mr-2 mb-2">
+                                        <MaterialIcons name="check" size={16} color="green" />
+                                        <Text className="ml-1 text-black">{amenity}</Text>
+                                    </View>
+                                ))
+                            ) : (
+                                <Text className="text-gray-500">{t("notAvailable")}</Text>
+                            )}
+                        </View>
+
+                        {/* Furnishing and Parking */}
                         <View className="flex-row justify-between mb-3">
-                            <View>
-                                <Text className="text-gray-500">Parking</Text>
-                                <Text className="text-black">{formData.parking}</Text>
+                            <View className="flex-row items-center">
+                                <MaterialIcons name="weekend" size={20} color="black" />
+                                <Text className="text-lg font-bold ml-2">{t("furnishing")}: </Text>
+                                <Text className="text-gray-500">{formData.furnishing === "" ? t("notAvailable") : formData.furnishing}</Text>
                             </View>
-                            <View>
-                                <Text className="text-gray-500">Furnishing Type</Text>
-                                <Text className="text-black">{formData.furnishing}</Text>
+                            <View className="flex-row items-center">
+                                <MaterialIcons name="local-parking" size={20} color="black" />
+                                <Text className="text-lg font-bold ml-2">{t("parking")}: </Text>
+                                <Text className="text-gray-500">{formData.parking === "" ? t("notAvailable") : formData.parking}</Text>
                             </View>
-                            
                         </View>
 
-                        <View>
-                            <Text className="text-gray-500">Food Preference</Text>
-                            <Text className="text-black">{formData.foodPreference}</Text>
-                        </View>
-                        
+                        {/* Dates */}
+                        <Text className="text-gray-500 mt-5">{t("lastUpdated")}: {formatDate(formData.date_updated)}</Text>
+                        <Text className="text-gray-500">{t("postedOn")}: {formatDate(formData.date_created)}</Text>
                     </View>
-                )}
 
-                {formData.propertyType === "Commercial" && (
-                    <View>
-                        <View>
-                            <Text className="text-gray-500">Commercial Type</Text>
-                            <Text className="text-black">{formData.commercialType}</Text>
-                        </View>
+                    <View className="flex-row justify-between">
+                        <TouchableOpacity
+                            className="bg-yellow-500 py-2 px-4 rounded-lg"
+                            onPress={() => id !== null && handleEdit(id)}
+                        >
+                            <Text className="text-white font-bold">{t("edit")}</Text> {/* Wrap text in <Text> */}
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            className="bg-green-500 py-2 px-4 rounded-lg"
+                            onPress={() => id !== null && handleChangeStatus(id)}
+                        >
+                            <Text className="text-white font-bold">
+                                {formData.status ? t("deactivate") : t("activate")} {/* Wrap text in <Text> */}
+                            </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            className="bg-red-500 py-2 px-4 rounded-lg"
+                            onPress={() => id !== null && handleDelete(id)}
+                        >
+                            <Text className="text-white font-bold">{t("delete")}</Text> {/* Wrap text in <Text> */}
+                        </TouchableOpacity>
                     </View>
-                )}
-
-                <Text className="text-lg font-bold mb-1">Other Details</Text>
-                <View className="flex-row justify-between mb-3">
-                    <View>
-                        <Text className="text-gray-500">Rent Negotiable</Text>
-                        <Text className="text-black">{formData.rentNegotiable}</Text>
-                    </View>
-                    <View>
-                        <Text className="text-gray-500">Source of Water</Text>
-                        <Text className="text-black">{formData.sourceOfWater}</Text>
-                    </View>
-                </View>
-
-            {formData.propertyType === "Full House" && (
-            <View>
-                <View className="flex-row justify-between mb-3">
-                    
-                    <View>
-                        <Text className="text-gray-500">Bedroom</Text>
-                        <Text className="text-black">{formData.numberOfBedRooms}</Text>
-                    </View>
-                    <View>
-                        <Text className="text-gray-500">Balcony         </Text>
-                        <Text className="text-black">{formData.numberOfBalconies}</Text>
-                    </View>
-                </View>
-                <View className="flex-row justify-between mb-3">
-                    
-                    <View>
-                        <Text className="text-gray-500">Number of Bathroom</Text>
-                        <Text className="text-black">{formData.numberOfBathRooms}</Text>
-                    </View>
-                </View>
-                </View> )}
-
-                {(formData.propertyType === "Full House" || formData.propertyType === "PG/Hostel") && (
-                <View>
-                    <View className="flex-row justify-between mb-3">
-                        <View>
-                            <Text className="text-gray-500">Floor Number</Text>
-                            <Text className="text-black">{formData.floorNumber}</Text>
-                        </View>
-                        <View>
-                            <Text className="text-gray-500">Age of Property</Text>
-                            <Text className="text-black">{formData.ageOfProperty}</Text>
-                        </View>
-                        
-                    </View>
-           
-                 </View> )}
-            
-
-                <Text className="text-lg font-bold mb-1">Amenities </Text>
-                <View className="flex-row justify-between mb-3">
-                {formData.basicAmenities.map((amenity, index) => (
-                         <Text className="text-black">{amenity}</Text>
-                    ))}
-                    
-                </View>
-
-                <Text className="text-lg font-bold mb-1">Other Amenities </Text>
-                <View className="flex-row justify-between mb-3">
-                {formData.additionalAmenities.map((otherAmenity, index) => (
-                         <Text className="text-black">{otherAmenity}</Text>
-                    ))}
-                    
-                </View>
-
-                <Text className="text-lg font-bold mb-1">Address Details</Text>
-                
-                    <View>
-                        <Text className="text-black">{formData.address}</Text>
-                        <Text className="text-black">{formData.city}</Text>
-                        <Text className="text-black">{formData.districtName}</Text>
-                        <Text className="text-black">{formData.stateName}</Text>
-                        <Text className="text-black">Pin - {formData.zip}</Text>
-                    </View>
-                
-                
-
-                <Text className="text-gray-500 mt-5 mb-5">Last Updated On: {formData.date_updated}</Text>
-                <Text className="text-gray-500 mb-5">Posted On: {formData.date_created}</Text>
-
-               
-            </View>
-        </ScrollView>
+                </>
+            )}
+        </ScrollView >
     );
 };
 

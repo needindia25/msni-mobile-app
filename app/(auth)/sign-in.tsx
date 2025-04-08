@@ -18,11 +18,23 @@ const SignIn = () => {
 
   const validateForm = () => {
     if (!username) {
-      Alert.alert(t("error"), t("errorPhoneRequired")); // Use translation key
+      Alert.alert(t("error"), t("errorPhoneRequired"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      ); // Use translation key
       return false;
     }
     if (!/^\d{10}$/.test(username)) {
-      Alert.alert(t("error"), t("errorPhoneInvalid")); // Use translation key
+      Alert.alert(t("error"), t("errorPhoneInvalid"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      ); // Use translation key
       return false;
     }
     return true;
@@ -50,7 +62,13 @@ const SignIn = () => {
       if (!response.ok) {
         const errorData = await response.json().catch(() => null); // Handle JSON parsing errors
         const errorMessage = errorData?.detail || t("invalidCredentials");
-        Alert.alert(t("error"), errorMessage);
+        Alert.alert(t("error"), errorMessage,
+          [
+            {
+              text: t("ok"),
+            },
+          ]
+        );
         return;
       }
 
@@ -58,7 +76,13 @@ const SignIn = () => {
       const { refresh, access, user_info } = data;
 
       if (!refresh || !access || !user_info) {
-        Alert.alert(t("error"), t("unexpectedResponse"));
+        Alert.alert(t("error"), t("unexpectedResponse"),
+          [
+            {
+              text: t("ok"),
+            },
+          ]
+        );
         return;
       }
 
@@ -77,7 +101,13 @@ const SignIn = () => {
       }
     } catch (err) {
       console.error("Login error:", err);
-      Alert.alert(t("error"), t("loginFailed"));
+      Alert.alert(t("error"), t("loginFailed"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      );
     } finally {
       setLoading(false);
     }

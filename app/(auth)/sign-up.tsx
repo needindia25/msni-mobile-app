@@ -39,23 +39,53 @@ const SignUp = () => {
 
   const validateForm = () => {
     if (!form.name) {
-      Alert.alert(t("error"), t("nameRequired")); // Use translation key
+      Alert.alert(t("error"), t("nameRequired"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      ); // Use translation key
       return false;
     }
     if (!form.phone) {
-      Alert.alert(t("error"), t("phoneRequired")); // Use translation key
+      Alert.alert(t("error"), t("phoneRequired"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      ); // Use translation key
       return false;
     }
     if (!/^\d{10}$/.test(form.phone)) {
-      Alert.alert(t("error"), t("phoneInvalid")); // Use translation key
+      Alert.alert(t("error"), t("phoneInvalid"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      ); // Use translation key
       return false;
     }
     if (!form.state) {
-      Alert.alert(t("error"), t("stateRequired")); // Use translation key
+      Alert.alert(t("error"), t("stateRequired"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      ); // Use translation key
       return false;
     }
     if (!form.district) {
-      Alert.alert(t("error"), t("districtRequired")); // Use translation key
+      Alert.alert(t("error"), t("districtRequired"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      ); // Use translation key
       return false;
     }
     return true;
@@ -91,10 +121,22 @@ const SignUp = () => {
         setShowSuccessModal(true);
       } else {
         const errorData = await response.json();
-        Alert.alert(t("error"), errorData.error || t("mobileAlreadyRegistered")); // Use translation key
+        Alert.alert(t("error"), errorData.error || t("mobileAlreadyRegistered"),
+          [
+            {
+              text: t("ok"),
+            },
+          ]
+        ); // Use translation key
       }
     } catch (err) {
-      Alert.alert(t("error"), t("errorOccurred")); // Use translation key
+      Alert.alert(t("error"), t("errorOccurred"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      ); // Use translation key
     } finally {
       setLoading(false);
     }

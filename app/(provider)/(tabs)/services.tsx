@@ -67,7 +67,12 @@ const Services = () => {
                 <View key={listing.id} className="bg-white rounded-lg shadow-md mb-5 p-5">
                   <ScrollView horizontal pagingEnabled className="flex-row mb-3">
                     {listing.images.map((image: string, index: number) => (
-                      <Image key={index} source={{ uri: image }} style={{ width: screenWidth - 40 }} className="h-48 rounded-lg mr-1" />
+                      <Image
+                        key={index}
+                        source={{ uri: image }}
+                        style={{ width: screenWidth - 40 }}
+                        className="h-48 rounded-lg mr-2"
+                      />
                     ))}
                   </ScrollView>
                   <Text className="text-xl font-bold mb-1">{listing.title}</Text> {/* Wrap text in <Text> */}

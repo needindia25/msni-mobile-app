@@ -50,6 +50,22 @@ const Home = () => {
         }));
     };
 
+    const handleView = async (id: number) => {
+        try {
+            await AsyncStorage.setItem("passServiceId", id.toString());
+            router.push(`/property-details`);
+        } catch (error) {
+            console.error("Error saving service ID to AsyncStorage:", error);
+            Alert.alert(t("error"), t("errorSavingServiceId"),
+                [
+                    {
+                        text: t("ok"),
+                    },
+                ]
+            ); // Use translation key
+        }
+    };
+
     const handleDelete = (id: number) => {
         Alert.alert(
             t("deleteProperty"), // Use translation key
@@ -68,23 +84,24 @@ const Home = () => {
                                     'Authorization': `Bearer ${token}`,
                                 },
                             });
-                            setListings((prev) => prev.filter((listing) => listing.id !== id));
-                            Alert.alert(t("success"), t("propertyDeleted")); // Use translation key
+                            Alert.alert(
+                                t("success"),
+                                t("propertyDeleted"),
+                                [
+                                    {
+                                        text: t("ok"),
+                                        onPress: () => {
+                                            // Perform the action when "OK" is pressed
+                                            setListings((prev) => prev.filter((listing) => listing.id !== id));
+                                        },
+                                    },
+                                ]
+                            ); // Use translation keys
                         }
                     },
                 },
             ]
         );
-    };
-
-    const handleView = async (id: number) => {
-        try {
-            await AsyncStorage.setItem("passServiceId", id.toString());
-            router.push(`/property-details`);
-        } catch (error) {
-            console.error("Error saving service ID to AsyncStorage:", error);
-            Alert.alert(t("error"), t("errorSavingServiceId")); // Use translation key
-        }
     };
 
     const handleEdit = async (id: number) => {
@@ -93,7 +110,13 @@ const Home = () => {
             router.push(`/add-property`);
         } catch (error) {
             console.error("Error saving service ID to AsyncStorage:", error);
-            Alert.alert(t("error"), t("errorSavingServiceId")); // Use translation key
+            Alert.alert(t("error"), t("errorSavingServiceId"),
+                [
+                    {
+                        text: t("ok"),
+                    },
+                ]
+            ); // Use translation key
         }
     };
 
@@ -104,7 +127,7 @@ const Home = () => {
             [
                 { text: t("cancel"), style: "cancel" }, // Use translation key
                 {
-                    text: t("change"), // Use translation key
+                    text: t("changeStatus"), // Use translation key
                     onPress: async () => {
                         const token = await AsyncStorage.getItem('token');
                         if (token) {
@@ -114,14 +137,25 @@ const Home = () => {
                                     'Authorization': `Bearer ${token}`,
                                 },
                             });
-                            Alert.alert(t("success"), t("statusUpdated")); // Use translation key
-                            setListings((prevListings) =>
-                                prevListings.map((listing) =>
-                                    listing.id === id
-                                        ? { ...listing, status: !listing.status }
-                                        : listing
-                                )
-                            );
+                            Alert.alert(
+                                t("success"),
+                                t("statusUpdated"),
+                                [
+                                    {
+                                        text: t("ok"),
+                                        onPress: () => {
+                                            // Perform the action when "OK" is pressed
+                                            setListings((prevListings) =>
+                                                prevListings.map((listing) =>
+                                                    listing.id === id
+                                                        ? { ...listing, status: !listing.status }
+                                                        : listing
+                                                )
+                                            );
+                                        },
+                                    },
+                                ]
+                            ); // Use translation keys
                         }
                     },
                 },
@@ -137,7 +171,7 @@ const Home = () => {
                     onPress={() => router.push('/add-property')}
                     style={{ zIndex: 1000 }}
                 >
-                    <Text className="text-white text-base font-bold">+ Add Next Property</Text> {/* Wrap "+" in <Text> */}
+                    <Text className="text-white text-base font-bold">+ {t("addNextProperty")}</Text> {/* Wrap "+" in <Text> */}
                 </TouchableOpacity>
             )}
             <ScrollView className="bg-gray-100 p-5">
@@ -153,7 +187,13 @@ const Home = () => {
                                 <View key={listing.id} className="bg-white rounded-lg shadow-md mb-5 p-5">
                                     <ScrollView horizontal pagingEnabled className="flex-row mb-3">
                                         {listing.images.map((image: string, index: number) => (
-                                            <Image key={index} source={{ uri: image }} style={{ width: screenWidth - 40 }} className="h-48 rounded-lg mr-1" />
+                                            <View key={index} className="relative">
+                                                <Image
+                                                    source={{ uri: image }}
+                                                    style={{ width: screenWidth - 40 }}
+                                                    className="h-48 rounded-lg mr-2"
+                                                />
+                                            </View>
                                         ))}
                                     </ScrollView>
                                     <Text className="text-xl font-bold mb-1">{listing.title}</Text> {/* Wrap text in <Text> */}
@@ -170,14 +210,14 @@ const Home = () => {
                                             className="bg-blue-500 py-2 px-4 rounded-lg"
                                             onPress={() => handleView(listing.id)}
                                         >
-                                        <Text className="text-white font-bold">{t("View")}</Text> {/* Wrap text in <Text> */}
+                                            <Text className="text-white font-bold">{t("View")}</Text> {/* Wrap text in <Text> */}
                                         </TouchableOpacity>
 
                                         <TouchableOpacity
                                             className="bg-yellow-500 py-2 px-4 rounded-lg"
                                             onPress={() => handleEdit(listing.id)}
                                         >
-                                        <Text className="text-white font-bold">{t("edit")}</Text> {/* Wrap text in <Text> */}
+                                            <Text className="text-white font-bold">{t("edit")}</Text> {/* Wrap text in <Text> */}
                                         </TouchableOpacity>
 
                                         <TouchableOpacity

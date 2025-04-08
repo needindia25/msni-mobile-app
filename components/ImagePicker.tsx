@@ -59,7 +59,13 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const token = await AsyncStorage.getItem('token');
         if (!token) {
-          Alert.alert(t("error"), t("noTokenError")); // Use translation key
+          Alert.alert(t("error"), t("noTokenError"),
+            [
+              {
+                text: t("ok"),
+              },
+            ]
+          ); // Use translation key
           return;
         }
         const imageUri = result.assets[0].uri;

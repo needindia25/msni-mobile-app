@@ -5,7 +5,7 @@ import { constants, icons } from "@/constants";
 import { fetchAPI } from "@/lib/fetch";
 import { DropdownProps } from "@/types/type";
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, SafeAreaView, ActivityIndicator, Alert, KeyboardAvoidingView, FlatList, Platform, Image } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, SafeAreaView, ActivityIndicator, Alert, KeyboardAvoidingView, FlatList, Platform, Image, ScrollView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import CustomMultiDropdown from "@/components/CustomMultiDropdown";
@@ -107,6 +107,11 @@ const MultiStepForm = () => {
           setFormData((prevFormData: any) => ({
             ...prevFormData,
             ...serviceResponse["options"],
+            ...{
+              images: serviceResponse["options"].images.length > 0
+                ? serviceResponse["options"].images.map((image: string) => image.replace("www.", "admin.")) // Replace "www." with "admin."
+                : [`${constants.BASE_URL}/media/no-image-found.png`],
+            }
           }));
 
           if (serviceResponse["options"].state) {
@@ -210,7 +215,7 @@ const MultiStepForm = () => {
 
       if (!formData.state || formData.state < 1) {
         newErrors.state = t("selectValidState"); // Use translation key
-      }     
+      }
 
       if (!formData.district || formData.district < 1) {
         newErrors.district = t("selectValidDistrict"); // Use translation key
@@ -219,7 +224,7 @@ const MultiStepForm = () => {
       if (!formData.city) {
         newErrors.city = t("cityError"); // Use translation key
       }
-    
+
       if (formData.city && formData.city.length < 2) {
         newErrors.city = t("cityMinError"); // Use translation key
       }
@@ -246,7 +251,13 @@ const MultiStepForm = () => {
   const handleSubmit = async (formData: any, stepIndex: number = 0) => {
     console.log("Form values:", formData);
     if (!validateForm()) {
-      Alert.alert(t("error"), t("pleaseFixErrors"));
+      Alert.alert(t("error"), t("pleaseFixErrors"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      );
       return;
     }
     try {
@@ -279,8 +290,8 @@ const MultiStepForm = () => {
       }
       if (stepIndex === 0) {
         Alert.alert(
-          t("success"), 
-          t("propertyDetailsSaved"), 
+          t("success"),
+          t("propertyDetailsSaved"),
           [
             {
               text: t("ok"),
@@ -294,7 +305,13 @@ const MultiStepForm = () => {
       }
       setStep(step + stepIndex);
     } catch (error) {
-      Alert.alert(t("error"), t("failedToSaveProperty")); // Use translation keys
+      Alert.alert(t("error"), t("failedToSaveProperty"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      ); // Use translation keys
       console.error("Error saving data:", error);
     }
   };
@@ -312,263 +329,264 @@ const MultiStepForm = () => {
           behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={{ flex: 1 }}
         >
-          <FlatList
+          {/* <FlatList
             data={[{ key: "form" }]} // Dummy data to render the form
-            renderItem={() => (
-              <View className="p-5 bg-gray-100">
-                <Text className="text-base font-bold text-center mb-5">
-                  {serviceId ? t("editProperty") : t("addProperty")}
-                </Text>
-                {/* Step Indicator */}
-                <View className="flex-row justify-between mb-5">
-                  {[1, 2, 3, 4, 5].map((num) => (
-                    <Text key={num} className={`text-base font-bold ${step === num ? "text-blue-500" : "text-gray-400"}`}>
-                      {t("step")} {num}
-                    </Text>
-                  ))}
-                </View>
+            renderItem={() => ( */}
+          <ScrollView className="bg-gray-100 p-5">
+            <View className="p-5 bg-gray-100">
+              <Text className="text-base font-bold text-center mb-5">
+                {serviceId ? t("editProperty") : t("addProperty")}
+              </Text>
+              {/* Step Indicator */}
+              <View className="flex-row justify-between mb-5">
+                {[1, 2, 3, 4, 5].map((num) => (
+                  <Text key={num} className={`text-base font-bold ${step === num ? "text-blue-500" : "text-gray-400"}`}>
+                    {t("step")} {num}
+                  </Text>
+                ))}
+              </View>
 
-                {step === 1 && (
-                  <View>
-                    <View className="flex-row flex-wrap justify-between mt-5">
-                      {staticData.propertyForOptions.map((pref) => (
-                        <TouchableOpacity
-                          key={pref.value}
-                          className={`rounded-lg p-3 flex-1 mr-2 ${formData.propertyFor === pref.value ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-                          onPress={() => handleInputChange("propertyFor", pref.value)}
-                        >
-                          <View className="flex-row items-center justify-center">
-                            <Image
-                              source={formData.propertyFor === pref.value ? icons.radioChecked : icons.radioUnchecked}
-                              className="w-6 h-6 mr-2"
-                              style={{ tintColor: "white" }} // Apply white tint color
-                            />
-                            <Text className="text-center text-base font-bold text-white">
-                              {t(pref.label)}
-                            </Text>
-                          </View>
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                    <CustomDropdown
-                      label={t("propertyType")}
-                      data={
-                        staticData.propertyTypeOptions[formData.propertyFor as keyof typeof staticData.propertyTypeOptions]
+              {step === 1 && (
+                <View>
+                  <View className="flex-row flex-wrap justify-between mt-5">
+                    {staticData.propertyForOptions.map((pref) => (
+                      <TouchableOpacity
+                        key={pref.value}
+                        className={`rounded-lg p-3 flex-1 mr-2 ${formData.propertyFor === pref.value ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
+                        onPress={() => handleInputChange("propertyFor", pref.value)}
+                      >
+                        <View className="flex-row items-center justify-center">
+                          <Image
+                            source={formData.propertyFor === pref.value ? icons.radioChecked : icons.radioUnchecked}
+                            className="w-6 h-6 mr-2"
+                            style={{ tintColor: "white" }} // Apply white tint color
+                          />
+                          <Text className="text-center text-base font-bold text-white">
+                            {t(pref.label)}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                  <CustomDropdown
+                    label={t("propertyType")}
+                    data={
+                      staticData.propertyTypeOptions[formData.propertyFor as keyof typeof staticData.propertyTypeOptions]
+                    }
+                    value={formData.propertyType}
+                    placeholder={t("selectPropertyType")}
+                    onChange={(selectedItem: DropdownProps) => handleInputChange("propertyType", selectedItem.value)}
+                  />
+                  {errors.propertyType && <Text className="text-red-500">{errors.propertyType}</Text>}
+
+                  <Text className="text-base font-bold mt-3">{t("title")}</Text>
+                  <TextInput
+                    placeholder={t("enterTitle")}
+                    className={`border rounded-lg p-3 bg-white ${errors.title ? "border-red-500" : "border-gray-300"
+                      }`} // Highlight border in red if there's an error
+                    value={formData.title}
+                    onChangeText={(value) => handleInputChange("title", value)}
+                    onBlur={() => {
+                      if (!formData.title) {
+                        setErrors((prev) => ({
+                          ...prev,
+                          title: t("titleRequired"), // Use translation key for error message
+                        }));
                       }
-                      value={formData.propertyType}
-                      placeholder={t("selectPropertyType")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("propertyType", selectedItem.value)}
-                    />
-                    {errors.propertyType && <Text className="text-red-500">{errors.propertyType}</Text>}
+                    }}
+                  />
+                  {errors.title && <Text className="text-red-500">{errors.title}</Text>}
 
-                    <Text className="text-base font-bold mt-3">{t("title")}</Text>
-                    <TextInput
-                      placeholder={t("enterTitle")}
-                      className={`border rounded-lg p-3 bg-white ${errors.title ? "border-red-500" : "border-gray-300"
-                        }`} // Highlight border in red if there's an error
-                      value={formData.title}
-                      onChangeText={(value) => handleInputChange("title", value)}
-                      onBlur={() => {
-                        if (!formData.title) {
-                          setErrors((prev) => ({
-                            ...prev,
-                            title: t("titleRequired"), // Use translation key for error message
-                          }));
-                        }
-                      }}
-                    />
-                    {errors.title && <Text className="text-red-500">{errors.title}</Text>}
+                  <Text className="text-base font-bold mt-3 mb-3">{t("description")}</Text>
+                  <CustomTextarea
+                    value={formData.description}
+                    onChangeText={(value) => handleInputChange("description", value)}
+                    onBlur={() => {
+                      if (!formData.description || formData.description.length < 4) {
+                        setErrors((prev) => ({
+                          ...prev,
+                          description: t("descriptionError"), // Use translation key for error message
+                        }));
+                      } else if (!formData.description || formData.description.length > 200) {
+                        setErrors((prev) => ({
+                          ...prev,
+                          description: t("descriptionMaxLenError"), // Use translation key for error message
+                        }));
+                      }
+                    }}
+                  />
+                  {errors.description && <Text className="text-red-500">{errors.description}</Text>} {/* Display error message */}
+                </View>
+              )}
 
-                    <Text className="text-base font-bold mt-3 mb-3">{t("description")}</Text>
-                    <CustomTextarea
-                      value={formData.description}
-                      onChangeText={(value) => handleInputChange("description", value)}
-                      onBlur={() => {
-                        if (!formData.description || formData.description.length < 4) {
-                          setErrors((prev) => ({
-                            ...prev,
-                            description: t("descriptionError"), // Use translation key for error message
-                          }));
-                        } else if (!formData.description || formData.description.length > 200) {
-                          setErrors((prev) => ({
-                            ...prev,
-                            description: t("descriptionMaxLenError"), // Use translation key for error message
-                          }));
-                        }
-                      }}
-                    />
-                    {errors.description && <Text className="text-red-500">{errors.description}</Text>} {/* Display error message */}
-                  </View>
-                )}
-
-                {step === 1 && formData.propertyType === "Land" && (
+              {/* {step === 1 && formData.propertyType === "Land" && (
                 <View className="mb-[120px]"></View>
-                )}
+              )} */}
 
-                {step === 1 && formData.propertyType === "Full House" && (
+              {step === 1 && formData.propertyType === "Full House" && (
+                <View>
+                  {/* Housing Type Dropdown */}
+                  <CustomDropdown
+                    label={t("housingType")}
+                    data={staticData.housingTypeOptions}
+                    value={formData.housingType}
+                    placeholder={t("selectHousingType")}
+                    onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", selectedItem.value)}
+                  />
+
+                  {/* BHK Type Dropdown */}
+                  <CustomDropdown
+                    label={t("bhkType")}
+                    data={staticData.bhkTypeOptions}
+                    value={formData.bhkType}
+                    placeholder={t("selectBhkType")}
+                    onChange={(selectedItem: DropdownProps) => handleInputChange("bhkType", selectedItem.value)}
+                  />
+
+                  {/* Family Preference Dropdown */}
+                  <CustomDropdown
+                    label={t("familyPreference")}
+                    data={staticData.familyPreferenceOptions}
+                    value={formData.familyPreference}
+                    placeholder={t("selectFamilyPreference")}
+                    onChange={(selectedItem: DropdownProps) => handleInputChange("familyPreference", selectedItem.value)}
+                  />
+
+                  {/* Food Preference Dropdown */}
+                  <CustomDropdown
+                    label={t("foodPreference")}
+                    data={staticData.foodPreferenceOptions}
+                    value={formData.foodPreference}
+                    placeholder={t("selectFoodPreference")}
+                    onChange={(selectedItem: DropdownProps) => handleInputChange("foodPreference", selectedItem.value)}
+                  />
+                </View>
+              )}
+
+              {step === 1 && formData.propertyType === "PG/Hostel" && (
+                <View>
+                  {/* Room Type Dropdown */}
+                  <CustomDropdown
+                    label={t("roomType")}
+                    data={staticData.roomTypeOptions}
+                    value={formData.housingType}
+                    placeholder={t("selectRoomType")}
+                    onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", selectedItem.value)}
+                  />
+
+                  {/* Gender Preference Dropdown */}
+                  <CustomDropdown
+                    label={t("genderPreference")}
+                    data={staticData.genderPreferenceOptions}
+                    value={formData.familyPreference}
+                    placeholder={t("selectGenderPreference")}
+                    onChange={(selectedItem: DropdownProps) => handleInputChange("familyPreference", selectedItem.value)}
+                  />
+
+                  {/* Food Preference Dropdown */}
+                  <CustomDropdown
+                    label={t("foodPreference")}
+                    data={staticData.foodPreferenceOptions}
+                    value={formData.foodPreference}
+                    placeholder={t("selectFoodPreference")}
+                    onChange={(selectedItem: DropdownProps) => handleInputChange("foodPreference", selectedItem.value)}
+                  />
+                </View>
+              )}
+
+              {step === 1 && formData.propertyType === "Commercial" && (
+                <View>
+                  {/* Commercial Type Dropdown */}
+                  <CustomDropdown
+                    label={t("commercialType")}
+                    data={staticData.commercialTypeOptions}
+                    value={formData.housingType}
+                    placeholder={t("selectCommercialType")}
+                    onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", selectedItem.value)}
+                  />
+                </View>
+              )}
+
+              {step === 2 && (
+                <View>
+                  <CustomDropdown
+                    label={t("state")}
+                    data={stateOptions}
+                    value={formData.state}
+                    placeholder={t("selectState")}
+                    onChange={(selectedItem: DropdownProps) => {
+                      handleInputChange("state", selectedItem.value);
+                      handleInputChange("stateName", selectedItem.label);
+                      handleInputChange("district", 0);
+                      handleInputChange("districtName", "");
+                      fetchDistricts(selectedItem.value as number)
+                    }}
+                  />
+                  {errors.state && <Text className="text-red-500">{errors.state}</Text>}
+
+                  <CustomDropdown
+                    label={t("district")}
+                    data={districtOptions}
+                    value={formData.district}
+                    placeholder={t("selectDistrict")}
+                    onChange={(selectedItem: DropdownProps) => {
+                      handleInputChange("district", selectedItem.value);
+                      handleInputChange("districtName", selectedItem.label);
+                    }}
+                  />
+                  {errors.district && <Text className="text-red-500">{errors.district}</Text>}
+
+                  <Text className="text-base font-bold mt-3 mb-3">{t("city")}</Text>
+                  <TextInput
+                    placeholder={t("enterCity")}
+                    className={`border rounded-lg p-3 bg-white ${errors.city ? "border-red-500" : "border-gray-300"
+                      }`} // Highlight border in red if there's an error
+                    value={formData.city}
+                    onChangeText={(value) => handleInputChange("city", value)} // Update formData on change
+                  />
+                  {errors.city && <Text className="text-red-500">{errors.city}</Text>} {/* Display error message */}
+
+                  <Text className="text-base font-bold mt-3 mb-3">{t("pincode")}</Text>
+                  <TextInput
+                    placeholder={t("enterPincode")}
+                    className={`border rounded-lg p-3 bg-white ${errors.zip ? "border-red-500" : "border-gray-300"
+                      }`} // Highlight border in red if there's an error
+                    keyboardType="numeric"
+                    value={formData.zip}
+                    onChangeText={(value) => handleInputChange("zip", value)} // Update formData on change
+                    onBlur={(value) => {
+                      if (!formData.zip || !/^\d{6}$/.test(formData.zip)) {
+                        setErrors((prev) => ({
+                          ...prev,
+                          zip: t("zipError"), // Use translation key for error message
+                        }));
+                      }
+                    }}
+                  />
+                  {errors.zip && <Text className="text-red-500">{errors.zip}</Text>} {/* Display error message */}
+
+                  <Text className="text-base font-bold mt-3 mb-3">{t("address")}</Text>
                   <View>
-                    {/* Housing Type Dropdown */}
-                    <CustomDropdown
-                      label={t("housingType")}
-                      data={staticData.housingTypeOptions}
-                      value={formData.housingType}
-                      placeholder={t("selectHousingType")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", selectedItem.value)}
-                    />
-
-                    {/* BHK Type Dropdown */}
-                    <CustomDropdown
-                      label={t("bhkType")}
-                      data={staticData.bhkTypeOptions}
-                      value={formData.bhkType}
-                      placeholder={t("selectBhkType")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("bhkType", selectedItem.value)}
-                    />
-
-                    {/* Family Preference Dropdown */}
-                    <CustomDropdown
-                      label={t("familyPreference")}
-                      data={staticData.familyPreferenceOptions}
-                      value={formData.familyPreference}
-                      placeholder={t("selectFamilyPreference")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("familyPreference", selectedItem.value)}
-                    />
-
-                    {/* Food Preference Dropdown */}
-                    <CustomDropdown
-                      label={t("foodPreference")}
-                      data={staticData.foodPreferenceOptions}
-                      value={formData.foodPreference}
-                      placeholder={t("selectFoodPreference")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("foodPreference", selectedItem.value)}
-                    />
-                  </View>
-                )}
-
-                {step === 1 && formData.propertyType === "PG/Hostel" && (
-                  <View>
-                    {/* Room Type Dropdown */}
-                    <CustomDropdown
-                      label={t("roomType")}
-                      data={staticData.roomTypeOptions}
-                      value={formData.housingType}
-                      placeholder={t("selectRoomType")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", selectedItem.value)}
-                    />
-
-                    {/* Gender Preference Dropdown */}
-                    <CustomDropdown
-                      label={t("genderPreference")}
-                      data={staticData.genderPreferenceOptions}
-                      value={formData.familyPreference}
-                      placeholder={t("selectGenderPreference")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("familyPreference", selectedItem.value)}
-                    />
-
-                    {/* Food Preference Dropdown */}
-                    <CustomDropdown
-                      label={t("foodPreference")}
-                      data={staticData.foodPreferenceOptions}
-                      value={formData.foodPreference}
-                      placeholder={t("selectFoodPreference")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("foodPreference", selectedItem.value)}
-                    />
-                  </View>
-                )}
-
-                {step === 1 && formData.propertyType === "Commercial" && (
-                  <View>
-                    {/* Commercial Type Dropdown */}
-                    <CustomDropdown
-                      label={t("commercialType")}
-                      data={staticData.commercialTypeOptions}
-                      value={formData.housingType}
-                      placeholder={t("selectCommercialType")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", selectedItem.value)}
-                    />
-                  </View>
-                )}
-
-                {step === 2 && (
-                  <View>                    
-                    <CustomDropdown
-                      label={t("state")}
-                      data={stateOptions}
-                      value={formData.state}
-                      placeholder={t("selectState")}
-                      onChange={(selectedItem: DropdownProps) => {
-                        handleInputChange("state", selectedItem.value);
-                        handleInputChange("stateName", selectedItem.label);                        
-                        handleInputChange("district", 0);
-                        handleInputChange("districtName", "");
-                        fetchDistricts(selectedItem.value as number)
-                      }}
-                    />
-                    {errors.state && <Text className="text-red-500">{errors.state}</Text>}
-
-                    <CustomDropdown
-                      label={t("district")}
-                      data={districtOptions}
-                      value={formData.district}
-                      placeholder={t("selectDistrict")}
-                      onChange={(selectedItem: DropdownProps) => {
-                        handleInputChange("district", selectedItem.value);
-                        handleInputChange("districtName", selectedItem.label);
-                      }}
-                    />
-                    {errors.district && <Text className="text-red-500">{errors.district}</Text>}
-
-                    <Text className="text-base font-bold mt-3 mb-3">{t("city")}</Text>
                     <TextInput
-                      placeholder={t("enterCity")}
-                      className={`border rounded-lg p-3 bg-white ${errors.city ? "border-red-500" : "border-gray-300"
+                      placeholder={t("enterAddressManually")} // Translation key for "Enter address manually"
+                      className={`border rounded-lg p-3 bg-white mt-3 ${errors.address ? "border-red-500" : "border-gray-300"
                         }`} // Highlight border in red if there's an error
-                      value={formData.city}
-                      onChangeText={(value) => handleInputChange("city", value)} // Update formData on change
-                    />
-                    {errors.city && <Text className="text-red-500">{errors.city}</Text>} {/* Display error message */}
-
-                    <Text className="text-base font-bold mt-3 mb-3">{t("pincode")}</Text>
-                    <TextInput
-                      placeholder={t("enterPincode")}
-                      className={`border rounded-lg p-3 bg-white ${errors.zip ? "border-red-500" : "border-gray-300"
-                        }`} // Highlight border in red if there's an error
-                      keyboardType="numeric"
-                      value={formData.zip}
-                      onChangeText={(value) => handleInputChange("zip", value)} // Update formData on change
-                      onBlur={(value) => {
-                        if (!formData.zip || !/^\d{6}$/.test(formData.zip)) {
+                      value={formData.address}
+                      onChangeText={(value) => handleInputChange("address", value)} // Update formData on change
+                      onBlur={() => {
+                        if (!formData.address || formData.address.length < 4) {
                           setErrors((prev) => ({
                             ...prev,
-                            zip: t("zipError"), // Use translation key for error message
+                            address: t("addressError"), // Use translation key for error message
                           }));
                         }
                       }}
                     />
-                    {errors.zip && <Text className="text-red-500">{errors.zip}</Text>} {/* Display error message */}
-                    
-                    <Text className="text-base font-bold mt-3 mb-3">{t("address")}</Text>
-                    <View>
-                      <TextInput
-                        placeholder={t("enterAddressManually")} // Translation key for "Enter address manually"
-                        className={`border rounded-lg p-3 bg-white mt-3 ${errors.address ? "border-red-500" : "border-gray-300"
-                          }`} // Highlight border in red if there's an error
-                        value={formData.address}
-                        onChangeText={(value) => handleInputChange("address", value)} // Update formData on change
-                        onBlur={() => {
-                          if (!formData.address || formData.address.length < 4) {
-                            setErrors((prev) => ({
-                              ...prev,
-                              address: t("addressError"), // Use translation key for error message
-                            }));
-                          }
-                        }}
-                      />
-                    </View>
-                    {errors.address && <Text className="text-red-500">{errors.address}</Text>}
+                  </View>
+                  {errors.address && <Text className="text-red-500">{errors.address}</Text>}
 
-                    {/* <View className="mb-[20px]"></View>
-                    <GoogleTextInput
+                  {/* <View className="mb-[20px]"></View> */}
+                    {/* <GoogleTextInput
                         icon={icons.target}
                         initialLocation={userAddress ? (() => {
                           const parsedAddress = typeof userAddress === "string" ? JSON.parse(userAddress) : userAddress;
@@ -582,190 +600,191 @@ const MultiStepForm = () => {
                           formData.location = location.address;
                         }}
                       /> */}
-                    <View className="mb-[120px]"></View>
+                  {/* <View className="mb-[120px]"></View> */}
+                </View>
+              )}
+
+              {step === 3 && (
+                <View>
+                  <Text className="text-base font-bold mt-3 mb-3">{t("rentAmount")}</Text>
+                  <TextInput
+                    placeholder={t("enterRentAmount")}
+                    className="border border-gray-300 rounded-lg p-3 bg-white"
+                    keyboardType="numeric"
+                    value={String(formData.rent)}
+                    onChangeText={(value) => handleInputChange("rent", value)}
+                  />
+                  <Text className="text-base font-bold mt-3 mb-3">{t("advanceAmount")}</Text>
+                  <TextInput
+                    placeholder={t("enterAdvanceAmount")}
+                    className="border border-gray-300 rounded-lg p-3 bg-white"
+                    keyboardType="numeric"
+                    value={String(formData.advance)}
+                    onChangeText={(value) => handleInputChange("advance", value)}
+                  />
+                  <Text className="text-base font-bold mb-3 mt-3">{t("isRentNegotiable")}</Text>
+                  <View className="flex-row flex-wrap justify-between">
+                    {['Yes', 'No'].map((pref) => (
+                      <TouchableOpacity
+                        key={pref}
+                        className={`rounded-lg p-3 flex-1 mr-2 ${formData.rentNegotiable === pref ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
+                        onPress={() => handleInputChange("rentNegotiable", pref)}
+                      >
+                        <View className="flex-row items-center justify-center">
+                          <Image
+                            source={formData.rentNegotiable === pref ? icons.radioChecked : icons.radioUnchecked}
+                            className="w-6 h-6 mr-2"
+                            style={{ tintColor: "white" }} // Apply white tint color
+                          />
+                          <Text className="text-center text-base font-bold text-white">
+                            {t(pref.toLowerCase())}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    ))}
                   </View>
-                )}
 
-                {step === 3 && (
-                  <View>
-                    <Text className="text-base font-bold mt-3 mb-3">{t("rentAmount")}</Text>
-                    <TextInput
-                      placeholder={t("enterRentAmount")}
-                      className="border border-gray-300 rounded-lg p-3 bg-white"
-                      keyboardType="numeric"
-                      value={String(formData.rent)}
-                      onChangeText={(value) => handleInputChange("rent", value)}
-                    />
-                    <Text className="text-base font-bold mt-3 mb-3">{t("advanceAmount")}</Text>
-                    <TextInput
-                      placeholder={t("enterAdvanceAmount")}
-                      className="border border-gray-300 rounded-lg p-3 bg-white"
-                      keyboardType="numeric"
-                      value={String(formData.advance)}
-                      onChangeText={(value) => handleInputChange("advance", value)}
-                    />
-                    <Text className="text-base font-bold mb-3 mt-3">{t("isRentNegotiable")}</Text>
-                    <View className="flex-row flex-wrap justify-between">
-                      {['Yes', 'No'].map((pref) => (
-                        <TouchableOpacity
-                          key={pref}
-                          className={`rounded-lg p-3 flex-1 mr-2 ${formData.rentNegotiable === pref ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-                          onPress={() => handleInputChange("rentNegotiable", pref)}
-                        >
-                          <View className="flex-row items-center justify-center">
-                            <Image
-                              source={formData.rentNegotiable === pref ? icons.radioChecked : icons.radioUnchecked}
-                              className="w-6 h-6 mr-2"
-                              style={{ tintColor: "white" }} // Apply white tint color
-                            />
-                            <Text className="text-center text-base font-bold text-white">
-                              {t(pref.toLowerCase())}
-                            </Text>
-                          </View>
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-
-                    <Text className="text-base font-bold mt-3 mb-3">{t("areaInSize")}</Text>
-                    <TextInput
-                      placeholder={t("enterAreaInSize")}
-                      className="border border-gray-300 rounded-lg p-3 bg-white"
-                      keyboardType="numeric"
-                      value={String(formData.areaInSize)}
-                      onChangeText={(value) => handleInputChange("areaInSize", value)}
-                    />
-                    {formData.propertyType !== "Land" && (
-                      <CustomDropdown
-                        label={t("floorNumber")}
-                        data={staticData.floors}
-                        value={formData.floorNumber}
-                        placeholder={t("selectFloorNumber")}
-                        onChange={(selectedItem: DropdownProps) => handleInputChange("floorNumber", selectedItem.value)}
-                      />
-                    )}
-                    {formData.propertyType === "Full House" && (
-                      <>
-                        <CustomDropdown
-                          label={t("numberOfBedRooms")}
-                          data={staticData.bedRooms}
-                          value={formData.numberOfBedRooms}
-                          placeholder={t("selectNumberOfBedRooms")}
-                          onChange={(selectedItem: DropdownProps) => handleInputChange("numberOfBedRooms", selectedItem.value)}
-                        />
-                        <CustomDropdown
-                          label={t("numberOfBalconies")}
-                          data={staticData.balconies}
-                          value={formData.numberOfBalconies}
-                          placeholder={t("selectNumberOfBalconies")}
-                          onChange={(selectedItem: DropdownProps) => handleInputChange("numberOfBalconies", selectedItem.value)}
-                        />
-                        <CustomDropdown
-                          label={t("numberOfBathRooms")}
-                          data={staticData.bathRooms}
-                          value={formData.numberOfBathRooms}
-                          placeholder={t("selectNumberOfBathRooms")}
-                          onChange={(selectedItem: DropdownProps) => handleInputChange("numberOfBathRooms", selectedItem.value)}
-                        />
-                      </>
-                    )}
-                    {formData.propertyType !== "Land" && (
-                      <CustomDropdown
-                        label={t("ageOfProperty")}
-                        data={staticData.ageOfProperty}
-                        value={formData.ageOfProperty}
-                        placeholder={t("selectAgeOfProperty")}
-                        onChange={(selectedItem: DropdownProps) => handleInputChange("ageOfProperty", selectedItem.value)}
-                      />
-                    )}
-                  </View>
-                )}
-
-                {step === 4 && (
-                  <View>
-                    {formData.propertyType !== "Land" && (
-                      <CustomDropdown
-                        label={t("furnishing")}
-                        data={staticData.furnishingOptions}
-                        value={formData.furnishing}
-                        placeholder={t("selectFurnishingType")}
-                        onChange={(selectedItem: DropdownProps) => handleInputChange("furnishing", selectedItem.value)}
-                      />
-                    )}
-
+                  <Text className="text-base font-bold mt-3 mb-3">{t("areaInSize")}</Text>
+                  <TextInput
+                    placeholder={t("enterAreaInSize")}
+                    className="border border-gray-300 rounded-lg p-3 bg-white"
+                    keyboardType="numeric"
+                    value={String(formData.areaInSize)}
+                    onChangeText={(value) => handleInputChange("areaInSize", value)}
+                  />
+                  {formData.propertyType !== "Land" && (
                     <CustomDropdown
-                      label={t("parking")}
-                      data={staticData.parkingOptions}
-                      value={formData.parking}
-                      placeholder={t("selectParkingType")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("parking", selectedItem.value)}
+                      label={t("floorNumber")}
+                      data={staticData.floors}
+                      value={formData.floorNumber}
+                      placeholder={t("selectFloorNumber")}
+                      onChange={(selectedItem: DropdownProps) => handleInputChange("floorNumber", selectedItem.value)}
                     />
-
-                    <CustomMultiDropdown
-                      label={t("basicAmenities")}
-                      data={staticData.basicAmenitiesOptions}
-                      value={formData.basicAmenities}
-                      placeholder={t("selectBasicAmenities")}
-                      onChange={(selectedItems: DropdownProps[]) => handleInputChange("basicAmenities", selectedItems.map(item => item.value))}
-                    />
-
-                    <CustomMultiDropdown
-                      label={t("additionalAmenities")}
-                      data={staticData.additionalAmenitiesOptions}
-                      value={formData.additionalAmenities}
-                      placeholder={t("selectAdditionalAmenities")}
-                      onChange={(selectedItems: DropdownProps[]) => handleInputChange("additionalAmenities", selectedItems.map(item => item.value))}
-                    />
-
+                  )}
+                  {formData.propertyType === "Full House" && (
+                    <>
+                      <CustomDropdown
+                        label={t("numberOfBedRooms")}
+                        data={staticData.bedRooms}
+                        value={formData.numberOfBedRooms}
+                        placeholder={t("selectNumberOfBedRooms")}
+                        onChange={(selectedItem: DropdownProps) => handleInputChange("numberOfBedRooms", selectedItem.value)}
+                      />
+                      <CustomDropdown
+                        label={t("numberOfBalconies")}
+                        data={staticData.balconies}
+                        value={formData.numberOfBalconies}
+                        placeholder={t("selectNumberOfBalconies")}
+                        onChange={(selectedItem: DropdownProps) => handleInputChange("numberOfBalconies", selectedItem.value)}
+                      />
+                      <CustomDropdown
+                        label={t("numberOfBathRooms")}
+                        data={staticData.bathRooms}
+                        value={formData.numberOfBathRooms}
+                        placeholder={t("selectNumberOfBathRooms")}
+                        onChange={(selectedItem: DropdownProps) => handleInputChange("numberOfBathRooms", selectedItem.value)}
+                      />
+                    </>
+                  )}
+                  {formData.propertyType !== "Land" && (
                     <CustomDropdown
-                      label={t("sourceOfWater")}
-                      data={staticData.sourceOfWaterOptions}
-                      value={formData.sourceOfWater}
-                      placeholder={t("selectSourceOfWater")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("sourceOfWater", selectedItem.value)}
+                      label={t("ageOfProperty")}
+                      data={staticData.ageOfProperty}
+                      value={formData.ageOfProperty}
+                      placeholder={t("selectAgeOfProperty")}
+                      onChange={(selectedItem: DropdownProps) => handleInputChange("ageOfProperty", selectedItem.value)}
                     />
-                  </View>
-                )}
-
-                {step === 5 && (
-                  <View className="mb-5">
-                    <Text className="text-base font-bold mb-4">{t("uploadImage")}</Text>
-                    <ImagePickerComponent
-                      images={formData.images}
-                      serviceId={serviceId}
-                      onImageSelect={(imagePath: string) => {
-                        console.log(formData.images, imagePath);
-                        handleInputChange("images", [...formData.images, imagePath]);
-                        console.log(formData);
-                      }}
-                    />
-                    <View className="mb-[120px]"></View>
-                  </View>
-                )}
-                {step === 6 && (<ComingSoon />)}
-
-                {/* Navigation Buttons */}
-                <View className={`flex-row ${step > 1 ? "justify-between" : "justify-end"} mt-5 mb-10`}>
-                  {step > 1 && <TouchableOpacity onPress={() => { handleSubmit(formData, -1); }} className="bg-gray-500 py-3 px-5 rounded-lg">
-                    <Text className="text-white text-base font-bold">{t("back")}</Text>
-                  </TouchableOpacity>}
-                  <TouchableOpacity onPress={() => handleCancel()} className="bg-gray-500 py-3 px-5 mx-3 rounded-lg">
-                    <Text className="text-white text-base font-bold">{t("cancel")}</Text>
-                  </TouchableOpacity>
-                  {step < 5 ? (
-                    <TouchableOpacity onPress={() => { handleSubmit(formData, 1); }} className="bg-blue-500 py-3 px-5 rounded-lg">
-                      <Text className="text-white text-base font-bold">{t("saveNext")}</Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity onPress={() => handleSubmit(formData)} className="bg-green-500 py-3 px-5 rounded-lg">
-                      <Text className="text-white text-base font-bold">{t("submit")}</Text>
-                    </TouchableOpacity>
                   )}
                 </View>
+              )}
+
+              {step === 4 && (
+                <View>
+                  {formData.propertyType !== "Land" && (
+                    <CustomDropdown
+                      label={t("furnishing")}
+                      data={staticData.furnishingOptions}
+                      value={formData.furnishing}
+                      placeholder={t("selectFurnishingType")}
+                      onChange={(selectedItem: DropdownProps) => handleInputChange("furnishing", selectedItem.value)}
+                    />
+                  )}
+
+                  <CustomDropdown
+                    label={t("parking")}
+                    data={staticData.parkingOptions}
+                    value={formData.parking}
+                    placeholder={t("selectParkingType")}
+                    onChange={(selectedItem: DropdownProps) => handleInputChange("parking", selectedItem.value)}
+                  />
+
+                  <CustomMultiDropdown
+                    label={t("basicAmenities")}
+                    data={staticData.basicAmenitiesOptions}
+                    value={formData.basicAmenities}
+                    placeholder={t("selectBasicAmenities")}
+                    onChange={(selectedItems: DropdownProps[]) => handleInputChange("basicAmenities", selectedItems.map(item => item.value))}
+                  />
+
+                  <CustomMultiDropdown
+                    label={t("additionalAmenities")}
+                    data={staticData.additionalAmenitiesOptions}
+                    value={formData.additionalAmenities}
+                    placeholder={t("selectAdditionalAmenities")}
+                    onChange={(selectedItems: DropdownProps[]) => handleInputChange("additionalAmenities", selectedItems.map(item => item.value))}
+                  />
+
+                  <CustomDropdown
+                    label={t("sourceOfWater")}
+                    data={staticData.sourceOfWaterOptions}
+                    value={formData.sourceOfWater}
+                    placeholder={t("selectSourceOfWater")}
+                    onChange={(selectedItem: DropdownProps) => handleInputChange("sourceOfWater", selectedItem.value)}
+                  />
+                </View>
+              )}
+
+              {step === 5 && (
+                <View className="mb-5">
+                  <Text className="text-base font-bold mb-4">{t("uploadImage")}</Text>
+                  <ImagePickerComponent
+                    images={formData.images}
+                    serviceId={serviceId}
+                    onImageSelect={(imagePath: string) => {
+                      console.log(formData.images, imagePath);
+                      handleInputChange("images", [...formData.images, imagePath]);
+                      console.log(formData);
+                    }}
+                  />
+                  {/* <View className="mb-[120px]"></View> */}
+                </View>
+              )}
+              {step === 6 && (<ComingSoon />)}
+
+              {/* Navigation Buttons */}
+              <View className={`flex-row ${step > 1 ? "justify-between" : "justify-end"} mt-5 mb-10`}>
+                {step > 1 && <TouchableOpacity onPress={() => { handleSubmit(formData, -1); }} className="bg-gray-500 py-3 px-5 rounded-lg">
+                  <Text className="text-white text-base font-bold">{t("back")}</Text>
+                </TouchableOpacity>}
+                <TouchableOpacity onPress={() => handleCancel()} className="bg-gray-500 py-3 px-5 mx-3 rounded-lg">
+                  <Text className="text-white text-base font-bold">{t("cancel")}</Text>
+                </TouchableOpacity>
+                {step < 5 ? (
+                  <TouchableOpacity onPress={() => { handleSubmit(formData, 1); }} className="bg-blue-500 py-3 px-5 rounded-lg">
+                    <Text className="text-white text-base font-bold">{t("saveNext")}</Text>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity onPress={() => handleSubmit(formData)} className="bg-green-500 py-3 px-5 rounded-lg">
+                    <Text className="text-white text-base font-bold">{t("submit")}</Text>
+                  </TouchableOpacity>
+                )}
               </View>
-            )}
-            keyExtractor={(item) => item.key}
-            keyboardShouldPersistTaps="handled"
-          />
+            </View>
+          </ScrollView>
+          {/*    )}
+          //   keyExtractor={(item) => item.key}
+          //   keyboardShouldPersistTaps="handled"
+          // />*/}
         </KeyboardAvoidingView>
       )}
     </SafeAreaView>
