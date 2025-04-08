@@ -20,6 +20,10 @@ const Layout = () => {
           [
             {
               text: t("ok"),
+              onPress: () => {
+                // Perform the action when "OK" is pressed
+                router.replace("/(auth)/sign-in");
+              },
             },
           ]
         ); // Use translation key

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, Dimensions, Alert, ActivityIndicator } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons"; // Import icons
-import { constants } from "@/constants";
+import { constants, icons } from "@/constants";
 import { fetchAPI } from "@/lib/fetch";
 import { useTranslation } from "react-i18next"; // Import useTranslation
 
@@ -19,18 +19,36 @@ const PropertyDetails = () => {
         title: "",
         propertyType: "",
         description: "",
+        latitude: 0,
+        longitude: 0,
         address: "",
-        city: "",
-        districtName: "",
+        location: "",
+        state: 0,
         stateName: "",
+        district: 0,
+        districtName: "",
+        city: "",
         zip: "",
+        housingType: "",
+        bhkType: "",
+        familyPreference: "",
+        foodPreference: "",
+        roomType: "",
+        commercialType: "",
         rent: 0,
         advance: 0,
+        rentNegotiable: "No",
         areaInSize: 0,
+        floorNumber: 0,
+        numberOfBedRooms: 1,
+        numberOfBalconies: 0,
+        numberOfBathRooms: 0,
+        ageOfProperty: 0,
         furnishing: "",
         parking: "",
         basicAmenities: [] as string[],
         additionalAmenities: [] as string[],
+        sourceOfWater: "",
         images: [] as string[],
         date_updated: "",
         date_created: "",
@@ -38,20 +56,27 @@ const PropertyDetails = () => {
     });
 
     useEffect(() => {
+        console.log("PropertyDetails component mounted");
         const fetchDetails = async () => {
+            console.log("Fetching property details...");
             try {
                 const passServiceId = await AsyncStorage.getItem("passServiceId");
                 if (passServiceId) {
                     setId(parseInt(passServiceId, 10));
                 }
+                console.log("Fetched service ID:", passServiceId);
                 const token = await AsyncStorage.getItem('token');
-                if (id && token) {
-                    const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${id}/`, {
+                console.log("Fetched token ID:", token);
+                if (passServiceId && token) {
+                    console.log("Fetching service response...");
+                    const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/`, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`,
                         },
                     });
+                    console.log("Service response:", serviceResponse);
+                    console.log("Service response options:", serviceResponse["options"]);
 
                     setFormData((prevFormData: any) => ({
                         ...prevFormData,
@@ -60,11 +85,13 @@ const PropertyDetails = () => {
                             date_updated: serviceResponse["date_updated"],
                             date_created: serviceResponse["date_created"],
                             status: serviceResponse["is_active"],
-                            images: serviceResponse["options"].images.length > 0
+                            images: serviceResponse["options"].images && serviceResponse["options"].images.length > 0
                                 ? serviceResponse["options"].images.map((image: string) => image.replace("www.", "admin.")) // Replace "www." with "admin."
                                 : [`${constants.BASE_URL}/media/no-image-found.png`],
                         }
                     }));
+                    console.log(serviceResponse);
+                    console.log(formData);
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -233,6 +260,153 @@ const PropertyDetails = () => {
                         <Text className="text-lg font-bold mb-1">{t("description")}</Text>
                         <Text className="text-gray-500 mb-3">{formData.description}</Text>
 
+                        <Text className="text-lg font-bold mb-1">Overview</Text>
+                        <View className="flex-row justify-between mb-3">
+                            <View>
+                                <Text className="text-gray-500">Available For</Text>
+                                <Text className="text-black">{formData.propertyFor}</Text>
+                            </View>
+                            <View>
+                                <Text className="text-gray-500">Property Type</Text>
+                                <Text className="text-black">{formData.propertyType}</Text>
+                            </View>
+                        </View>
+
+                        {formData.propertyType === "Full House" && (
+                            <View>
+                                <View className="flex-row justify-between mb-3">
+                                    <View>
+                                        <Text className="text-gray-500">Housing Type</Text>
+                                        <Text className="text-black">{formData.housingType}</Text>
+                                    </View>
+                                    <View>
+                                        <Text className="text-gray-500">BHK Type        </Text>
+                                        <Text className="text-black">{formData.bhkType}</Text>
+                                    </View>
+                                </View>
+                                <View className="flex-row justify-between mb-3">
+                                    <View>
+                                        <Text className="text-gray-500">Preferred Tenancy</Text>
+                                        <Text className="text-black">{formData.familyPreference}</Text>
+                                    </View>
+                                </View>
+                            </View>
+                        )}
+
+                        {formData.propertyType === "PG/Hostel" && (
+                            <View>
+                                <View className="flex-row justify-between mb-3">
+                                    <View>
+                                        <Text className="text-gray-500">Room Type</Text>
+                                        <Text className="text-black">{formData.roomType}</Text>
+                                    </View>
+                                    <View>
+                                        <Text className="text-gray-500">Gender Preference</Text>
+                                        <Text className="text-black">{formData.familyPreference}</Text>
+                                    </View>
+                                </View>
+                            </View>
+                        )}
+
+                        {(formData.propertyType === "Full House" || formData.propertyType === "PG/Hostel") && (
+                            <View>
+                                {/* <View className="flex-row justify-between mb-3">
+                                    <View>
+                                        <Text className="text-gray-500">Parking</Text>
+                                        <Text className="text-black">{formData.parking}</Text>
+                                    </View>
+                                    <View>
+                                        <Text className="text-gray-500">Furnishing Type</Text>
+                                        <Text className="text-black">{formData.furnishing}</Text>
+                                    </View>
+                                </View>
+                                <View>
+                                    <Text className="text-gray-500">Food Preference</Text>
+                                    <Text className="text-black">{formData.foodPreference}</Text>
+                                </View> */}
+                                {/* Furnishing and Parking */}
+                                <View className="flex-row justify-between mb-3">
+                                    <View className="flex-row items-center">
+                                        <MaterialIcons name="weekend" size={20} color="black" />
+                                        <Text className="text-lg font-bold ml-2">{t("furnishing")}: </Text>
+                                        <Text className="text-gray-500">{formData.furnishing === "" ? t("notAvailable") : formData.furnishing}</Text>
+                                    </View>
+                                    <View className="flex-row items-center">
+                                        <MaterialIcons name="local-parking" size={20} color="black" />
+                                        <Text className="text-lg font-bold ml-2">{t("parking")}: </Text>
+                                        <Text className="text-gray-500">{formData.parking === "" ? t("notAvailable") : formData.parking}</Text>
+                                    </View>
+                                </View>
+                                <View className="flex-row justify-between mb-3">
+                                    <View className="flex-row items-center">
+                                        <MaterialIcons name="restaurant" size={20} color="black" />
+                                        <Text className="text-lg font-bold ml-2">{t("foodPreference")}: </Text>
+                                        <Text className="text-gray-500">{formData.foodPreference === "" ? t("notAvailable") : formData.foodPreference}</Text>
+                                    </View>
+                                </View>
+                            </View>
+                        )}
+
+                        {formData.propertyType === "Commercial" && (
+                            <View>
+                                <View>
+                                    <Text className="text-gray-500">Commercial Type</Text>
+                                    <Text className="text-black">{formData.housingType}</Text>
+                                </View>
+                            </View>
+                        )}
+
+                        <Text className="text-lg font-bold mb-1">Other Details</Text>
+                        <View className="flex-row justify-between mb-3">
+                            <View>
+                                <Text className="text-gray-500">Rent Negotiable</Text>
+                                <Text className="text-black">{formData.rentNegotiable}</Text>
+                            </View>
+                            <View>
+                                <Text className="text-gray-500">Source of Water</Text>
+                                <Text className="text-black">{formData.sourceOfWater}</Text>
+                            </View>
+                        </View>
+
+                        {formData.propertyType === "Full House" && (
+                            <View>
+                                <View className="flex-row justify-between mb-3">
+
+                                    <View>
+                                        <Text className="text-gray-500">Bedroom</Text>
+                                        <Text className="text-black">{formData.numberOfBedRooms}</Text>
+                                    </View>
+                                    <View>
+                                        <Text className="text-gray-500">Balcony         </Text>
+                                        <Text className="text-black">{formData.numberOfBalconies}</Text>
+                                    </View>
+                                </View>
+                                <View className="flex-row justify-between mb-3">
+
+                                    <View>
+                                        <Text className="text-gray-500">Number of Bathroom</Text>
+                                        <Text className="text-black">{formData.numberOfBathRooms}</Text>
+                                    </View>
+                                </View>
+                            </View>
+                        )}
+
+                        {(formData.propertyType === "Full House" || formData.propertyType === "PG/Hostel") && (
+                            <View>
+                                <View className="flex-row justify-between mb-3">
+                                    <View>
+                                        <Text className="text-gray-500">Floor Number</Text>
+                                        <Text className="text-black">{formData.floorNumber}</Text>
+                                    </View>
+                                    <View>
+                                        <Text className="text-gray-500">Age of Property</Text>
+                                        <Text className="text-black">{formData.ageOfProperty}</Text>
+                                    </View>
+                                </View>
+                            </View>
+                        )}
+
+
                         {/* Amenities */}
                         <Text className="text-lg font-bold mb-1">{t("amenities")}</Text>
                         <View className="flex-row flex-wrap mb-3">
@@ -263,31 +437,17 @@ const PropertyDetails = () => {
                             )}
                         </View>
 
-                        {/* Furnishing and Parking */}
-                        <View className="flex-row justify-between mb-3">
-                            <View className="flex-row items-center">
-                                <MaterialIcons name="weekend" size={20} color="black" />
-                                <Text className="text-lg font-bold ml-2">{t("furnishing")}: </Text>
-                                <Text className="text-gray-500">{formData.furnishing === "" ? t("notAvailable") : formData.furnishing}</Text>
-                            </View>
-                            <View className="flex-row items-center">
-                                <MaterialIcons name="local-parking" size={20} color="black" />
-                                <Text className="text-lg font-bold ml-2">{t("parking")}: </Text>
-                                <Text className="text-gray-500">{formData.parking === "" ? t("notAvailable") : formData.parking}</Text>
-                            </View>
-                        </View>
-
                         {/* Dates */}
                         <Text className="text-gray-500 mt-5">{t("lastUpdated")}: {formatDate(formData.date_updated)}</Text>
                         <Text className="text-gray-500">{t("postedOn")}: {formatDate(formData.date_created)}</Text>
                     </View>
 
-                    <View className="flex-row justify-between">
+                    <View className="flex-row justify-between mb-[40px] mt-[20px]">
                         <TouchableOpacity
                             className="bg-yellow-500 py-2 px-4 rounded-lg"
                             onPress={() => id !== null && handleEdit(id)}
                         >
-                            <Text className="text-white font-bold">{t("edit")}</Text> {/* Wrap text in <Text> */}
+                            <Text className="text-white font-bold">{t("edit")}</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -295,7 +455,7 @@ const PropertyDetails = () => {
                             onPress={() => id !== null && handleChangeStatus(id)}
                         >
                             <Text className="text-white font-bold">
-                                {formData.status ? t("deactivate") : t("activate")} {/* Wrap text in <Text> */}
+                                {formData.status ? t("deactivate") : t("activate")}
                             </Text>
                         </TouchableOpacity>
 
@@ -303,7 +463,7 @@ const PropertyDetails = () => {
                             className="bg-red-500 py-2 px-4 rounded-lg"
                             onPress={() => id !== null && handleDelete(id)}
                         >
-                            <Text className="text-white font-bold">{t("delete")}</Text> {/* Wrap text in <Text> */}
+                            <Text className="text-white font-bold">{t("delete")}</Text>
                         </TouchableOpacity>
                     </View>
                 </>

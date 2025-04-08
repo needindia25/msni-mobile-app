@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {Alert, View, Text, TouchableOpacity, SafeAreaView, ScrollView, TextInput, Modal, Dimensions } from 'react-native';
+import { Alert, View, Text, TouchableOpacity, SafeAreaView, ScrollView, TextInput, Modal, Dimensions, Image } from 'react-native';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import CustomCheckBox from '@/components/CustomCheckBox';
 import CustomRadioGroup from '@/components/CustomRadioGroup';
@@ -58,16 +58,20 @@ const Home = () => {
 
   const [form, setForm] = useState<{
     state: number;
-    city: number;
+    district: number;
+    city: string;
+    address: string;
     locality: string;
     lookingFor: string;
     BHKType: string | null;
-    rentRange: number|null;    
+    rentRange: number | null;
   }>({
-    state: 5,
-    city: 0,
+    state: 0,
+    district: 0,
+    city: "",
+    address: "",
     locality: "",
-    lookingFor: "fullHouse", 
+    lookingFor: "fullHouse",
     BHKType: null,
     rentRange: null,
   });
@@ -131,9 +135,8 @@ const Home = () => {
     }
   };
 
-const [states, setStates] = useState<{ id: number; name: string; code: string }[]>([]);
-const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
-
+  const [states, setStates] = useState<{ id: number; name: string; code: string }[]>([]);
+  const [districts, setDistricts] = useState<{ id: number; name: string }[]>([]);
   useEffect(() => {
     const fetchStates = async () => {
       try {
@@ -148,58 +151,53 @@ const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
     fetchStates();
   }, []);
 
-  useEffect(() => {
-    // Fetch cities when a state is selected
-    const fetchCities = async () => {
-      if (form.state) {
-        try {
-          const response = await fetchAPI(
-            `${constants.API_URL}/master/state/${form.state}/cities`
-          );
-          setCities(response);
-        } catch (error) {
-          console.error('Error fetching citiess:', error);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-    fetchCities();
-  }, [form.state]);
+  // Fetch Cities when state changes
+  const fetchDistricts = async (stateId: number) => {
+    if (!stateId) return;
+    try {
+      const response = await fetchAPI(`${constants.API_URL}/master/state/${stateId}/districts`);
+      setDistricts(response)
+      districtOptions = response.map((district: any) => ({
+        label: district.name,
+        value: district.id,
+      }));
+    } catch (error) {
+      console.error("Error fetching districts:", error);
+    }
+  };
 
   const stateOptions = states?.map(state => ({
     label: state.name,
     value: state.id
   })) || [];
-
-  const cityOptions = cities?.map(city => ({
-    label: city.name,
-    value: city.id
-  })) || [];
+  let districtOptions = districts.map((district: any) => ({
+    label: district.name,
+    value: district.id,
+  }));
 
   const screenWidth = Dimensions.get('screen').width;
-  
+
   return (
     <SafeAreaView className="flex h-full bg-white">
       <ScrollView className="flex-1 bg-white p-5">
         <Text className="text-2xl font-bold text-center mb-5">Search Properties</Text>
         <View className="mb-5">
-          <Text className="text-lg font-bold mb-3">Category</Text>
+          {/* <Text className="text-lg font-bold mb-3">Category</Text> */}
           {/* <View className="flex-row justify-between mb-3">
             <TouchableOpacity
-              className={`rounded-lg p-3 flex-1 mr-2 ${selectedCategory === 'BUY' ? 'bg-teal-500' : 'bg-gray-100'}`}
+              className={`rounded-lg p-3 flex-1 mr-2 ${selectedCategory === 'BUY' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
               onPress={() => setSelectedCategory('BUY')}
             >
               <Text className={`text-center ${selectedCategory === 'BUY' ? 'text-white' : 'text-black'}`}>BUY</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              className={`rounded-lg p-3 flex-1 ml-2 ${selectedCategory === 'RENT' ? 'bg-teal-500' : 'bg-gray-100'}`}
+              className={`rounded-lg p-3 flex-1 ml-2 ${selectedCategory === 'RENT' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
               onPress={() => setSelectedCategory('RENT')}
             >
               <Text className={`text-center ${selectedCategory === 'RENT' ? 'text-white' : 'text-black'}`}>RENT</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              className={`rounded-lg p-3 flex-1 ml-2 ${selectedCategory === 'LEASE' ? 'bg-teal-500' : 'bg-gray-100'}`}
+              className={`rounded-lg p-3 flex-1 ml-2 ${selectedCategory === 'LEASE' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
               onPress={() => setSelectedCategory('LEASE')}
             >
               <Text className={`text-center ${selectedCategory === 'LEASE' ? 'text-white' : 'text-black'}`}>LEASE</Text>
@@ -210,7 +208,7 @@ const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
               options={[
                 { label: "RENT", value: "RENT" },
                 { label: "LEASE", value: "LEASE" },
-               // { label: "BUY", value: "BUY" },
+                // { label: "BUY", value: "BUY" },
               ]}
               selectedValue={selectedCategory}
               onValueChange={(value: string) => setSelectedCategory(value)}
@@ -218,7 +216,7 @@ const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
           </View>
         </View>
         <View className="mt-4">
-          <Text className="text-lg mb-2">State</Text>
+          <Text className="text-lg font-bold mb-3">State</Text>
           <Dropdown
             data={stateOptions}
             labelField="label"
@@ -238,16 +236,16 @@ const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
           />
         </View>
         <View className="mt-4">
-          <Text className="text-lg mb-2">City</Text>
+          <Text className="text-lg font-bold mb-3">District</Text>
           <Dropdown
-            data={cityOptions}
+            data={districtOptions}
             labelField="label"
             valueField="value"
-            placeholder="Select your City"
-            value={form.city}
+            placeholder="Select your District"
+            value={form.district}
             onChange={(item) => {
-              console.log("Selected city:", item);
-              setForm({ ...form, city: item.value });
+              console.log("Selected District:", item);
+              setForm({ ...form, district: item.value });
             }}
             style={{
               padding: 10,
@@ -258,46 +256,51 @@ const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
             disable={!form.state}
           />
         </View>
-        {/* <View className="mb-5">
-          <Text className="text-lg font-bold mb-3">City</Text>
-          <TouchableOpacity className="bg-gray-100 rounded-lg p-3 mb-3 w-full">
-            <Text className="text-center">Bangalore</Text>
-          </TouchableOpacity>
-        </View> */}
-
-        <View className="mb-5">
-          <Text className="text-lg font-bold mb-3">Locality</Text>
+        <View className="mt-4">
+          <Text className="text-lg font-bold mb-3">City/Town/Village</Text>
           <TextInput
-            placeholder="Search upto 3 localities or landmarks"
-            className="bg-gray-100 rounded-lg p-3 mb-3 w-full"
+            placeholder="Enter a City/Town/Village"
+            className={`border rounded-lg p-3 bg-white border-gray-300"}`}
+            value={form.city}
+            onChangeText={(value) => setForm({ ...form, city: value })}
+          />
+        </View>
+
+        <View className="mt-4">
+          <Text className="text-lg font-bold mb-3">Address</Text>
+          <TextInput
+            placeholder="Enter a Address"
+            className={`border rounded-lg p-3 bg-white border-gray-300"}`}
+            value={form.address}
+            onChangeText={(value) => setForm({ ...form, address: value })}
           />
         </View>
 
         {selectedCategory === 'RENT' && (
           <>
-            <View className="mb-5">
+            <View className="mt-4">
               <Text className="text-lg font-bold mb-3">Looking For</Text>
               {/* <View className="flex-row justify-between mb-3">
                 <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 mr-2 ${lookingFor === 'Full House' ? 'bg-teal-500' : 'bg-gray-100'}`}
+                  className={`rounded-lg p-3 flex-1 mr-2 ${lookingFor === 'Full House' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
                   onPress={() => setLookingFor('Full House')}
                 >
                   <Text className={`text-center ${lookingFor === 'Full House' ? 'text-white' : 'text-black'}`}>Full House</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'PG/Hostel' ? 'bg-teal-500' : 'bg-gray-100'}`}
+                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'PG/Hostel' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
                   onPress={() => setLookingFor('PG/Hostel')}
                 >
                   <Text className={`text-center ${lookingFor === 'PG/Hostel' ? 'text-white' : 'text-black'}`}>PG/Hostel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'Flatmates' ? 'bg-teal-500' : 'bg-gray-100'}`}
+                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'Flatmates' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
                   onPress={() => setLookingFor('Flatmates')}
                 >
                   <Text className={`text-center ${lookingFor === 'Flatmates' ? 'text-white' : 'text-black'}`}>Flatmates</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'Commercial' ? 'bg-teal-500' : 'bg-gray-100'}`}
+                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'Commercial' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
                   onPress={() => setLookingFor('Commercial')}
                 >
                   <Text className={`text-center ${lookingFor === 'Commercial' ? 'text-white' : 'text-black'}`}>Commercial</Text>
@@ -318,24 +321,31 @@ const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
 
             {lookingFor === 'Full House' && (
               <>
-              <View className="mb-5">
-                <Text className="text-lg font-bold mb-3">Preference</Text>
-                <View className="flex-row flex-wrap justify-between">
-                  {preferences.map((pref) => (
-                    <TouchableOpacity
-                      key={pref}
-                      className={`rounded-lg p-3 mb-3 ${preference === pref ? 'bg-teal-500' : 'bg-gray-100'}`}
-                      style={{
-                        width: '48%', // Ensures two items fit per row
-                        marginRight: preferences.indexOf(pref) % 2 === 0 ? '2%' : 0, // Adds margin to the right for the first item in the row
-                      }}
-                      onPress={() => setPreference(pref)}
-                    >
-                      <Text className={`text-center ${preference === pref ? 'text-white' : 'text-black'}`}>{pref}</Text>
-                    </TouchableOpacity>
-                  ))}
+                <View className="mb-5">
+                  <Text className="text-lg font-bold mb-3">Preference</Text>
+                  <View className="flex-row flex-wrap justify-between">
+                    {preferences.map((pref) => (
+                      <TouchableOpacity
+                        key={pref}
+                        className={`rounded-lg p-3 mb-3 ${preference === pref ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
+                        style={{
+                          width: '48%', // Ensures two items fit per row
+                          marginRight: preferences.indexOf(pref) % 2 === 0 ? '2%' : 0, // Adds margin to the right for the first item in the row
+                        }}
+                        onPress={() => setPreference(pref)}
+                      >
+                        <View className="flex-row items-center justify-center">
+                          <Image
+                            source={preference === pref ? icons.radioChecked : icons.radioUnchecked}
+                            className="w-6 h-6 mr-2"
+                            style={{ tintColor: "white" }} // Apply white tint color
+                          />
+                          <Text className="text-center text-base font-bold text-white">{pref}</Text>
+                        </View>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
                 </View>
-              </View>
 
 
                 <View className="mb-5">
@@ -358,10 +368,17 @@ const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
                     {['Male', 'Female', 'Any'].map((pref) => (
                       <TouchableOpacity
                         key={pref}
-                        className={`rounded-lg p-3 flex-1 mr-2 ${preference === pref ? 'bg-teal-500' : 'bg-gray-100'}`}
+                        className={`rounded-lg p-3 flex-1 mr-2 ${preference === pref ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
                         onPress={() => setPreference(pref)}
                       >
-                        <Text className={`text-center ${preference === pref ? 'text-white' : 'text-black'}`}>{pref}</Text>
+                        <View className="flex-row items-center justify-center">
+                          <Image
+                            source={preference === pref ? icons.radioChecked : icons.radioUnchecked}
+                            className="w-6 h-6 mr-2"
+                            style={{ tintColor: "white" }} // Apply white tint color
+                          />
+                          <Text className="text-center text-base font-bold text-white">{pref}</Text>
+                        </View>
                       </TouchableOpacity>
                     ))}
                   </View>
@@ -393,25 +410,25 @@ const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
           </>
         )}
 
-        {selectedCategory === 'BUY' && (
+        {/* {selectedCategory === 'BUY' && (
           <>
             <View className="mb-5">
               <Text className="text-lg font-bold mb-3">Looking For</Text>
               <View className="flex-row justify-between mb-3">
                 <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 mr-2 ${lookingFor === 'Full House' ? 'bg-teal-500' : 'bg-gray-100'}`}
+                  className={`rounded-lg p-3 flex-1 mr-2 ${lookingFor === 'Full House' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
                   onPress={() => setLookingFor('Full House')}
                 >
                   <Text className={`text-center ${lookingFor === 'Full House' ? 'text-white' : 'text-black'}`}>Full House</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'Land/Plot' ? 'bg-teal-500' : 'bg-gray-100'}`}
+                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'Land/Plot' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
                   onPress={() => setLookingFor('Land/Plot')}
                 >
                   <Text className={`text-center ${lookingFor === 'Land/Plot' ? 'text-white' : 'text-black'}`}>Land/Plot</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'Commercial' ? 'bg-teal-500' : 'bg-gray-100'}`}
+                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'Commercial' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
                   onPress={() => setLookingFor('Commercial')}
                 >
                   <Text className={`text-center ${lookingFor === 'Commercial' ? 'text-white' : 'text-black'}`}>Commercial</Text>
@@ -443,30 +460,51 @@ const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
               </View>
             )}
           </>
-        )}
+        )} */}
 
         {selectedCategory === 'LEASE' && (
           <>
-            <View className="mb-5">
+            <View className="mt-4">
               <Text className="text-lg font-bold mb-3">Looking For</Text>
               <View className="flex-row justify-between mb-3">
                 <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 mr-2 ${lookingFor === 'Full House' ? 'bg-teal-500' : 'bg-gray-100'}`}
+                  className={`rounded-lg p-3 flex-1 mr-2 ${lookingFor === 'Full House' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
                   onPress={() => setLookingFor('Full House')}
                 >
-                  <Text className={`text-center ${lookingFor === 'Full House' ? 'text-white' : 'text-black'}`}>Full House</Text>
+                  <View className="flex-row items-center justify-center">
+                    <Image
+                      source={lookingFor === 'Full House' ? icons.radioChecked : icons.radioUnchecked}
+                      className="w-6 h-6 mr-2"
+                      style={{ tintColor: "white" }} // Apply white tint color
+                    />
+                    <Text className="text-center text-2xl font-bold text-white">Full House</Text>
+                  </View>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'Land/Plot' ? 'bg-teal-500' : 'bg-gray-100'}`}
-                  onPress={() => setLookingFor('Land/Plot')}
+                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'Land' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
+                  onPress={() => setLookingFor('Land')}
                 >
-                  <Text className={`text-center ${lookingFor === 'Land/Plot' ? 'text-white' : 'text-black'}`}>Land/Plot</Text>
+                  <View className="flex-row items-center justify-center">
+                    <Image
+                      source={lookingFor === 'Land' ? icons.radioChecked : icons.radioUnchecked}
+                      className="w-6 h-6 mr-2"
+                      style={{ tintColor: "white" }} // Apply white tint color
+                    />
+                    <Text className="text-center text-2xl font-bold text-white">Land</Text>
+                  </View>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'Commercial' ? 'bg-teal-500' : 'bg-gray-100'}`}
+                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'Commercial' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
                   onPress={() => setLookingFor('Commercial')}
                 >
-                  <Text className={`text-center ${lookingFor === 'Commercial' ? 'text-white' : 'text-black'}`}>Commercial</Text>
+                  <View className="flex-row items-center justify-center">
+                    <Image
+                      source={lookingFor === 'Commercial' ? icons.radioChecked : icons.radioUnchecked}
+                      className="w-6 h-6 mr-2"
+                      style={{ tintColor: "white" }} // Apply white tint color
+                    />
+                    <Text className="text-center text-2xl font-bold text-white">Commercial</Text>
+                  </View>
                 </TouchableOpacity>
               </View>
             </View>
@@ -601,7 +639,7 @@ const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
           />
         </View>
 
-        <View className="mb-5">
+        {/* <View className="mb-5">
           <Text className="text-lg font-bold mb-3">Property Type</Text>
           <View className="flex-row flex-wrap justify-between">
             <TouchableOpacity className="bg-gray-100 rounded-lg p-3 flex-1 mr-2">
@@ -683,7 +721,7 @@ const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
               <Text className="text-center">4 Wheeler</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
 
         <TouchableOpacity className="bg-teal-500 rounded-lg p-3 mt-5 mb-10 w-full"
           onPress={() => router.push('/(seeker)/search-list')}>

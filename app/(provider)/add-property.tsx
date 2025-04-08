@@ -108,7 +108,7 @@ const MultiStepForm = () => {
             ...prevFormData,
             ...serviceResponse["options"],
             ...{
-              images: serviceResponse["options"].images.length > 0
+              images: serviceResponse["options"].images && serviceResponse["options"].images.length > 0
                 ? serviceResponse["options"].images.map((image: string) => image.replace("www.", "admin.")) // Replace "www." with "admin."
                 : [`${constants.BASE_URL}/media/no-image-found.png`],
             }
