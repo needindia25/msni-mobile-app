@@ -22,13 +22,18 @@ const PropertyDetails = () => {
         address: "",
         location: "",
         state: 0,
+        stateName:"",
         district: 0,
+        districtName:"",
         city: "",
         zip: "",
         housingType: "",
         bhkType: "",
         familyPreference: "",
         foodPreference: "",
+        genderPreference:"",
+        roomType:"",
+        commercialType:"",
         rent: 0,
         advance: 0,
         rentNegotiable: "No",
@@ -44,8 +49,8 @@ const PropertyDetails = () => {
         additionalAmenities: [] as string[],
         sourceOfWater: "",
         images: [] as string[],
-        lastUpdated: "",
-        postedOn:"",
+        date_updated: "",
+        date_created:"",
       });
       
     useEffect(() => {
@@ -72,30 +77,16 @@ const PropertyDetails = () => {
                 ...serviceResponse["options"],
               
               }));
-    
-              if (serviceResponse["options"].state) {
-                await fetchDistricts(serviceResponse["options"].state);
-              }
+              console.log(formData);
             }
           } catch (error) {
             console.error("Error fetching data:", error);
         }
-        console.log(formData);
         };
     
         fetchDetails();
       }, []);
     
-      // Fetch District
-        const fetchDistricts = async (stateId: number) => {
-          if (!stateId) return;
-          try {
-            const response = await fetchAPI(`${constants.API_URL}/master/state/${stateId}/districts`);
-            
-          } catch (error) {
-            console.error("Error fetching districts:", error);
-          }
-        };
 
     
     return (
@@ -146,7 +137,8 @@ const PropertyDetails = () => {
                     </View>
                 </View>
 
-
+                {formData.propertyType === "Full House" && (
+                <View>
                 <View className="flex-row justify-between mb-3">
                     <View>
                         <Text className="text-gray-500">Housing Type</Text>
@@ -158,28 +150,62 @@ const PropertyDetails = () => {
                     </View>
                 </View>
 
-                <View className="flex-row justify-between mb-3">
-                    <View>
-                        <Text className="text-gray-500">Parking</Text>
-                        <Text className="text-black">{formData.parking}</Text>
-                    </View>
-                    <View>
-                        <Text className="text-gray-500">Furnishing Type</Text>
-                        <Text className="text-black">{formData.furnishing}</Text>
-                    </View>
-                    
-                </View>
+                
                 
                 <View className="flex-row justify-between mb-3">
                     <View>
                         <Text className="text-gray-500">Preferred Tenancy</Text>
                         <Text className="text-black">{formData.familyPreference}</Text>
                     </View>
-                    <View>
-                        <Text className="text-gray-500">Food Preference</Text>
-                        <Text className="text-black">{formData.foodPreference}</Text>
-                    </View>
+                    
                 </View>
+                </View> )}
+
+                {formData.propertyType === "PG/Hostel" && (
+                    <View>
+                        <View className="flex-row justify-between mb-3">
+                            <View>
+                                <Text className="text-gray-500">Room Type</Text>
+                                <Text className="text-black">{formData.roomType}</Text>
+                            </View>
+                            <View>
+                                <Text className="text-gray-500">Gender Preference</Text>
+                                <Text className="text-black">{formData.genderPreference}</Text>
+                            </View>
+                        </View>
+                    </View>
+                    )}
+
+                    {(formData.propertyType === "Full House" || formData.propertyType === "PG/Hostel") && (
+                     <View>
+                        <View className="flex-row justify-between mb-3">
+                            <View>
+                                <Text className="text-gray-500">Parking</Text>
+                                <Text className="text-black">{formData.parking}</Text>
+                            </View>
+                            <View>
+                                <Text className="text-gray-500">Furnishing Type</Text>
+                                <Text className="text-black">{formData.furnishing}</Text>
+                            </View>
+                            
+                        </View>
+
+                        <View>
+                            <Text className="text-gray-500">Food Preference</Text>
+                            <Text className="text-black">{formData.foodPreference}</Text>
+                        </View>
+                        
+                    </View>
+                )}
+
+                {formData.propertyType === "Commercial" && (
+                    <View>
+                        <View>
+                            <Text className="text-gray-500">Commercial Type</Text>
+                            <Text className="text-black">{formData.commercialType}</Text>
+                        </View>
+                    </View>
+                )}
 
                 <Text className="text-lg font-bold mb-1">Other Details</Text>
                 <View className="flex-row justify-between mb-3">
@@ -192,34 +218,45 @@ const PropertyDetails = () => {
                         <Text className="text-black">{formData.sourceOfWater}</Text>
                     </View>
                 </View>
+
+            {formData.propertyType === "Full House" && (
+            <View>
                 <View className="flex-row justify-between mb-3">
+                    
                     <View>
-                        <Text className="text-gray-500">Floor Number</Text>
-                        <Text className="text-black">{formData.floorNumber}</Text>
+                        <Text className="text-gray-500">Bedroom</Text>
+                        <Text className="text-black">{formData.numberOfBedRooms}</Text>
                     </View>
                     <View>
-                        <Text className="text-gray-500">Bedroom             </Text>
-                        <Text className="text-black">{formData.numberOfBedRooms}</Text>
+                        <Text className="text-gray-500">Balcony         </Text>
+                        <Text className="text-black">{formData.numberOfBalconies}</Text>
                     </View>
                 </View>
                 <View className="flex-row justify-between mb-3">
-                    <View>
-                        <Text className="text-gray-500">Balcony</Text>
-                        <Text className="text-black">{formData.numberOfBalconies}</Text>
-                    </View>
+                    
                     <View>
                         <Text className="text-gray-500">Number of Bathroom</Text>
                         <Text className="text-black">{formData.numberOfBathRooms}</Text>
                     </View>
                 </View>
-                <View className="flex-row justify-between mb-3">
-                    <View>
-                        <Text className="text-gray-500">Age of Property</Text>
-                        <Text className="text-black">{formData.ageOfProperty}</Text>
-                    </View>
-                    
-                </View>
+                </View> )}
 
+                {(formData.propertyType === "Full House" || formData.propertyType === "PG/Hostel") && (
+                <View>
+                    <View className="flex-row justify-between mb-3">
+                        <View>
+                            <Text className="text-gray-500">Floor Number</Text>
+                            <Text className="text-black">{formData.floorNumber}</Text>
+                        </View>
+                        <View>
+                            <Text className="text-gray-500">Age of Property</Text>
+                            <Text className="text-black">{formData.ageOfProperty}</Text>
+                        </View>
+                        
+                    </View>
+           
+                 </View> )}
+            
 
                 <Text className="text-lg font-bold mb-1">Amenities </Text>
                 <View className="flex-row justify-between mb-3">
@@ -242,15 +279,15 @@ const PropertyDetails = () => {
                     <View>
                         <Text className="text-black">{formData.address}</Text>
                         <Text className="text-black">{formData.city}</Text>
-                        <Text className="text-black">{formData.district}</Text>
-                        <Text className="text-black">{formData.state}</Text>
+                        <Text className="text-black">{formData.districtName}</Text>
+                        <Text className="text-black">{formData.stateName}</Text>
                         <Text className="text-black">Pin - {formData.zip}</Text>
                     </View>
                 
                 
 
-                <Text className="text-gray-500 mt-5 mb-5">Last Updated On: {formData.lastUpdated}</Text>
-                <Text className="text-gray-500 mb-5">Posted On: {formData.postedOn}</Text>
+                <Text className="text-gray-500 mt-5 mb-5">Last Updated On: {formData.date_updated}</Text>
+                <Text className="text-gray-500 mb-5">Posted On: {formData.date_created}</Text>
 
                
             </View>
