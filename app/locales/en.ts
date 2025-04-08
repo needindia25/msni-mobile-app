@@ -255,6 +255,11 @@ const en = {
         postedOn: "Posted On",
         notAvailable: "N/A",
         addNextProperty: "Add Next Property",
+        overview: "Overview",
+        availableFor: "Available For",
+        preferredTenancy: "Preferred Tenancy",
+        otherDetails: "Other Details",
+        sqFt: "Sq. Ft.",
     },
 };
 

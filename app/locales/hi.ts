@@ -256,6 +256,11 @@ const hi = {
         postedOn: "प्रकाशित तिथि",
         notAvailable: "उपलब्ध नहीं",
         addNextProperty: "अगली संपत्ति जोड़ें",
+        overview: "अवलोकन",
+        availableFor: "उपलब्धता",
+        preferredTenancy: "पसंदीदा किरायेदारी",
+        otherDetails: "अन्य विवरण",
+        sqFt: "वर्ग फुट",
     },
 };
 

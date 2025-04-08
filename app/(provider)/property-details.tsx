@@ -253,21 +253,21 @@ const PropertyDetails = () => {
                         {/* Area */}
                         <View className="flex-row items-center mb-3">
                             <MaterialIcons name="square-foot" size={20} color="black" />
-                            <Text className="text-lg font-bold ml-2">{t("area")}: {formData.areaInSize} Sq. Ft.</Text>
+                            <Text className="text-lg font-bold ml-2">{t("area")}: {formData.areaInSize} {t("sqFt")}</Text>
                         </View>
 
                         {/* Description */}
                         <Text className="text-lg font-bold mb-1">{t("description")}</Text>
                         <Text className="text-gray-500 mb-3">{formData.description}</Text>
 
-                        <Text className="text-lg font-bold mb-1">Overview</Text>
+                        <Text className="text-lg font-bold mb-1">{t("overview")}</Text>
                         <View className="flex-row justify-between mb-3">
                             <View>
-                                <Text className="text-gray-500">Available For</Text>
+                                <Text className="text-gray-500">{t("availableFor")}</Text>
                                 <Text className="text-black">{formData.propertyFor}</Text>
                             </View>
                             <View>
-                                <Text className="text-gray-500">Property Type</Text>
+                                <Text className="text-gray-500">{t("propertyType")}</Text>
                                 <Text className="text-black">{formData.propertyType}</Text>
                             </View>
                         </View>
@@ -276,17 +276,17 @@ const PropertyDetails = () => {
                             <View>
                                 <View className="flex-row justify-between mb-3">
                                     <View>
-                                        <Text className="text-gray-500">Housing Type</Text>
+                                        <Text className="text-gray-500">{t("housingType")}</Text>
                                         <Text className="text-black">{formData.housingType}</Text>
                                     </View>
                                     <View>
-                                        <Text className="text-gray-500">BHK Type        </Text>
+                                        <Text className="text-gray-500">{t("bhkType")}</Text>
                                         <Text className="text-black">{formData.bhkType}</Text>
                                     </View>
                                 </View>
                                 <View className="flex-row justify-between mb-3">
                                     <View>
-                                        <Text className="text-gray-500">Preferred Tenancy</Text>
+                                        <Text className="text-gray-500">{t("preferredTenancy")}</Text>
                                         <Text className="text-black">{formData.familyPreference}</Text>
                                     </View>
                                 </View>
@@ -297,11 +297,11 @@ const PropertyDetails = () => {
                             <View>
                                 <View className="flex-row justify-between mb-3">
                                     <View>
-                                        <Text className="text-gray-500">Room Type</Text>
+                                        <Text className="text-gray-500">{t("roomType")}</Text>
                                         <Text className="text-black">{formData.roomType}</Text>
                                     </View>
                                     <View>
-                                        <Text className="text-gray-500">Gender Preference</Text>
+                                        <Text className="text-gray-500">{t("genderPreference")}</Text>
                                         <Text className="text-black">{formData.familyPreference}</Text>
                                     </View>
                                 </View>
@@ -310,20 +310,6 @@ const PropertyDetails = () => {
 
                         {(formData.propertyType === "Full House" || formData.propertyType === "PG/Hostel") && (
                             <View>
-                                {/* <View className="flex-row justify-between mb-3">
-                                    <View>
-                                        <Text className="text-gray-500">Parking</Text>
-                                        <Text className="text-black">{formData.parking}</Text>
-                                    </View>
-                                    <View>
-                                        <Text className="text-gray-500">Furnishing Type</Text>
-                                        <Text className="text-black">{formData.furnishing}</Text>
-                                    </View>
-                                </View>
-                                <View>
-                                    <Text className="text-gray-500">Food Preference</Text>
-                                    <Text className="text-black">{formData.foodPreference}</Text>
-                                </View> */}
                                 {/* Furnishing and Parking */}
                                 <View className="flex-row justify-between mb-3">
                                     <View className="flex-row items-center">
@@ -350,20 +336,20 @@ const PropertyDetails = () => {
                         {formData.propertyType === "Commercial" && (
                             <View>
                                 <View>
-                                    <Text className="text-gray-500">Commercial Type</Text>
+                                    <Text className="text-gray-500">{t("commercialType")}</Text>
                                     <Text className="text-black">{formData.housingType}</Text>
                                 </View>
                             </View>
                         )}
 
-                        <Text className="text-lg font-bold mb-1">Other Details</Text>
+                        <Text className="text-lg font-bold mb-1">{t("otherDetails")}</Text>
                         <View className="flex-row justify-between mb-3">
                             <View>
-                                <Text className="text-gray-500">Rent Negotiable</Text>
+                                <Text className="text-gray-500">{t("isRentNegotiable")}</Text>
                                 <Text className="text-black">{formData.rentNegotiable}</Text>
                             </View>
                             <View>
-                                <Text className="text-gray-500">Source of Water</Text>
+                                <Text className="text-gray-500">{t("sourceOfWater")}</Text>
                                 <Text className="text-black">{formData.sourceOfWater}</Text>
                             </View>
                         </View>
@@ -373,18 +359,18 @@ const PropertyDetails = () => {
                                 <View className="flex-row justify-between mb-3">
 
                                     <View>
-                                        <Text className="text-gray-500">Bedroom</Text>
+                                        <Text className="text-gray-500">{t("numberOfBedRooms")}</Text>
                                         <Text className="text-black">{formData.numberOfBedRooms}</Text>
                                     </View>
                                     <View>
-                                        <Text className="text-gray-500">Balcony         </Text>
+                                        <Text className="text-gray-500">{t("numberOfBalconies")}</Text>
                                         <Text className="text-black">{formData.numberOfBalconies}</Text>
                                     </View>
                                 </View>
                                 <View className="flex-row justify-between mb-3">
 
                                     <View>
-                                        <Text className="text-gray-500">Number of Bathroom</Text>
+                                        <Text className="text-gray-500">{t("numberOfBathRooms")}</Text>
                                         <Text className="text-black">{formData.numberOfBathRooms}</Text>
                                     </View>
                                 </View>
@@ -395,11 +381,11 @@ const PropertyDetails = () => {
                             <View>
                                 <View className="flex-row justify-between mb-3">
                                     <View>
-                                        <Text className="text-gray-500">Floor Number</Text>
+                                        <Text className="text-gray-500">{t("floorNumber")}</Text>
                                         <Text className="text-black">{formData.floorNumber}</Text>
                                     </View>
                                     <View>
-                                        <Text className="text-gray-500">Age of Property</Text>
+                                        <Text className="text-gray-500">{t("ageOfProperty")}</Text>
                                         <Text className="text-black">{formData.ageOfProperty}</Text>
                                     </View>
                                 </View>
