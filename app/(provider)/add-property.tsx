@@ -35,7 +35,9 @@ const MultiStepForm = () => {
     address: "",
     location: "",
     state: 0,
+    stateName: "",
     district: 0,
+    districtName: "",
     city: "",
     zip: "",
     housingType: "",
@@ -496,6 +498,9 @@ const MultiStepForm = () => {
                       placeholder={t("selectState")}
                       onChange={(selectedItem: DropdownProps) => {
                         handleInputChange("state", selectedItem.value);
+                        handleInputChange("stateName", selectedItem.label);                        
+                        handleInputChange("district", 0);
+                        handleInputChange("districtName", "");
                         fetchDistricts(selectedItem.value as number)
                       }}
                     />
@@ -506,7 +511,10 @@ const MultiStepForm = () => {
                       data={districtOptions}
                       value={formData.district}
                       placeholder={t("selectDistrict")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("district", selectedItem.value)}
+                      onChange={(selectedItem: DropdownProps) => {
+                        handleInputChange("district", selectedItem.value);
+                        handleInputChange("districtName", selectedItem.label);
+                      }}
                     />
                     {errors.district && <Text className="text-red-500">{errors.district}</Text>}
 
@@ -519,8 +527,6 @@ const MultiStepForm = () => {
                       onChangeText={(value) => handleInputChange("city", value)} // Update formData on change
                     />
                     {errors.city && <Text className="text-red-500">{errors.city}</Text>} {/* Display error message */}
-
-
 
                     <Text className="text-base font-bold mt-3 mb-3">{t("pincode")}</Text>
                     <TextInput
@@ -540,70 +546,9 @@ const MultiStepForm = () => {
                       }}
                     />
                     {errors.zip && <Text className="text-red-500">{errors.zip}</Text>} {/* Display error message */}
-
                     
                     <Text className="text-base font-bold mt-3 mb-3">{t("address")}</Text>
                     <View>
-                      {/* <GoogleTextInput
-                        icon={icons.target}
-                        initialLocation={userAddress!}
-                        handlePress={async (location) => {
-                          setUserLocation(location);
-                          console.log("location", location)
-                          formData.latitude = location.latitude;
-                          formData.longitude = location.longitude;
-                          formData.address = location.address;
-                          formData.location = location.address;
-                          errors.address = "";
-                          errors.zip = "";
-                          errors.address = "";
-                          errors.state = "";
-                          errors.district = "";
-                          errors.city = "";
-
-                          const addressComponents = location.address_components;
-                          if (!addressComponents || addressComponents.length === 0) return; // ✅ Check for undefined components
-
-                          const totalAddComponents = addressComponents.length - 1;
-                          formData.state = 0;
-                          formData.district = 0;
-                          formData.city = "";
-                          formData.zip = ""
-                          for (let index = totalAddComponents; index >= 0; index--) {
-                            const element = addressComponents[index];
-                            console.log(index, " => ", element)
-
-                            // ✅ Extract ZIP Code
-                            if (index === totalAddComponents && parseInt(element.long_name, 10)) {
-                              console.log("zip", index, "=>", typeof element.long_name, "=>", element.long_name);
-                              formData.zip = element.long_name;
-                              continue;
-                            }
-
-                            // ✅ Extract State
-                            if (!formData.state) {
-                              const selectedState = stateOptions.find((state) => state.label === element.long_name);
-                              if (selectedState) {
-                                formData.state = selectedState.value;
-                                console.log("selectedState =>", selectedState)
-                                await fetchDistricts(formData.state); // ✅ Awaiting city fetch
-                                console.log("districtOptions", formData.state, districtOptions)
-                                continue;
-                              }
-                            }
-
-                            // ✅ Extract City
-                            if (!formData.district) {
-                              const selectedDistrict = districtOptions.find((district) => district.label === element.long_name);
-                              console.log("selectedDistrict => ", selectedDistrict)
-                              if (selectedDistrict) {
-                                formData.district = selectedDistrict.value;
-                                break;
-                              }
-                            }
-                          }
-                        }}
-                      /> */}
                       <TextInput
                         placeholder={t("enterAddressManually")} // Translation key for "Enter address manually"
                         className={`border rounded-lg p-3 bg-white mt-3 ${errors.address ? "border-red-500" : "border-gray-300"
@@ -622,6 +567,21 @@ const MultiStepForm = () => {
                     </View>
                     {errors.address && <Text className="text-red-500">{errors.address}</Text>}
 
+                    {/* <View className="mb-[20px]"></View>
+                    <GoogleTextInput
+                        icon={icons.target}
+                        initialLocation={userAddress ? (() => {
+                          const parsedAddress = typeof userAddress === "string" ? JSON.parse(userAddress) : userAddress;
+                          return { latitude: parseFloat(parsedAddress?.latitude || "0"), longitude: parseFloat(parsedAddress?.longitude || "0") };
+                        })() : undefined}
+                        handlePress={async (location) => {
+                          setUserLocation(location);
+                          console.log("location", location)
+                          formData.latitude = location.latitude;
+                          formData.longitude = location.longitude;
+                          formData.location = location.address;
+                        }}
+                      /> */}
                     <View className="mb-[120px]"></View>
                   </View>
                 )}

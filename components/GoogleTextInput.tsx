@@ -1,5 +1,6 @@
 import { View, Image, TouchableOpacity } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import MapView, { Marker } from "react-native-maps"; // Import MapView and Marker
 import 'react-native-get-random-values'; // Polyfill for crypto.getRandomValues
 import { v4 as uuidv4 } from 'uuid';
 import { useState } from "react";
@@ -26,7 +27,41 @@ const GoogleTextInput = ({
 
   const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(null);
 
-  
+  // Default region for the map
+  const [region, setRegion] = useState({
+    latitude: initialLocation?.latitude || 24.799644726160327,
+    longitude: initialLocation?.longitude || 85.06087840697387,
+    latitudeDelta: 0.0175,
+    longitudeDelta: 0.0175,
+  });
+
+  // Function to fetch address using Google Geocoding API
+  const getAddressFromCoordinates = async (latitude: number, longitude: number) => {
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${googlePlacesApiKey}`
+      );
+      const data = await response.json();
+      if (data.results && data.results.length > 0) {
+        const address = data.results[0].formatted_address;
+        setSelectedLocation({
+          latitude,
+          longitude,
+          address,
+          address_components: data.results[0].address_components,
+        });
+        handlePress({
+          latitude,
+          longitude,
+          address,
+          address_components: data.results[0].address_components,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching address:", error);
+    }
+  };
+
   return (
     <View className="flex-1 bg-gray-100">
       {/* Google Places Input */}
@@ -72,6 +107,12 @@ const GoogleTextInput = ({
               address_components: details.address_components,
             };
             setSelectedLocation(locationData);
+            setRegion({
+              latitude: locationData.latitude,
+              longitude: locationData.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            });
             handlePress(locationData);
           }}
           query={{
@@ -87,26 +128,34 @@ const GoogleTextInput = ({
               />
             </View>
           )}
-          // renderRightButton={() => (
-          //   <TouchableOpacity
-          //     onPress={() => {
-          //       setSelectedLocation(null); // Reset selected location
-          //     }}
-          //     className="justify-center items-center w-6 h-6"
-          //   >
-          //     <Image
-          //       source={icons.close}
-          //       className="w-6 h-6"
-          //       resizeMode="contain"
-          //     />
-          //   </TouchableOpacity>
-          // )}
           textInputProps={{
             placeholderTextColor: "gray",
             placeholder: t("searchPlaceholder"), // Use translation key
           }}
         />
       </View>
+
+      {/* MapView */}
+      <MapView
+        style={{ height: 300, width: "100%", marginTop: 20 }} // Adjust height and width as needed
+        region={region}
+        onRegionChangeComplete={(newRegion) => setRegion(newRegion)}
+      >
+        {selectedLocation && (
+          <Marker
+            coordinate={{
+              latitude: selectedLocation.latitude,
+              longitude: selectedLocation.longitude,
+            }}
+            draggable // Make the marker draggable
+            onDragEnd={(e) => {
+              const { latitude, longitude } = e.nativeEvent.coordinate;
+              getAddressFromCoordinates(latitude, longitude); // Fetch address for new coordinates
+            }}
+            title={selectedLocation.address}
+          />
+        )}
+      </MapView>
     </View>
   );
 };
