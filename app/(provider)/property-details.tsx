@@ -44,6 +44,8 @@ const PropertyDetails = () => {
         additionalAmenities: [] as string[],
         sourceOfWater: "",
         images: [] as string[],
+        lastUpdated: "",
+        postedOn:"",
       });
       
     useEffect(() => {
@@ -95,62 +97,7 @@ const PropertyDetails = () => {
           }
         };
 
-    const property = {
-        id: 1,
-        title: '2 BHK Independent Builder Floor',
-        location: 'Sector 2, HSR Layout, Bangalore, India',
-        deposit: '₹ 50000',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-        images: [
-            'https://plus.unsplash.com/premium_photo-1674676471104-3c4017645e6f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8YXBhcnRtZW50fGVufDB8fDB8fHww',
-            'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXBhcnRtZW50fGVufDB8fDB8fHww',
-            'https://plus.unsplash.com/premium_photo-1684175656320-5c3f701c082c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YXBhcnRtZW50fGVufDB8fDB8fHww',
-            'https://images.unsplash.com/photo-1523192193543-6e7296d960e4?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YXBhcnRtZW50fGVufDB8fDB8fHww',
-        ],
-      //  services: ['Estimate Moving Cost', 'Create Agreement', 'Painting'],
-       // nearby: ['ICICI Bank ATM', 'Bus Stop', 'Varthur market'],
-        overview: {
-            parking: 'Car & Bike',
-            furnishing: 'Semi Furnished',
-            bathroom: '2',
-            facing: 'East',
-            tenants: 'Family',
-            age: '10 years',
-            size: '950 sq-ft',
-            waterSupply: 'Borewell',
-        },
-        lastUpdated: '21/02/2025',
-        postedOn: '05/02/2025',
-        similarProperties: [
-            {
-                id: 2,
-                title: '3BHK Apartment',
-                location: 'Koramangala, Bangalore',
-                price: '₹ 35000',
-                images: [
-                    'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGFwYXJ0bWVudHxlbnwwfHwwfHx8MA%3D%3D',
-                    'https://images.unsplash.com/photo-1459767129954-1b1c1f9b9ace?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGFwYXJ0bWVudHxlbnwwfHwwfHx8MA%3D%3D',
-
-                ],
-            },
-            {
-                id: 3,
-                title: '3BHK Apartment',
-                location: 'Koramangala, Bangalore',
-                price: '₹ 35000',
-                images: [
-                    'https://plus.unsplash.com/premium_photo-1683769251695-963095b23d67?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGFwYXJ0bWVudHxlbnwwfHwwfHx8MA%3D%3D',
-                    'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fGFwYXJ0bWVudHxlbnwwfHwwfHx8MA%3D%3D',
-                ],
-            },
-        ],
-        owner: {
-            name: 'Santosh Kumar',
-            phone: '+91 0987654321',
-            address: 'Leeway Enclave Apartment, Sector 2, HSR Layout, Bangalore, Karnataka, 560068, India',
-        },
-    };
-
+    
     return (
         <ScrollView className="bg-gray-100 p-5">
             <TouchableOpacity onPress={() => router.back()} className="mb-5">
@@ -302,8 +249,8 @@ const PropertyDetails = () => {
                 
                 
 
-                <Text className="text-gray-500 mt-5 mb-5">Last Updated On: {property.lastUpdated}</Text>
-                <Text className="text-gray-500 mb-5">Posted On: {property.postedOn}</Text>
+                <Text className="text-gray-500 mt-5 mb-5">Last Updated On: {formData.lastUpdated}</Text>
+                <Text className="text-gray-500 mb-5">Posted On: {formData.postedOn}</Text>
 
                
             </View>
