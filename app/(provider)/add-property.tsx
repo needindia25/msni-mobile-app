@@ -750,6 +750,12 @@ const MultiStepForm = () => {
                   <ImagePickerComponent
                     images={formData.images}
                     serviceId={serviceId}
+                    onImageDelete={(imagePath: string) => {
+                      console.log(formData.images, imagePath);
+                      const updatedImages = formData.images.filter((img: string) => img !== imagePath);
+                      handleInputChange("images", updatedImages);
+                      console.log(formData);
+                    }}
                     onImageSelect={(imagePath: string) => {
                       console.log(formData.images, imagePath);
                       handleInputChange("images", [...formData.images, imagePath]);

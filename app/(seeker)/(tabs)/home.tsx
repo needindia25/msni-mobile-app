@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Alert, View, Text, TouchableOpacity, SafeAreaView, ScrollView, TextInput, Modal, Dimensions, Image } from 'react-native';
+import { Alert, View, Text, TouchableOpacity, SafeAreaView, ScrollView, TextInput, Modal, Dimensions, Image, ActivityIndicator } from 'react-native';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import CustomCheckBox from '@/components/CustomCheckBox';
 import CustomRadioGroup from '@/components/CustomRadioGroup';
@@ -9,24 +9,69 @@ import { fetchAPI } from "@/lib/fetch";
 import { Dropdown } from 'react-native-element-dropdown';
 import { constants, icons, images } from "@/constants";
 
+import { getStaticData } from "@/constants/staticData"; // Import static data
+import { useTranslation } from "react-i18next"; // Import useTranslation
+import CustomDropdown from '@/components/CustomDropdown';
+import { DropdownProps } from '@/types/type';
+import en from '../../locales/en';
 
 const Home = () => {
   const router = useRouter();
+  const { t } = useTranslation();
+
+  const staticData = getStaticData(t); // Get static data with translations
+
+  const [searchData, setSearchData] = useState({
+    propertyFor: "Rent",
+    propertyType: "Full House",
+    latitude: 0,
+    longitude: 0,
+    address: "",
+    location: "",
+    state: 0,
+    district: 0,
+    city: "",
+    housingType: [] as string[],
+    bhkType: [] as string[],
+    familyPreference: "Any",
+    foodPreference: "Any",
+    rent_min: 0,
+    rent_max: 0,
+    rentNegotiable: "No",
+    furnishing: "None",
+    parking: [] as string[],
+    basicAmenities: [] as string[],
+    additionalAmenities: [] as string[],
+    sourceOfWater: [] as string[],
+  });
+
+  const handleInputChange = (field: string, value: any) => {
+    console.log("Field:", field, "Value:", value);
+    setSearchData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  }
   const [rentRange, setRentRange] = useState([0, 500000]);
   const [bhkTypeModalVisible, setBhkTypeModalVisible] = useState(false);
   const [selectedBhkTypes, setSelectedBhkTypes] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState('RENT');
-  const [lookingFor, setLookingFor] = useState('Full House');
   const [roomTypeModalVisible, setRoomTypeModalVisible] = useState(false);
   const [selectedRoomTypes, setSelectedRoomTypes] = useState<string[]>([]);
+  const [housingTypeModalVisible, setHousingTypesVisible] = useState(false);
+  const [selectedHousingTypes, setSelectedHousingTypes] = useState<string[]>([]);
+
+
   const [commercialTypeModalVisible, setCommercialTypeModalVisible] = useState(false);
   const [selectedCommercialTypes, setSelectedCommercialTypes] = useState<string[]>([]);
-  const [preference, setPreference] = useState('Any');
 
-  const bhkTypes = ['1 RK', '1 BHK', '2 BHK', '3 BHK', '4 BHK', '4+ BHK'];
-  const roomTypes = ['Single', 'Sharing (2)', 'Sharing (3)', 'Sharing (4)'];
-  const commercialTypes = ['Office Space', 'Co-Working', 'Shop', 'Showroom', 'Godown', 'Warehouse', 'Industrial Shed', 'Industrial Building', 'Restaurant/Cafe/Others'];
-  const preferences = ['Family', 'Bachelor', 'Female', 'Any'];
+  useEffect(() => {
+    const updateRentRange = async () => {
+      searchData.rent_min = rentRange[0];
+      searchData.rent_max = rentRange[1];
+      console.log("Updated Rent Range:", searchData.rent_min, searchData.rent_max);
+    };
+    updateRentRange();
+  }, [rentRange]);
 
   const toggleBhkType = (type: string) => {
     if (selectedBhkTypes.includes(type)) {
@@ -34,6 +79,16 @@ const Home = () => {
     } else {
       setSelectedBhkTypes([...selectedBhkTypes, type]);
     }
+    handleInputChange("bhkType", selectedBhkTypes);
+  };
+
+  const toggleHousingType = (type: string) => {
+    if (selectedHousingTypes.includes(type)) {
+      setSelectedHousingTypes(selectedHousingTypes.filter((item) => item !== type));
+    } else {
+      setSelectedHousingTypes([...selectedHousingTypes, type]);
+    }
+    handleInputChange("housingType", selectedHousingTypes);
   };
 
   const toggleRoomType = (type: string) => {
@@ -42,6 +97,7 @@ const Home = () => {
     } else {
       setSelectedRoomTypes([...selectedRoomTypes, type]);
     }
+    handleInputChange("housingType", selectedRoomTypes);
   };
 
   const toggleCommercialType = (type: string) => {
@@ -50,89 +106,61 @@ const Home = () => {
     } else {
       setSelectedCommercialTypes([...selectedCommercialTypes, type]);
     }
+    handleInputChange("commercialType", selectedCommercialTypes);
   };
 
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [showVerificationModal, setVerificationModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const [form, setForm] = useState<{
-    state: number;
-    district: number;
-    city: string;
-    address: string;
-    locality: string;
-    lookingFor: string;
-    BHKType: string | null;
-    rentRange: number | null;
-  }>({
-    state: 0,
-    district: 0,
-    city: "",
-    address: "",
-    locality: "",
-    lookingFor: "fullHouse",
-    BHKType: null,
-    rentRange: null,
-  });
-
   const validateForm = () => {
-    console.log("Form data:", form);
-    if (!form.state) {
-      Alert.alert("Error", "State is required");
+    console.log("Form data:", searchData);
+    if (searchData.state === 0) {
+      Alert.alert(
+        t("error"),
+        t("selectValidState"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]);
       return false;
     }
-    if (!form.city) {
-      Alert.alert("Error", "City is required");
+    if (searchData.district === 0) {
+      Alert.alert(
+        t("error"),
+        t("selectValidDistrict"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]);
       return false;
     }
-    if (!form.locality) {
-      Alert.alert("Error", "Locality is required");
+    if (searchData.city.trim().length < 2) {
+      Alert.alert(
+        t("error"),
+        t("cityError"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]);
       return false;
     }
     return true;
   };
 
-  const onVerficationPress = async () => {
+  const onProprtySearchPress = async () => {
+    console.log("Form Data:", searchData);
+    return;
     if (!validateForm()) {
       return;
     }
-    setVerificationModal(true);
-  };
-
-  const onProprtySearchPress = async () => {
-    setLoading(true);
-    setVerificationModal(false);
-    try {
-      const response = await fetch(`${constants.API_URL}/getPropertyList/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          state: form.state,
-          city: form.city,
-          locality: form.locality,
-          lookingFor: form.lookingFor,
-          BHKType: form.BHKType,
-          rentRange: form.rentRange,
-        }),
-      });
-      console.log(response)
-
-      if (response.ok) {
-        //setShowSuccessModal(true);
-        console.log(response)
-
-      } else {
-        const errorData = await response.json();
-        Alert.alert("Error", errorData.error || "No Property Found for the selected options!");
-      }
-    } catch (err) {
-      Alert.alert("Error", "An error occurred");
-    } finally {
-      setLoading(false);
-    }
+    router.push({
+      pathname: '/(seeker)/search-list',
+      params: {
+        searchData: JSON.stringify(searchData), // Pass searchData as a string
+      },
+    });
   };
 
   const [states, setStates] = useState<{ id: number; name: string; code: string }[]>([]);
@@ -142,6 +170,10 @@ const Home = () => {
       try {
         const response = await fetchAPI(`${constants.API_URL}/master/states`); // Replace with your API endpoint
         setStates(response);
+        if (searchData.state) {
+          fetchDistricts(searchData.state);
+        }
+        console.log("States fetched:", response);
       } catch (error) {
         console.error('Error fetching states--:', error);
       } finally {
@@ -175,559 +207,358 @@ const Home = () => {
     value: district.id,
   }));
 
-  const screenWidth = Dimensions.get('screen').width;
+
+  const getKeyByValue = (value: string): string => {
+    // Find the key by value
+    const key = Object.keys(en.translation).find((k) => en.translation[k as keyof typeof en.translation] === value);
+
+    // Return the key or fallback to the lowercase version of the value
+    if (key) {
+      return t(key);
+    }
+    return value;
+  };
 
   return (
     <SafeAreaView className="flex h-full bg-white">
       <ScrollView className="flex-1 bg-white p-5">
-        <Text className="text-2xl font-bold text-center mb-5">Search Properties</Text>
-        <View className="mb-5">
-          {/* <Text className="text-lg font-bold mb-3">Category</Text> */}
-          {/* <View className="flex-row justify-between mb-3">
-            <TouchableOpacity
-              className={`rounded-lg p-3 flex-1 mr-2 ${selectedCategory === 'BUY' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-              onPress={() => setSelectedCategory('BUY')}
-            >
-              <Text className={`text-center ${selectedCategory === 'BUY' ? 'text-white' : 'text-black'}`}>BUY</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className={`rounded-lg p-3 flex-1 ml-2 ${selectedCategory === 'RENT' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-              onPress={() => setSelectedCategory('RENT')}
-            >
-              <Text className={`text-center ${selectedCategory === 'RENT' ? 'text-white' : 'text-black'}`}>RENT</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className={`rounded-lg p-3 flex-1 ml-2 ${selectedCategory === 'LEASE' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-              onPress={() => setSelectedCategory('LEASE')}
-            >
-              <Text className={`text-center ${selectedCategory === 'LEASE' ? 'text-white' : 'text-black'}`}>LEASE</Text>
-            </TouchableOpacity>
-          </View> */}
-          <View>
-            <CustomRadioGroup
-              options={[
-                { label: "RENT", value: "RENT" },
-                { label: "LEASE", value: "LEASE" },
-                // { label: "BUY", value: "BUY" },
-              ]}
-              selectedValue={selectedCategory}
-              onValueChange={(value: string) => setSelectedCategory(value)}
-            />
+        {loading ? (
+          <View className="flex-1 justify-center mt-[5%] items-center">
+            <ActivityIndicator size="large" color="#00ff00" />
+            <Text className="mt-2 text-base">{t("loading")}</Text>
           </View>
-        </View>
-        <View className="mt-4">
-          <Text className="text-lg font-bold mb-3">State</Text>
-          <Dropdown
-            data={stateOptions}
-            labelField="label"
-            valueField="value"
-            placeholder="Select a state"
-            value={form.state}
-            onChange={(item) => {
-              console.log("Selected state:", item);
-              setForm({ ...form, state: item.value });
-            }}
-            style={{
-              padding: 10,
-              borderColor: 'gray',
-              borderWidth: 1,
-              borderRadius: 5,
-            }}
-          />
-        </View>
-        <View className="mt-4">
-          <Text className="text-lg font-bold mb-3">District</Text>
-          <Dropdown
-            data={districtOptions}
-            labelField="label"
-            valueField="value"
-            placeholder="Select your District"
-            value={form.district}
-            onChange={(item) => {
-              console.log("Selected District:", item);
-              setForm({ ...form, district: item.value });
-            }}
-            style={{
-              padding: 10,
-              borderColor: 'gray',
-              borderWidth: 1,
-              borderRadius: 5,
-            }}
-            disable={!form.state}
-          />
-        </View>
-        <View className="mt-4">
-          <Text className="text-lg font-bold mb-3">City/Town/Village</Text>
-          <TextInput
-            placeholder="Enter a City/Town/Village"
-            className={`border rounded-lg p-3 bg-white border-gray-300"}`}
-            value={form.city}
-            onChangeText={(value) => setForm({ ...form, city: value })}
-          />
-        </View>
-
-        <View className="mt-4">
-          <Text className="text-lg font-bold mb-3">Address</Text>
-          <TextInput
-            placeholder="Enter a Address"
-            className={`border rounded-lg p-3 bg-white border-gray-300"}`}
-            value={form.address}
-            onChangeText={(value) => setForm({ ...form, address: value })}
-          />
-        </View>
-
-        {selectedCategory === 'RENT' && (
+        ) : (
           <>
-            <View className="mt-4">
-              <Text className="text-lg font-bold mb-3">Looking For</Text>
-              {/* <View className="flex-row justify-between mb-3">
-                <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 mr-2 ${lookingFor === 'Full House' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-                  onPress={() => setLookingFor('Full House')}
-                >
-                  <Text className={`text-center ${lookingFor === 'Full House' ? 'text-white' : 'text-black'}`}>Full House</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'PG/Hostel' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-                  onPress={() => setLookingFor('PG/Hostel')}
-                >
-                  <Text className={`text-center ${lookingFor === 'PG/Hostel' ? 'text-white' : 'text-black'}`}>PG/Hostel</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'Flatmates' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-                  onPress={() => setLookingFor('Flatmates')}
-                >
-                  <Text className={`text-center ${lookingFor === 'Flatmates' ? 'text-white' : 'text-black'}`}>Flatmates</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'Commercial' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-                  onPress={() => setLookingFor('Commercial')}
-                >
-                  <Text className={`text-center ${lookingFor === 'Commercial' ? 'text-white' : 'text-black'}`}>Commercial</Text>
-                </TouchableOpacity>
-              </View> */}
+            <Text className="text-2xl font-bold text-center mb-5">{t("searchProperties")}</Text>
+            <View className="mb-5">
               <View>
-                <CustomRadioGroup
-                  options={[
-                    { label: "Full House", value: "Full House" },
-                    { label: "PG/Hostel", value: "PG/Hostel" },
-                    { label: "Commercial", value: "Commercial" },
-                  ]}
-                  selectedValue={lookingFor}
-                  onValueChange={(value: string) => setLookingFor(value)}
+                <View className="flex-row flex-wrap justify-between mt-5">
+                  {staticData.propertyForOptions.map((pref) => (
+                    <TouchableOpacity
+                      key={pref.value}
+                      className={`rounded-lg p-3 flex-1 mr-2 ${searchData.propertyFor === pref.value ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
+                      onPress={() => handleInputChange("propertyFor", pref.value)}
+                    >
+                      <View className="flex-row items-center justify-center">
+                        <Image
+                          source={searchData.propertyFor === pref.value ? icons.radioChecked : icons.radioUnchecked}
+                          className="w-6 h-6 mr-2"
+                          style={{ tintColor: "white" }} // Apply white tint color
+                        />
+                        <Text className="text-center text-base font-bold text-white">
+                          {t(pref.label)}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            </View>
+            <View className="mt-4">
+              <CustomDropdown
+                label={t("state")}
+                data={stateOptions}
+                value={searchData.state}
+                placeholder={t("selectState")}
+                onChange={(selectedItem: DropdownProps) => {
+                  handleInputChange("state", selectedItem.value);
+                  handleInputChange("district", 0);
+                  fetchDistricts(selectedItem.value as number)
+                }}
+              />
+            </View>
+            <View className="mt-4">
+              <CustomDropdown
+                label={t("district")}
+                data={districtOptions}
+                value={searchData.district}
+                placeholder={t("selectDistrict")}
+                onChange={(selectedItem: DropdownProps) => {
+                  handleInputChange("district", selectedItem.value);
+                }}
+              />
+            </View>
+            <View className="mt-4">
+              <Text className="text-base font-bold mt-3 mb-3">{t("city")}</Text>
+              <TextInput
+                placeholder={t("enterCity")}
+                className={`border rounded-lg p-3 bg-white "border-gray-300}`}
+                value={searchData.city}
+                onChangeText={(value) => handleInputChange("city", value)}
+              />
+            </View>
+            <View className="mt-4">
+              <Text className="text-base font-bold mt-3 mb-3">{t("address")}</Text>
+              <View>
+                <TextInput
+                  placeholder={t("enterAddressManually")}
+                  className={`border rounded-lg p-3 bg-white mt-3 border-gray-300}`}
+                  value={searchData.address}
+                  onChangeText={(value) => handleInputChange("address", value)}
                 />
               </View>
             </View>
-
-            {lookingFor === 'Full House' && (
+            <View className="mt-4">
+              <Text className="text-lg font-bold mb-3">{t("propertyType")}</Text>
+              <View>
+                <CustomRadioGroup
+                  options={
+                    staticData.propertyTypeOptions[searchData.propertyFor as keyof typeof staticData.propertyTypeOptions]
+                  }
+                  selectedValue={searchData.propertyType}
+                  onValueChange={(value: string) => handleInputChange("propertyType", value)}
+                />
+              </View>
+            </View>
+            {searchData.propertyType === 'Full House' && (
               <>
                 <View className="mb-5">
-                  <Text className="text-lg font-bold mb-3">Preference</Text>
-                  <View className="flex-row flex-wrap justify-between">
-                    {preferences.map((pref) => (
-                      <TouchableOpacity
-                        key={pref}
-                        className={`rounded-lg p-3 mb-3 ${preference === pref ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-                        style={{
-                          width: '48%', // Ensures two items fit per row
-                          marginRight: preferences.indexOf(pref) % 2 === 0 ? '2%' : 0, // Adds margin to the right for the first item in the row
-                        }}
-                        onPress={() => setPreference(pref)}
-                      >
-                        <View className="flex-row items-center justify-center">
-                          <Image
-                            source={preference === pref ? icons.radioChecked : icons.radioUnchecked}
-                            className="w-6 h-6 mr-2"
-                            style={{ tintColor: "white" }} // Apply white tint color
-                          />
-                          <Text className="text-center text-base font-bold text-white">{pref}</Text>
-                        </View>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
+                  <Text className="text-lg font-bold mb-3">{t("housingType")}</Text>
+                  <TouchableOpacity
+                    className="bg-gray-100 rounded-lg p-3 mb-3 w-full"
+                    onPress={() => setHousingTypesVisible(true)}
+                  >
+                    <Text className="text-center">{selectedHousingTypes.length > 0 ? selectedHousingTypes.map((val) => { return getKeyByValue(val) }).join(', ') : t("selectHousingType")}</Text>
+                  </TouchableOpacity>
                 </View>
 
-
                 <View className="mb-5">
-                  <Text className="text-lg font-bold mb-3">BHK Type</Text>
+                  <Text className="text-lg font-bold mb-3">{t("bhkType")}</Text>
                   <TouchableOpacity
                     className="bg-gray-100 rounded-lg p-3 mb-3 w-full"
                     onPress={() => setBhkTypeModalVisible(true)}
                   >
-                    <Text className="text-center">{selectedBhkTypes.length > 0 ? selectedBhkTypes.join(', ') : 'Select BHK Type'}</Text>
+                    <Text className="text-center">{selectedBhkTypes.length > 0 ? selectedBhkTypes.map((val) => { return getKeyByValue(val) }).join(', ') : t("selectBhkType")}</Text>
                   </TouchableOpacity>
                 </View>
-              </>
-            )}
-
-            {(lookingFor === 'PG/Hostel') && (
-              <>
                 <View className="mb-5">
-                  <Text className="text-lg font-bold mb-3">Preference</Text>
-                  <View className="flex-row justify-between mb-3">
-                    {['Male', 'Female', 'Any'].map((pref) => (
+                  <Text className="text-lg font-bold mb-3">{t("familyPreference")}</Text>
+                  <View className="flex-row flex-wrap justify-between">
+                    {staticData.familyPreferenceOptions.map((familyPreference, index) => (
                       <TouchableOpacity
-                        key={pref}
-                        className={`rounded-lg p-3 flex-1 mr-2 ${preference === pref ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-                        onPress={() => setPreference(pref)}
+                        key={index}
+                        className={`rounded-lg p-3 mb-3 ${searchData.familyPreference === familyPreference.value ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
+                        style={{
+                          width: '48%', // Ensures two items fit per row
+                          marginRight: searchData.familyPreference.indexOf(familyPreference.value) % 2 === 0 ? '2%' : 0, // Adds margin to the right for the first item in the row
+                        }}
+                        onPress={() => handleInputChange("familyPreference", familyPreference.value)}
                       >
                         <View className="flex-row items-center justify-center">
                           <Image
-                            source={preference === pref ? icons.radioChecked : icons.radioUnchecked}
+                            source={searchData.familyPreference === familyPreference.value ? icons.radioChecked : icons.radioUnchecked}
                             className="w-6 h-6 mr-2"
                             style={{ tintColor: "white" }} // Apply white tint color
                           />
-                          <Text className="text-center text-base font-bold text-white">{pref}</Text>
+                          <Text className="text-center text-base font-bold text-white">{familyPreference.label}</Text>
                         </View>
                       </TouchableOpacity>
                     ))}
                   </View>
                 </View>
+                {/* <View className="mb-5">
+                  <Text className="text-lg font-bold mb-3">{t("furnishing")}</Text>
+                  <View>
+                    <CustomRadioGroup
+                      options={staticData.furnishingOptions}
+                      selectedValue={searchData.furnishing}
+                      onValueChange={(value: string) => handleInputChange("furnishing", value)}
+                    />
+                  </View>
+                </View> */}
 
+                {/* <View className="mb-5">
+                  <Text className="text-lg font-bold mb-3">{t("foodPreference")}</Text>
+                  <View>
+                    <CustomRadioGroup
+                      options={staticData.foodPreferenceOptions}
+                      selectedValue={searchData.foodPreference}
+                      onValueChange={(value: string) => handleInputChange("foodPreference", value)}
+                    />
+                  </View>
+                </View> */}
+              </>
+            )}
+            {(searchData.propertyType === 'PG/Hostel') && (
+              <>
                 <View className="mb-5">
-                  <Text className="text-lg font-bold mb-3">Room Type</Text>
+                  <Text className="text-lg font-bold mb-3">{t("roomType")}</Text>
                   <TouchableOpacity
                     className="bg-gray-100 rounded-lg p-3 mb-3 w-full"
                     onPress={() => setRoomTypeModalVisible(true)}
                   >
-                    <Text className="text-center">{selectedRoomTypes.length > 0 ? selectedRoomTypes.join(', ') : 'Select Room Type'}</Text>
+                    <Text className="text-center">{selectedRoomTypes.length > 0 ? selectedRoomTypes.map((val) => { return getKeyByValue(val) }).join(', ') : t("selectRoomType")}</Text>
                   </TouchableOpacity>
+                </View>
+                <View className="mb-5">
+                  <Text className="text-lg font-bold mb-3">{t("genderPreference")}</Text>
+                  <View className="flex-row justify-between mb-3">
+                    {staticData.genderPreferenceOptions.map((genderPreference, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        className={`rounded-lg p-3 flex-1 mr-2 ${searchData.familyPreference === genderPreference.value ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
+                        onPress={() => handleInputChange("familyPreference", genderPreference.value)}
+                      >
+                        <View className="flex-row items-center justify-center">
+                          <Image
+                            source={searchData.familyPreference === genderPreference.value ? icons.radioChecked : icons.radioUnchecked}
+                            className="w-6 h-6 mr-2"
+                            style={{ tintColor: "white" }} // Apply white tint color
+                          />
+                          <Text className="text-center text-base font-bold text-white">{genderPreference.label}</Text>
+                        </View>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
                 </View>
               </>
             )}
-
-            {lookingFor === 'Commercial' && (
+            {searchData.propertyType === 'Commercial' && (
               <View className="mb-5">
-                <Text className="text-lg font-bold mb-3">Commercial Type</Text>
+                <Text className="text-lg font-bold mb-3">{t("commercialType")}</Text>
                 <TouchableOpacity
                   className="bg-gray-100 rounded-lg p-3 mb-3 w-full"
                   onPress={() => setCommercialTypeModalVisible(true)}
                 >
-                  <Text className="text-center">{selectedCommercialTypes.length > 0 ? selectedCommercialTypes.join(', ') : 'Select Commercial Type'}</Text>
+                  <Text className="text-center">{selectedCommercialTypes.length > 0 ? selectedCommercialTypes.map((val) => { return getKeyByValue(val) }).join(', ') : 'Select Commercial Type'}</Text>
                 </TouchableOpacity>
               </View>
             )}
+
+            <Modal
+              visible={housingTypeModalVisible}
+              transparent={true}
+              animationType="slide"
+              onRequestClose={() => setHousingTypesVisible(false)}
+            >
+              <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
+                <View className="bg-white rounded-lg p-5 w-3/4">
+                  <Text className="text-lg font-bold mb-3">{t("selectHousingType")}</Text>
+                  {staticData.housingTypeOptions.map((housingType, index) => (
+                    <View key={index} className="flex-row items-center mb-2">
+                      <CustomCheckBox
+                        value={selectedHousingTypes.includes(housingType.value)}
+                        onValueChange={() => toggleHousingType(housingType.value)}
+                      />
+                      <Text className="ml-2">{housingType.label}</Text>
+                    </View>
+                  ))}
+                  <TouchableOpacity
+                    className="bg-teal-500 rounded-lg p-3 mt-5"
+                    onPress={() => setHousingTypesVisible(false)}
+                  >
+                    <Text className="text-white text-center">{t("done")}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+            <Modal
+              visible={bhkTypeModalVisible}
+              transparent={true}
+              animationType="slide"
+              onRequestClose={() => setBhkTypeModalVisible(false)}
+            >
+              <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
+                <View className="bg-white rounded-lg p-5 w-3/4">
+                  <Text className="text-lg font-bold mb-3">{t("selectBhkType")}</Text>
+                  {staticData.bhkTypeOptions.map((bhkType, index) => (
+                    <View key={index} className="flex-row items-center mb-2">
+                      <CustomCheckBox
+                        value={selectedBhkTypes.includes(bhkType.value)}
+                        onValueChange={() => toggleBhkType(bhkType.value)}
+                      />
+                      <Text className="ml-2">{bhkType.label}</Text>
+                    </View>
+                  ))}
+                  <TouchableOpacity
+                    className="bg-teal-500 rounded-lg p-3 mt-5"
+                    onPress={() => setBhkTypeModalVisible(false)}
+                  >
+                    <Text className="text-white text-center">{t("done")}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+            <Modal
+              visible={roomTypeModalVisible}
+              transparent={true}
+              animationType="slide"
+              onRequestClose={() => setRoomTypeModalVisible(false)}
+            >
+              <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
+                <View className="bg-white rounded-lg p-5 w-3/4">
+                  <Text className="text-lg font-bold mb-3">{t("selectRoomType")}</Text>
+                  {staticData.roomTypeOptions.map((roomType, index) => (
+                    <View key={index} className="flex-row items-center mb-2">
+                      <CustomCheckBox
+                        value={selectedRoomTypes.includes(roomType.value)}
+                        onValueChange={() => toggleRoomType(roomType.value)}
+                      />
+                      <Text className="ml-2">{roomType.label}</Text>
+                    </View>
+                  ))}
+                  <TouchableOpacity
+                    className="bg-teal-500 rounded-lg p-3 mt-5"
+                    onPress={() => setRoomTypeModalVisible(false)}
+                  >
+                    <Text className="text-white text-center">{t("done")}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+            <Modal
+              visible={commercialTypeModalVisible}
+              transparent={true}
+              animationType="slide"
+              onRequestClose={() => setCommercialTypeModalVisible(false)}
+            >
+              <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
+                <View className="bg-white rounded-lg p-5 w-3/4">
+                  <Text className="text-lg font-bold mb-3">{t("selectCommercialType")}</Text>
+                  {staticData.commercialTypeOptions.map((commercialType, index) => (
+                    <View key={index} className="flex-row items-center mb-2">
+                      <CustomCheckBox
+                        value={selectedCommercialTypes.includes(commercialType.value)}
+                        onValueChange={() => toggleCommercialType(commercialType.value)}
+                      />
+                      <Text className="ml-2">{commercialType.label}</Text>
+                    </View>
+                  ))}
+                  <TouchableOpacity
+                    className="bg-teal-500 rounded-lg p-3 mt-5"
+                    onPress={() => setCommercialTypeModalVisible(false)}
+                  >
+                    <Text className="text-white text-center">{t("done")}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+            {/* <View className="mb-5">
+              <Text className="text-lg font-bold mb-3">{t("rentRange")}</Text>
+              <View className="flex-row justify-between items-center mb-3">
+                <Text className="text-lg">₹ {rentRange[0]}</Text>
+                <Text className="text-lg">₹ {rentRange[1]}</Text>
+              </View>
+              <MultiSlider
+                values={rentRange}
+                sliderLength={screenWidth - 40}
+                onValuesChange={(values: number[]) => setRentRange(values)}
+                min={0}
+                max={500000}
+                step={500}
+                selectedStyle={{ backgroundColor: '#1FB28A' }}
+                unselectedStyle={{ backgroundColor: '#d3d3d3' }}
+                trackStyle={{ height: 10 }}
+                markerStyle={{ backgroundColor: '#1FB28A', height: 20, width: 20 }}
+              />
+            </View> */}
+            <TouchableOpacity className="bg-teal-500 rounded-lg p-3 mt-5 mb-10 w-full"
+              onPress={() => onProprtySearchPress()}>
+              <Text className="text-white text-center text-lg">{t("search")}</Text>
+            </TouchableOpacity>
           </>
         )}
-
-        {/* {selectedCategory === 'BUY' && (
-          <>
-            <View className="mb-5">
-              <Text className="text-lg font-bold mb-3">Looking For</Text>
-              <View className="flex-row justify-between mb-3">
-                <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 mr-2 ${lookingFor === 'Full House' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-                  onPress={() => setLookingFor('Full House')}
-                >
-                  <Text className={`text-center ${lookingFor === 'Full House' ? 'text-white' : 'text-black'}`}>Full House</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'Land/Plot' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-                  onPress={() => setLookingFor('Land/Plot')}
-                >
-                  <Text className={`text-center ${lookingFor === 'Land/Plot' ? 'text-white' : 'text-black'}`}>Land/Plot</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'Commercial' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-                  onPress={() => setLookingFor('Commercial')}
-                >
-                  <Text className={`text-center ${lookingFor === 'Commercial' ? 'text-white' : 'text-black'}`}>Commercial</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {lookingFor === 'Full House' && (
-              <View className="mb-5">
-                <Text className="text-lg font-bold mb-3">BHK Type</Text>
-                <TouchableOpacity
-                  className="bg-gray-100 rounded-lg p-3 mb-3 w-full"
-                  onPress={() => setBhkTypeModalVisible(true)}
-                >
-                  <Text className="text-center">{selectedBhkTypes.length > 0 ? selectedBhkTypes.join(', ') : 'Select BHK Type'}</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-
-            {lookingFor === 'Commercial' && (
-              <View className="mb-5">
-                <Text className="text-lg font-bold mb-3">Commercial Type</Text>
-                <TouchableOpacity
-                  className="bg-gray-100 rounded-lg p-3 mb-3 w-full"
-                  onPress={() => setCommercialTypeModalVisible(true)}
-                >
-                  <Text className="text-center">{selectedCommercialTypes.length > 0 ? selectedCommercialTypes.join(', ') : 'Select Commercial Type'}</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </>
-        )} */}
-
-        {selectedCategory === 'LEASE' && (
-          <>
-            <View className="mt-4">
-              <Text className="text-lg font-bold mb-3">Looking For</Text>
-              <View className="flex-row justify-between mb-3">
-                <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 mr-2 ${lookingFor === 'Full House' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-                  onPress={() => setLookingFor('Full House')}
-                >
-                  <View className="flex-row items-center justify-center">
-                    <Image
-                      source={lookingFor === 'Full House' ? icons.radioChecked : icons.radioUnchecked}
-                      className="w-6 h-6 mr-2"
-                      style={{ tintColor: "white" }} // Apply white tint color
-                    />
-                    <Text className="text-center text-2xl font-bold text-white">Full House</Text>
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'Land' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-                  onPress={() => setLookingFor('Land')}
-                >
-                  <View className="flex-row items-center justify-center">
-                    <Image
-                      source={lookingFor === 'Land' ? icons.radioChecked : icons.radioUnchecked}
-                      className="w-6 h-6 mr-2"
-                      style={{ tintColor: "white" }} // Apply white tint color
-                    />
-                    <Text className="text-center text-2xl font-bold text-white">Land</Text>
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className={`rounded-lg p-3 flex-1 ml-2 ${lookingFor === 'Commercial' ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-                  onPress={() => setLookingFor('Commercial')}
-                >
-                  <View className="flex-row items-center justify-center">
-                    <Image
-                      source={lookingFor === 'Commercial' ? icons.radioChecked : icons.radioUnchecked}
-                      className="w-6 h-6 mr-2"
-                      style={{ tintColor: "white" }} // Apply white tint color
-                    />
-                    <Text className="text-center text-2xl font-bold text-white">Commercial</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {lookingFor === 'Full House' && (
-              <View className="mb-5">
-                <Text className="text-lg font-bold mb-3">BHK Type</Text>
-                <TouchableOpacity
-                  className="bg-gray-100 rounded-lg p-3 mb-3 w-full"
-                  onPress={() => setBhkTypeModalVisible(true)}
-                >
-                  <Text className="text-center">{selectedBhkTypes.length > 0 ? selectedBhkTypes.join(', ') : 'Select BHK Type'}</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-
-            {lookingFor === 'Commercial' && (
-              <View className="mb-5">
-                <Text className="text-lg font-bold mb-3">Commercial Type</Text>
-                <TouchableOpacity
-                  className="bg-gray-100 rounded-lg p-3 mb-3 w-full"
-                  onPress={() => setCommercialTypeModalVisible(true)}
-                >
-                  <Text className="text-center">{selectedCommercialTypes.length > 0 ? selectedCommercialTypes.join(', ') : 'Select Commercial Type'}</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </>
-        )}
-
-        <Modal
-          visible={bhkTypeModalVisible}
-          transparent={true}
-          animationType="slide"
-          onRequestClose={() => setBhkTypeModalVisible(false)}
-        >
-          <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
-            <View className="bg-white rounded-lg p-5 w-3/4">
-              <Text className="text-lg font-bold mb-3">Select BHK Type</Text>
-              {bhkTypes.map((type) => (
-                <View key={type} className="flex-row items-center mb-2">
-                  <CustomCheckBox
-                    value={selectedBhkTypes.includes(type)}
-                    onValueChange={() => toggleBhkType(type)}
-                  />
-                  <Text className="ml-2">{type}</Text>
-                </View>
-              ))}
-              <TouchableOpacity
-                className="bg-teal-500 rounded-lg p-3 mt-5"
-                onPress={() => setBhkTypeModalVisible(false)}
-              >
-                <Text className="text-white text-center">Done</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-
-        <Modal
-          visible={roomTypeModalVisible}
-          transparent={true}
-          animationType="slide"
-          onRequestClose={() => setRoomTypeModalVisible(false)}
-        >
-          <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
-            <View className="bg-white rounded-lg p-5 w-3/4">
-              <Text className="text-lg font-bold mb-3">Select Room Type</Text>
-              {roomTypes.map((type) => (
-                <View key={type} className="flex-row items-center mb-2">
-                  <CustomCheckBox
-                    value={selectedRoomTypes.includes(type)}
-                    onValueChange={() => toggleRoomType(type)}
-                  />
-                  <Text className="ml-2">{type}</Text>
-                </View>
-              ))}
-              <TouchableOpacity
-                className="bg-teal-500 rounded-lg p-3 mt-5"
-                onPress={() => setRoomTypeModalVisible(false)}
-              >
-                <Text className="text-white text-center">Done</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-
-        <Modal
-          visible={commercialTypeModalVisible}
-          transparent={true}
-          animationType="slide"
-          onRequestClose={() => setCommercialTypeModalVisible(false)}
-        >
-          <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
-            <View className="bg-white rounded-lg p-5 w-3/4">
-              <Text className="text-lg font-bold mb-3">Select Commercial Type</Text>
-              {commercialTypes.map((type) => (
-                <View key={type} className="flex-row items-center mb-2">
-                  <CustomCheckBox
-                    value={selectedCommercialTypes.includes(type)}
-                    onValueChange={() => toggleCommercialType(type)}
-                  />
-                  <Text className="ml-2">{type}</Text>
-                </View>
-              ))}
-              <TouchableOpacity
-                className="bg-teal-500 rounded-lg p-3 mt-5"
-                onPress={() => setCommercialTypeModalVisible(false)}
-              >
-                <Text className="text-white text-center">Done</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-
-        <View className="mb-5">
-          <Text className="text-lg font-bold mb-3">Rent Range</Text>
-          <View className="flex-row justify-between items-center mb-3">
-            <Text className="text-lg">₹ {rentRange[0]}</Text>
-            <Text className="text-lg">₹ {rentRange[1]}</Text>
-          </View>
-          <MultiSlider
-            values={rentRange}
-            sliderLength={screenWidth - 40}
-            onValuesChange={(values: number[]) => setRentRange(values)}
-            min={0}
-            max={500000}
-            step={500}
-            selectedStyle={{ backgroundColor: '#1FB28A' }}
-            unselectedStyle={{ backgroundColor: '#d3d3d3' }}
-            trackStyle={{ height: 10 }}
-            markerStyle={{ backgroundColor: '#1FB28A', height: 20, width: 20 }}
-          />
-        </View>
-
-        {/* <View className="mb-5">
-          <Text className="text-lg font-bold mb-3">Property Type</Text>
-          <View className="flex-row flex-wrap justify-between">
-            <TouchableOpacity className="bg-gray-100 rounded-lg p-3 flex-1 mr-2">
-              <Text className="text-center">Apartment</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="bg-gray-100 rounded-lg p-3 flex-1 mr-2">
-              <Text className="text-center">Gated Community Villa</Text>
-            </TouchableOpacity>
-          </View>
-          <View className="flex-row flex-wrap justify-between mt-3">
-            <TouchableOpacity className="bg-gray-100 rounded-lg p-3 flex-1 mr-2">
-              <Text className="text-center">Independent House/Villa</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View className="mb-5">
-          <Text className="text-lg font-bold mb-3">Availability</Text>
-          <View className="flex-row flex-wrap justify-between">
-            <TouchableOpacity className="bg-gray-100 rounded-lg p-3 flex-1 mr-2">
-              <Text className="text-center">Immediate</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="bg-gray-100 rounded-lg p-3 flex-1 mr-2">
-              <Text className="text-center">Within 15 Days</Text>
-            </TouchableOpacity>
-          </View>
-          <View className="flex-row flex-wrap justify-between mt-3">
-            <TouchableOpacity className="bg-gray-100 rounded-lg p-3 flex-1 mr-2">
-              <Text className="text-center">Within 30 Days</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="bg-gray-100 rounded-lg p-3 flex-1 mr-2">
-              <Text className="text-center">After 30 Days</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View className="mb-5">
-          <Text className="text-lg font-bold mb-3">Preferred Tenant</Text>
-          <View className="flex-row flex-wrap justify-between">
-            <TouchableOpacity className="bg-gray-100 rounded-lg p-3 flex-1 mr-2">
-              <Text className="text-center">Family</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="bg-gray-100 rounded-lg p-3 flex-1 mr-2">
-              <Text className="text-center">Company</Text>
-            </TouchableOpacity>
-          </View>
-          <View className="flex-row flex-wrap justify-between mt-3">
-            <TouchableOpacity className="bg-gray-100 rounded-lg p-3 flex-1 mr-2">
-              <Text className="text-center">Bachelor Male</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="bg-gray-100 rounded-lg p-3 flex-1 mr-2">
-              <Text className="text-center">Bachelor Female</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View className="mb-5">
-          <Text className="text-lg font-bold mb-3">Furnishing</Text>
-          <View className="flex-row flex-wrap justify-between">
-            <TouchableOpacity className="bg-gray-100 rounded-lg p-3 m-1 w-[30%]">
-              <Text className="text-center">Full</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="bg-gray-100 rounded-lg p-3 m-1 w-[30%]">
-              <Text className="text-center">Semi</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="bg-gray-100 rounded-lg p-3 m-1 w-[30%]">
-              <Text className="text-center">None</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View className="mb-5">
-          <Text className="text-lg font-bold mb-3">Parking</Text>
-          <View className="flex-row justify-between mb-3">
-            <TouchableOpacity className="bg-gray-100 rounded-lg p-3 flex-1 mr-2">
-              <Text className="text-center">2 Wheeler</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="bg-gray-100 rounded-lg p-3 flex-1 mr-2">
-              <Text className="text-center">4 Wheeler</Text>
-            </TouchableOpacity>
-          </View>
-        </View> */}
-
-        <TouchableOpacity className="bg-teal-500 rounded-lg p-3 mt-5 mb-10 w-full"
-          onPress={() => router.push('/(seeker)/search-list')}>
-          <Text className="text-white text-center text-lg">SEARCH</Text>
-        </TouchableOpacity>
-      </ScrollView>
+      </ScrollView >
     </SafeAreaView>
   );
 };

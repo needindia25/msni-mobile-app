@@ -17,7 +17,7 @@ const Support = () => {
           <View className="flex-row items-center justify-center mb-2">
             <Image source={icons.email} className="w-6 h-6 ml-4" />
             <Text className="text-base font-semibold text-center ml-2">
-              support@multisolutionofneedindia.com
+              customercare@multisolutionofneedindia.com
             </Text>
           </View>
           <View className="flex-row items-center justify-center mb-2">

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, Alert, FlatList, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, ActivityIndicator, Alert, FlatList, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Subscription, UserInfo } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,11 +10,12 @@ import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const Profile = () => {
-    const { t } = useTranslation(); // Initialize translation hook
+    const { t, i18n } = useTranslation(); // Initialize translation hook
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
     const [subscriptions, setSubscription] = useState<Subscription[]>([]);
+    const [selectedLanguage, setSelectedLanguage] = useState<string>(i18n.language); // Track selected language
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -88,22 +89,69 @@ const Profile = () => {
         expiryDate: subscription.expired_on ? format(new Date(subscription.expired_on), 'dd-MMM-yyyy') : 'N/A',
     })) || [];
 
+    const changeLanguage = async (language: string) => {
+        try {
+            await AsyncStorage.setItem('language', language); // Save selected language
+            i18n.changeLanguage(language); // Change app language
+            setSelectedLanguage(language); // Update state
+        } catch (error) {
+            console.error('Error changing language:', error);
+        }
+    };
+
     return (
-        <SafeAreaView className="flex h-full items-center justify-between bg-white">
+        <SafeAreaView className="flex-1 bg-white px-4 pt-6">
             {loading ? (
-                <ActivityIndicator size="large" color="#0000ff" />
+                <View className="flex-1 items-center justify-center">
+                    <ActivityIndicator size="large" color="#10b981" />
+                </View>
             ) : (
-                <View className="flex-1 w-full bg-white p-5">
-                    <Text className="text-2xl font-bold text-center mb-5">{t("profile")}</Text> {/* Use translation key */}
-                    <View className="items-center mb-5">
-                        <View className="bg-gray-300 rounded-full w-20 h-20 items-center justify-center mb-3">
-                            <Text className="text-2xl text-white">{userInfo?.full_name ? getInitialURL(userInfo.full_name) : 'NI'}</Text>
+                <ScrollView contentContainerStyle={{ paddingBottom: 30 }} showsVerticalScrollIndicator={false}>
+                    {/* Profile Title */}
+                    <Text className="text-3xl font-extrabold text-center text-gray-800 mb-6">
+                        {t("profile")}
+                    </Text>
+
+                    {/* User Info */}
+                    <View className="items-center bg-gray-100 rounded-2xl p-5 mb-6 shadow-sm">
+                        <View className="bg-green-500 rounded-full w-24 h-24 items-center justify-center mb-3 shadow-md">
+                            <Text className="text-3xl text-white font-bold">
+                                {userInfo?.full_name ? getInitialURL(userInfo.full_name) : 'NI'}
+                            </Text>
                         </View>
-                        <Text className="text-lg font-semibold">{userInfo?.full_name}</Text>
-                        <Text className="text-gray-500">+91 {userInfo?.email.split('@')[0]}</Text>
-                        <Text className="text-gray-500">{userInfo?.code}</Text>
-                        <Text className="text-gray-500">{userInfo?.user_type_id === 1 ? "Seeker" : "Provider"}</Text>
+                        <Text className="text-xl font-semibold text-gray-900">{userInfo?.full_name}</Text>
+                        <Text className="text-gray-600 text-sm">+91 {userInfo?.email.split('@')[0]}</Text>
+                        <Text className="text-gray-600 text-sm">{userInfo?.code}</Text>
+                        <Text className="text-green-600 text-base mt-1 font-medium">
+                            {userInfo?.user_type_id === 1 ? "Seeker" : "Provider"}
+                        </Text>
                     </View>
+
+                    {/* Language Selector Title */}
+                    <Text className="text-xl font-bold text-center text-gray-800 mb-4">
+                        {t("selectLanguage")}
+                    </Text>
+
+                    {/* Language Options */}
+                    <View className="flex-row justify-center mb-6">
+                        {[
+                            { code: "en", name: "English" },
+                            { code: "hi", name: "हिंदी" },
+                        ].map((lang) => (
+                            <TouchableOpacity
+                                key={lang.code}
+                                className={`rounded-full px-5 py-3 mx-2 shadow-md ${selectedLanguage === lang.code
+                                        ? "bg-green-500"
+                                        : "bg-gray-300"
+                                    }`}
+                                onPress={() => changeLanguage(lang.code)}
+                            >
+                                <Text className="text-white font-bold">{lang.name}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+
+                    {/* Subscription Section */}
                     {subscriptionPlans.length > 0 ? (
                         <FlatList
                             data={subscriptionPlans}
@@ -122,19 +170,24 @@ const Profile = () => {
                             )}
                         />
                     ) : (
-                        <View className="flex-1 items-center justify-center bg-white p-5">
-                            <Text className="text-xl font-bold text-black mb-2">{t("noActiveSubscription")}</Text> {/* Use translation key */}
+                        <View className="items-center bg-yellow-50 rounded-xl p-6 shadow-sm mt-6">
+                            <Text className="text-xl font-bold text-gray-800 mb-3">
+                                {t("noActiveSubscription")}
+                            </Text>
                             <TouchableOpacity
-                                className="bg-green-500 py-3 px-10 rounded-full mb-5"
+                                className="bg-green-500 px-8 py-3 rounded-full shadow-md"
                                 onPress={() => router.push('/choose-subscription')}
                             >
-                                <Text className="text-white text-lg font-bold">{t("subscribeNow")}</Text> {/* Use translation key */}
+                                <Text className="text-white text-lg font-bold">
+                                    {t("subscribeNow")}
+                                </Text>
                             </TouchableOpacity>
                         </View>
                     )}
-                </View>
+                </ScrollView>
             )}
         </SafeAreaView>
+
     );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import { View, Image, TouchableOpacity, Text, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { constants } from '@/constants';
@@ -9,9 +9,10 @@ interface ImagePickerProps {
   images: string[];
   serviceId: number | null;
   onImageSelect: (imagePath: string) => void;
+  onImageDelete: (imagePath: string) => void;
 }
 
-const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], serviceId, onImageSelect }) => {
+const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], serviceId, onImageSelect, onImageDelete }) => {
   const { t } = useTranslation(); // Initialize translation hook
   const [selectedImages, setSelectedImages] = useState<string[]>(images);
 
@@ -129,6 +130,7 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
           style: 'destructive',
           onPress: () => {
             setSelectedImages((prev) => prev.filter((img) => img !== imageUri));
+            onImageDelete(imageUri);
           },
         },
       ]
