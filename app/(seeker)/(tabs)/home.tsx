@@ -437,7 +437,6 @@ const Home = () => {
                 </TouchableOpacity>
               </View>
             )}
-
             <Modal
               visible={housingTypeModalVisible}
               transparent={true}
