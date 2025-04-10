@@ -4,6 +4,7 @@ import { Listing } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
+import { MaterialIcons } from "@expo/vector-icons"; // Import icons
 import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 
@@ -41,10 +42,10 @@ const Services = () => {
       id: property.id,
       title: property.title,
       location: property.options.address || "Unknown Location",
-      rating: "New",
       price: `₹ ${property.options.rent || "N/A"}`,
-      requests: 0,
-      favorites: 0,
+      requests: property.service_request_count.requests || 0,
+      favorites: property.service_request_count.favorites || 0,
+      rating: property.options.avg_rating || 0,
       images: property.options.images && property.options.images.length > 0
         ? property.options.images.map((image: string) => image.replace("www.", "admin.")) // Replace "www." with "admin."
         : [`${constants.BASE_URL}/media/no-image-found.png`],
@@ -58,7 +59,7 @@ const Services = () => {
         {loading ? (
           <View className="flex-1 justify-center mt-[60%] items-center">
             <ActivityIndicator size="large" color="#00ff00" />
-            <Text className="mt-2 text-xl">{t("loading")}</Text> {/* Wrap text in <Text> */}
+            <Text className="mt-2 text-xl">{t("loading")}</Text>
           </View>
         ) : (
           <>
@@ -75,26 +76,33 @@ const Services = () => {
                       />
                     ))}
                   </ScrollView>
-                  <Text className="text-xl font-bold mb-1">{listing.title}</Text> {/* Wrap text in <Text> */}
-                  <Text className="text-gray-500 mb-1">{listing.location}</Text> {/* Wrap text in <Text> */}
+                  <Text className="text-xl font-bold mb-1">{listing.title}</Text>
+                  <Text className="text-gray-500 mb-1">{listing.location}</Text>
 
                   {/* Rating and Price Row */}
                   <View className="flex-row justify-between items-center mb-1">
                     <Text className="text-blue-500 text-lg font-bold">
-                      {listing.price} <Text className="text-sm text-gray-500">{t("pricePerMonth")}</Text> {/* Wrap text in <Text> */}
+                      {listing.price} <Text className="text-sm text-gray-500">{t("pricePerMonth")}</Text>
                     </Text>
                     <View className="flex-row items-center">
-                      <Text className="text-yellow-500 mr-1">★</Text> {/* Wrap text in <Text> */}
-                      <Text className="text-gray-500">{listing.rating}</Text> {/* Wrap text in <Text> */}
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <MaterialIcons
+                          key={star}
+                          name={star <= Math.floor(listing.rating) ? "star" : star - listing.rating <= 0.5 ? "star-half" : "star-border"}
+                          size={20}
+                          color="#FFD700"
+                        />
+                      ))}
+                      <Text className="text-gray-500 ml-2">({listing.rating.toFixed(1)})</Text>
                     </View>
                   </View>
 
                   {/* Requests and Favorites Row */}
                   <View className="flex-row justify-between items-center mb-3">
-                    <Text className="text-gray-500">{listing.requests} {t("requests")}</Text> {/* Wrap text in <Text> */}
+                    <Text className="text-gray-500">{listing.requests} {t("requests")}</Text>
                     <View className="flex-row items-center">
-                      <Text className="text-red-500 mr-1">❤</Text> {/* Wrap text in <Text> */}
-                      <Text className="text-gray-500">{listing.favorites} {t("favorites")}</Text> {/* Wrap text in <Text> */}
+                      <Text className="text-red-500 mr-1">❤</Text>
+                      <Text className="text-gray-500">{listing.favorites} {t("favorites")}</Text>
                     </View>
                   </View>
                 </View>
@@ -107,15 +115,15 @@ const Services = () => {
                     className="w-12 h-12"
                   />
                 </View>
-                <Text className="text-xl font-bold text-black mb-2">{t("noPropertyFound")}</Text> {/* Wrap text in <Text> */}
+                <Text className="text-xl font-bold text-black mb-2">{t("noPropertyFound")}</Text>
                 <Text className="text-base text-gray-600 text-center mb-10">
-                  {t("noPropertyMessage")} {/* Wrap text in <Text> */}
+                  {t("noPropertyMessage")}
                 </Text>
                 <TouchableOpacity
                   className="bg-green-500 py-3 px-10 rounded-full mb-5"
                   onPress={() => router.push('/add-property')}
                 >
-                  <Text className="text-white text-lg font-bold">{t("addNewProperty")}</Text> {/* Wrap text in <Text> */}
+                  <Text className="text-white text-lg font-bold">{t("addNewProperty")}</Text>
                 </TouchableOpacity>
               </View>
             )}

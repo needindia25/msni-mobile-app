@@ -96,7 +96,7 @@ const SearchList = () => {
                 {loading ? (
                     <View className="flex-1 justify-center mt-[60%] items-center">
                         <ActivityIndicator size="large" color="#00ff00" />
-                        <Text className="mt-2 text-xl">{t("loading")}</Text> {/* Wrap text in <Text> */}
+                        <Text className="mt-2 text-xl">{t("loading")}</Text>
                     </View>
                 ) : (
                     <>

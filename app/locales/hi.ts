@@ -299,6 +299,8 @@ const hi = {
         viewDetails: "विवरण देखें",
         ownerDetails: "मालिक का विवरण",
         contactOwner: "मालिक से संपर्क करें",
+        noRequestFound: "कोई अनुरोध नहीं मिला",
+        noRequestMessage: "आपने अभी तक कोई सेवा अनुरोध नहीं किया है",
     },
 };
 

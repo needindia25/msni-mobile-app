@@ -178,7 +178,7 @@ const Home = () => {
                 {loading ? (
                     <View className="flex-1 justify-center mt-[60%] items-center">
                         <ActivityIndicator size="large" color="#00ff00" />
-                        <Text className="mt-2 text-xl">{t("loading")}</Text> {/* Wrap text in <Text> */}
+                        <Text className="mt-2 text-xl">{t("loading")}</Text>
                     </View>
                 ) : (
                     <>
@@ -196,12 +196,12 @@ const Home = () => {
                                             </View>
                                         ))}
                                     </ScrollView>
-                                    <Text className="text-xl font-bold mb-1">{listing.title}</Text> {/* Wrap text in <Text> */}
-                                    <Text className="text-gray-500 mb-1">{listing.location}</Text> {/* Wrap text in <Text> */}
+                                    <Text className="text-xl font-bold mb-1">{listing.title}</Text>
+                                    <Text className="text-gray-500 mb-1">{listing.location}</Text>
 
                                     <View className="flex-row justify-between items-center mb-1">
                                         <Text className="text-blue-500 text-lg font-bold">
-                                            {listing.price} <Text className="text-sm text-gray-500">/month</Text> {/* Wrap text in <Text> */}
+                                            {listing.price} <Text className="text-sm text-gray-500">/month</Text>
                                         </Text>
                                     </View>
 
@@ -210,14 +210,14 @@ const Home = () => {
                                             className="bg-blue-500 py-2 px-4 rounded-lg"
                                             onPress={() => handleView(listing.id)}
                                         >
-                                            <Text className="text-white font-bold">{t("view")}</Text> {/* Wrap text in <Text> */}
+                                            <Text className="text-white font-bold">{t("view")}</Text>
                                         </TouchableOpacity>
 
                                         <TouchableOpacity
                                             className="bg-yellow-500 py-2 px-4 rounded-lg"
                                             onPress={() => handleEdit(listing.id)}
                                         >
-                                            <Text className="text-white font-bold">{t("edit")}</Text> {/* Wrap text in <Text> */}
+                                            <Text className="text-white font-bold">{t("edit")}</Text>
                                         </TouchableOpacity>
 
                                         <TouchableOpacity
@@ -225,7 +225,7 @@ const Home = () => {
                                             onPress={() => handleChangeStatus(listing.id)}
                                         >
                                             <Text className="text-white font-bold">
-                                                {listing.status ? t("deactivate") : t("activate")} {/* Wrap text in <Text> */}
+                                                {listing.status ? t("deactivate") : t("activate")}
                                             </Text>
                                         </TouchableOpacity>
 
@@ -233,7 +233,7 @@ const Home = () => {
                                             className="bg-red-500 py-2 px-4 rounded-lg"
                                             onPress={() => handleDelete(listing.id)}
                                         >
-                                            <Text className="text-white font-bold">{t("delete")}</Text> {/* Wrap text in <Text> */}
+                                            <Text className="text-white font-bold">{t("delete")}</Text>
                                         </TouchableOpacity>
                                     </View>
                                 </View>
@@ -246,15 +246,15 @@ const Home = () => {
                                         className="w-12 h-12"
                                     />
                                 </View>
-                                <Text className="text-xl font-bold text-black mb-2">{t("noPropertyFound")}</Text> {/* Wrap text in <Text> */}
+                                <Text className="text-xl font-bold text-black mb-2">{t("noPropertyFound")}</Text>
                                 <Text className="text-base text-gray-600 text-center mb-10">
-                                    {t("noPropertyMessage")} {/* Wrap text in <Text> */}
+                                    {t("noPropertyMessage")}
                                 </Text>
                                 <TouchableOpacity
                                     className="bg-green-500 py-3 px-10 rounded-full mb-5"
                                     onPress={() => router.push('/add-property')}
                                 >
-                                    <Text className="text-white text-lg font-bold">{t("addNewProperty")}</Text> {/* Wrap text in <Text> */}
+                                    <Text className="text-white text-lg font-bold">{t("addNewProperty")}</Text>
                                 </TouchableOpacity>
                             </View>
                         )}

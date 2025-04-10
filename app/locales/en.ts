@@ -298,6 +298,8 @@ const en = {
         viewDetails: "View Details",
         ownerDetails: "Owner Details",
         contactOwner: "Contact Owner",
+        noRequestFound: "No Request Found",
+        noRequestMessage: "You have not requested any services yet",
     },
 };
 
