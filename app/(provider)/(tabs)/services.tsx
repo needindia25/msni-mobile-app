@@ -45,7 +45,7 @@ const Services = () => {
       price: `₹ ${property.options.rent || "N/A"}`,
       requests: property.service_request_count.requests || 0,
       favorites: property.service_request_count.favorites || 0,
-      rating: property.options.avg_rating || 0,
+      rating: property.service_request_count.avg_rating || 0,
       images: property.options.images && property.options.images.length > 0
         ? property.options.images.map((image: string) => image.replace("www.", "admin.")) // Replace "www." with "admin."
         : [`${constants.BASE_URL}/media/no-image-found.png`],
