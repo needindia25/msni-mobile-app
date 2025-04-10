@@ -151,7 +151,7 @@ const Home = () => {
 
   const onProprtySearchPress = async () => {
     console.log("Form Data:", searchData);
-    return;
+    // return;
     if (!validateForm()) {
       return;
     }
@@ -202,11 +202,11 @@ const Home = () => {
     label: state.name,
     value: state.id
   })) || [];
+
   let districtOptions = districts.map((district: any) => ({
     label: district.name,
     value: district.id,
   }));
-
 
   const getKeyByValue = (value: string): string => {
     // Find the key by value
@@ -545,25 +545,6 @@ const Home = () => {
                 </View>
               </View>
             </Modal>
-            {/* <View className="mb-5">
-              <Text className="text-lg font-bold mb-3">{t("rentRange")}</Text>
-              <View className="flex-row justify-between items-center mb-3">
-                <Text className="text-lg">₹ {rentRange[0]}</Text>
-                <Text className="text-lg">₹ {rentRange[1]}</Text>
-              </View>
-              <MultiSlider
-                values={rentRange}
-                sliderLength={screenWidth - 40}
-                onValuesChange={(values: number[]) => setRentRange(values)}
-                min={0}
-                max={500000}
-                step={500}
-                selectedStyle={{ backgroundColor: '#1FB28A' }}
-                unselectedStyle={{ backgroundColor: '#d3d3d3' }}
-                trackStyle={{ height: 10 }}
-                markerStyle={{ backgroundColor: '#1FB28A', height: 20, width: 20 }}
-              />
-            </View> */}
             <TouchableOpacity className="bg-teal-500 rounded-lg p-3 mt-5 mb-10 w-full"
               onPress={() => onProprtySearchPress()}>
               <Text className="text-white text-center text-lg">{t("search")}</Text>

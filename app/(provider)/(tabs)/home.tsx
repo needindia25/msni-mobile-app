@@ -210,7 +210,7 @@ const Home = () => {
                                             className="bg-blue-500 py-2 px-4 rounded-lg"
                                             onPress={() => handleView(listing.id)}
                                         >
-                                            <Text className="text-white font-bold">{t("View")}</Text> {/* Wrap text in <Text> */}
+                                            <Text className="text-white font-bold">{t("view")}</Text> {/* Wrap text in <Text> */}
                                         </TouchableOpacity>
 
                                         <TouchableOpacity

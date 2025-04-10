@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
+import en from '../locales/en';
 
 const SearchList = () => {
     const { t } = useTranslation(); // Initialize translation hook
@@ -51,6 +52,10 @@ const SearchList = () => {
             price: `₹ ${property.options.rent || "N/A"}`,
             requests: 0,
             favorites: 0,
+            propertyType: property.options.propertyType || "Unknown Type",
+            stateName: property.options.stateName || "Unknown State",
+            districtName: property.options.districtName || "Unknown District",
+            city: property.options.city,
             images: property.options.images && property.options.images.length > 0
                 ? property.options.images.map((image: string) => image.replace("www.", "admin.")) // Replace "www." with "admin."
                 : [`${constants.BASE_URL}/media/no-image-found.png`],
@@ -74,17 +79,19 @@ const SearchList = () => {
         }
     };
 
+
+    const getKeyByValue = (value: string): string => {
+        // Find the key by value
+        const key = Object.keys(en.translation).find((k) => en.translation[k as keyof typeof en.translation] === value);
+
+        // Return the key or fallback to the lowercase version of the value
+        if (key) {
+            return t(key);
+        }
+        return value;
+    };
     return (
         <>
-            {listings.length > 0 && (
-                <TouchableOpacity
-                    className="absolute top-5 right-5 bg-green-500 rounded-full p-5 shadow-lg"
-                    onPress={() => router.push('/add-property')}
-                    style={{ zIndex: 1000 }}
-                >
-                    <Text className="text-white text-base font-bold">+ {t("addNextProperty")}</Text> {/* Wrap "+" in <Text> */}
-                </TouchableOpacity>
-            )}
             <ScrollView className="bg-gray-100 p-5">
                 {loading ? (
                     <View className="flex-1 justify-center mt-[60%] items-center">
@@ -98,7 +105,16 @@ const SearchList = () => {
                         </TouchableOpacity>
                         {listings.length > 0 ? (
                             listings.map((listing: any) => (
-                                <View key={listing.id} className="bg-white rounded-lg shadow-md mb-5 p-5">
+                                <View key={listing.id} className="bg-white rounded-lg shadow-md mb-5 p-5 relative">
+                                    {/* Favorite Button */}
+                                    {/* <TouchableOpacity
+                                        className="absolute top-3 right-3 bg-gray-200 p-2 rounded-full"
+                                        onPress={() => console.log("Favorite clicked")}
+                                    >
+                                        <FontAwesome5 name="heart" size={16} color="#FF7F19" />
+                                    </TouchableOpacity> */}
+
+                                    {/* Image Carousel */}
                                     <ScrollView horizontal pagingEnabled className="flex-row mb-3">
                                         {listing.images.map((image: string, index: number) => (
                                             <View key={index} className="relative">
@@ -107,26 +123,46 @@ const SearchList = () => {
                                                     style={{ width: screenWidth - 40 }}
                                                     className="h-48 rounded-lg mr-2"
                                                 />
+                                                {/* Add an overlay for image count */}
+                                                <View className="absolute bottom-2 right-2 bg-black bg-opacity-50 px-2 py-1 rounded-full">
+                                                    <Text className="text-white text-xs">{`${index + 1}/${listing.images.length}`}</Text>
+                                                </View>
                                             </View>
                                         ))}
                                     </ScrollView>
-                                    <Text className="text-xl font-bold mb-1">{listing.title}</Text> {/* Wrap text in <Text> */}
-                                    <Text className="text-gray-500 mb-1">{listing.location}</Text> {/* Wrap text in <Text> */}
 
-                                    <View className="flex-row justify-between items-center mb-1">
-                                        <Text className="text-blue-500 text-lg font-bold">
-                                            {listing.price} <Text className="text-sm text-gray-500">/month</Text> {/* Wrap text in <Text> */}
+                                    {/* Title */}
+                                    <Text className="text-xl font-bold mb-2 text-gray-800">{listing.title}</Text>
+
+                                    {/* Location */}
+                                    <View className="flex-row items-center mb-3">
+                                        <MaterialIcons name="location-on" size={20} color="#4CAF50" />
+                                        <Text className="text-gray-600 ml-2">
+                                            {listing.city}, {listing.districtName}, {listing.stateName}
                                         </Text>
                                     </View>
 
-                                    <View className="flex-row justify-between">
-                                        <TouchableOpacity
-                                            className="bg-blue-500 py-2 px-4 rounded-lg"
-                                            onPress={() => handleView(listing.id)}
-                                        >
-                                            <Text className="text-white font-bold">{t("View")}</Text> {/* Wrap text in <Text> */}
-                                        </TouchableOpacity>
+                                    {/* Price */}
+                                    <View className="flex-row justify-between items-center mb-3">
+                                        <Text className="text-blue-600 text-lg font-bold">
+                                            {listing.price} <Text className="text-sm text-gray-500">{t("pricePerMonth")}</Text>
+                                        </Text>
                                     </View>
+
+                                    {/* Property Type */}
+                                    <View className="flex-row justify-between items-center mb-3">
+                                        <Text className="text-gray-700 text-base font-medium">
+                                            {getKeyByValue(listing.propertyType)}
+                                        </Text>
+                                    </View>
+
+                                    {/* View Details Button */}
+                                    <TouchableOpacity
+                                        className="bg-blue-500 py-2 px-5 rounded-lg mt-3"
+                                        onPress={() => handleView(listing.id)}
+                                    >
+                                        <Text className="text-white text-center font-bold">{t("viewDetails")}</Text>
+                                    </TouchableOpacity>
                                 </View>
                             ))
                         ) : (

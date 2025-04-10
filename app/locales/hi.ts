@@ -3,6 +3,7 @@ const hi = {
         welcome: "नीड इंडिया में आपका स्वागत है",
         createAccountToGetStarted: "शुरू करने के लिए अपना खाता बनाएं",
         phoneLabel: "मोबाइल नंबर (बिना +91)",
+        phoneNumber: "मोबाइल नंबर",
         phonePlaceholder: "मोबाइल नंबर दर्ज करें",
         verify: "सत्यापित करें",
         noAccount: "क्या आपके पास खाता नहीं है?",
@@ -22,6 +23,7 @@ const hi = {
         onboarding2Title: "आसान संपत्ति खोज",
         onboarding2Description: "किरायेदार या किराए के लिए घर चाहिए? नीड इंडिया ऐप आपकी समस्या हल करेगा",
         nameLabel: "नाम",
+        ownerName: "संपत्ति मालिक का नाम",
         namePlaceholder: "नाम दर्ज करें",
         userTypeLabel: "उपयोगकर्ता प्रकार",
         stateLabel: "राज्य",
@@ -293,6 +295,10 @@ const hi = {
         search: "खोजें",
         noFilteredPropertyMessage: "आपके फ़िल्टर मानदंड से मेल खाने वाली कोई संपत्ति नहीं है।",
         resetFilters: "फ़िल्टर रीसेट करें",
+        view: "देखें",
+        viewDetails: "विवरण देखें",
+        ownerDetails: "मालिक का विवरण",
+        contactOwner: "मालिक से संपर्क करें",
     },
 };
 

@@ -3,6 +3,7 @@ const en = {
         welcome: "Welcome to Need India",
         createAccountToGetStarted: "Create your account to get started",
         phoneLabel: "Mobile Number (without +91)",
+        phoneNumber: "Mobile Number",
         phonePlaceholder: "Enter Mobile Number",
         verify: "Verify",
         noAccount: "Don't have an account?",
@@ -22,6 +23,7 @@ const en = {
         onboarding2Title: "Easy Property Search",
         onboarding2Description: "Need a tenant or a house for rent? Need India app will solve your problem",
         nameLabel: "Name",
+        ownerName: "Owner Name",
         namePlaceholder: "Enter name",
         userTypeLabel: "User Type",
         stateLabel: "State",
@@ -292,6 +294,10 @@ const en = {
         search: "Search",
         noFilteredPropertyMessage: "No properties match your filter criteria.",
         resetFilters: "Reset Filters",
+        view: "View",
+        viewDetails: "View Details",
+        ownerDetails: "Owner Details",
+        contactOwner: "Contact Owner",
     },
 };
 

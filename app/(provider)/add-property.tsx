@@ -251,7 +251,9 @@ const MultiStepForm = () => {
   const handleSubmit = async (formData: any, stepIndex: number = 0) => {
     console.log("Form values:", formData);
     if (!validateForm()) {
-      Alert.alert(t("error"), t("pleaseFixErrors"),
+      Alert.alert(
+        t("error"),
+        t("pleaseFixErrors"),
         [
           {
             text: t("ok"),
@@ -283,6 +285,7 @@ const MultiStepForm = () => {
         } : {
           title: formData.title,
           options: formData,
+          service_id: 1,
         }),
       });
       if (method === "POST") {
