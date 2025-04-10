@@ -300,14 +300,27 @@ const Home = () => {
             </View>
             <View className="mt-4">
               <Text className="text-lg font-bold mb-3">{t("propertyType")}</Text>
-              <View>
-                <CustomRadioGroup
-                  options={
-                    staticData.propertyTypeOptions[searchData.propertyFor as keyof typeof staticData.propertyTypeOptions]
-                  }
-                  selectedValue={searchData.propertyType}
-                  onValueChange={(value: string) => handleInputChange("propertyType", value)}
-                />
+              <View className="flex-row flex-wrap justify-between">
+                {staticData.propertyTypeOptions[searchData.propertyFor as keyof typeof staticData.propertyTypeOptions].map((propertyType, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    className={`rounded-lg p-3 mb-3 ${searchData.propertyType === propertyType.value ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
+                    style={{
+                      width: '48%', // Ensures two items fit per row
+                      marginRight: searchData.propertyType.indexOf(propertyType.value) % 2 === 0 ? '2%' : 0, // Adds margin to the right for the first item in the row
+                    }}
+                    onPress={() => handleInputChange("propertyType", propertyType.value)}
+                  >
+                    <View className="flex-row items-center justify-center">
+                      <Image
+                        source={searchData.propertyType === propertyType.value ? icons.radioChecked : icons.radioUnchecked}
+                        className="w-6 h-6 mr-2"
+                        style={{ tintColor: "white" }} // Apply white tint color
+                      />
+                      <Text className="text-center text-base font-bold text-white">{propertyType.label}</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
               </View>
             </View>
             {searchData.propertyType === 'Full House' && (
