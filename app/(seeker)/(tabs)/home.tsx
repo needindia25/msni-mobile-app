@@ -45,13 +45,13 @@ const Home = () => {
     additionalAmenities: [] as string[],
   });
 
-  const saveSearchData = async (data: any) => {
-    try {
-      await AsyncStorage.setItem("searchData", JSON.stringify(data));
-    } catch (error) {
-      console.error("Error saving search data:", error);
-    }
-  };
+  // const saveSearchData = async (data: any) => {
+  //   try {
+  //     await AsyncStorage.setItem("searchData", JSON.stringify(data));
+  //   } catch (error) {
+  //     console.error("Error saving search data:", error);
+  //   }
+  // };
 
   const handleInputChange = (field: string, value: any) => {
     console.log("Field:", field, "Value:", value);
@@ -95,20 +95,20 @@ const Home = () => {
     }));
   };
 
-  useEffect(() => {
-    const loadSearchData = async () => {
-      try {
-        const savedData = await AsyncStorage.getItem("searchData");
-        if (savedData) {
-          setSearchData(JSON.parse(savedData));
-        }
-      } catch (error) {
-        console.error("Error loading search data:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const loadSearchData = async () => {
+  //     try {
+  //       const savedData = await AsyncStorage.getItem("searchData");
+  //       if (savedData) {
+  //         setSearchData(JSON.parse(savedData));
+  //       }
+  //     } catch (error) {
+  //       console.error("Error loading search data:", error);
+  //     }
+  //   };
 
-    loadSearchData();
-  }, []);
+  //   loadSearchData();
+  // }, []);
 
   const [bhkTypeModalVisible, setBhkTypeModalVisible] = useState(false);
   const [selectedBhkTypes, setSelectedBhkTypes] = useState<string[]>([]);
@@ -204,7 +204,7 @@ const Home = () => {
       return;
     }
     
-    saveSearchData(searchData);
+    // saveSearchData(searchData);
     router.push({
       pathname: '/(seeker)/search-list',
       params: {
