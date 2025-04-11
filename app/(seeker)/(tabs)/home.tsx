@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next"; // Import useTranslation
 import CustomDropdown from '@/components/CustomDropdown';
 import { DropdownProps } from '@/types/type';
 import en from '../../locales/en';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Home = () => {
   const router = useRouter();
@@ -23,7 +24,6 @@ const Home = () => {
 
   const [searchData, setSearchData] = useState({
     propertyFor: "Rent",
-    propertyType: "Full House",
     latitude: 0,
     longitude: 0,
     address: "",
@@ -31,6 +31,7 @@ const Home = () => {
     state: 0,
     district: 0,
     city: "",
+    propertyType: "Full House",
     housingType: [] as string[],
     bhkType: [] as string[],
     familyPreference: "Any",
@@ -42,17 +43,73 @@ const Home = () => {
     parking: [] as string[],
     basicAmenities: [] as string[],
     additionalAmenities: [] as string[],
-    sourceOfWater: [] as string[],
   });
+
+  const saveSearchData = async (data: any) => {
+    try {
+      await AsyncStorage.setItem("searchData", JSON.stringify(data));
+    } catch (error) {
+      console.error("Error saving search data:", error);
+    }
+  };
 
   const handleInputChange = (field: string, value: any) => {
     console.log("Field:", field, "Value:", value);
+    let updatedData = {};
+    console.log("=> Updated Data:", updatedData);
+    if (field === "propertyFor") {
+      updatedData = {
+        propertyType: "Full House",
+        housingType: [] as string[],
+        bhkType: [] as string[],
+        familyPreference: "Any",
+        foodPreference: "Any",
+        rent_min: 0,
+        rent_max: 0,
+        rentNegotiable: "No",
+        furnishing: "None",
+        parking: [] as string[],
+        basicAmenities: [] as string[],
+        additionalAmenities: [] as string[],
+      }
+    } else if (field === "propertyType") {
+      updatedData = {
+        housingType: [] as string[],
+        bhkType: [] as string[],
+        familyPreference: "Any",
+        foodPreference: "Any",
+        rent_min: 0,
+        rent_max: 0,
+        rentNegotiable: "No",
+        furnishing: "None",
+        parking: [] as string[],
+        basicAmenities: [] as string[],
+        additionalAmenities: [] as string[],
+      }
+    }
+    console.log("Updated Data:", updatedData);
     setSearchData((prev) => ({
       ...prev,
       [field]: value,
+      ...updatedData
     }));
-  }
-  const [rentRange, setRentRange] = useState([0, 500000]);
+  };
+
+  useEffect(() => {
+    const loadSearchData = async () => {
+      try {
+        const savedData = await AsyncStorage.getItem("searchData");
+        if (savedData) {
+          setSearchData(JSON.parse(savedData));
+        }
+      } catch (error) {
+        console.error("Error loading search data:", error);
+      }
+    };
+
+    loadSearchData();
+  }, []);
+
   const [bhkTypeModalVisible, setBhkTypeModalVisible] = useState(false);
   const [selectedBhkTypes, setSelectedBhkTypes] = useState<string[]>([]);
   const [roomTypeModalVisible, setRoomTypeModalVisible] = useState(false);
@@ -63,15 +120,6 @@ const Home = () => {
 
   const [commercialTypeModalVisible, setCommercialTypeModalVisible] = useState(false);
   const [selectedCommercialTypes, setSelectedCommercialTypes] = useState<string[]>([]);
-
-  useEffect(() => {
-    const updateRentRange = async () => {
-      searchData.rent_min = rentRange[0];
-      searchData.rent_max = rentRange[1];
-      console.log("Updated Rent Range:", searchData.rent_min, searchData.rent_max);
-    };
-    updateRentRange();
-  }, [rentRange]);
 
   const toggleBhkType = (type: string) => {
     if (selectedBhkTypes.includes(type)) {
@@ -155,6 +203,8 @@ const Home = () => {
     if (!validateForm()) {
       return;
     }
+    
+    saveSearchData(searchData);
     router.push({
       pathname: '/(seeker)/search-list',
       params: {

@@ -179,7 +179,7 @@ const SearchList = () => {
                                 </Text>
                                 <TouchableOpacity
                                     className="bg-green-500 py-3 px-10 rounded-full mb-3"
-                                    onPress={() => router.push('/(seeker)/(tabs)/home')} // Navigate back to the home page to reset filters
+                                    onPress={() => router.back()} // Navigate back to the home page to reset filters
                                 >
                                     <Text className="text-white text-lg font-bold">{t("resetFilters")}</Text>
                                 </TouchableOpacity>

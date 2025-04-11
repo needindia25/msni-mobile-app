@@ -567,13 +567,13 @@ const PropertyDetails = () => {
                                     <Text className="text-white font-semibold">{formData.owner_contact}</Text>
                                 </View>
 
-                                <View className="flex-row justify-between">
-                                    <View className="flex-row items-center">
+                                <View className="flex-row justify-between items-start">
+                                    <View className="flex-row items-center flex-shrink-0 mr-4">
                                         <MaterialIcons name="location-on" size={20} color="white" />
                                         <Text className="text-white ml-2">{t("address")}</Text>
                                     </View>
-                                    <Text className="text-white font-semibold">
-                                        {formData.address}, {formData.city}, {formData.districtName}, {formData.stateName} - {formData.zip}
+                                    <Text className="text-white font-semibold flex-shrink text-right">
+                                        {`${formData.address}, ${formData.city}, ${formData.districtName}, ${formData.stateName} - ${formData.zip}`}
                                     </Text>
                                 </View>
                             </View>
