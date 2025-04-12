@@ -77,19 +77,9 @@ const SearchList = () => {
     };
 
     const handleView = async (id: number) => {
-        try {
-            await AsyncStorage.setItem("passServiceId", id.toString());
-            router.push(`/property-details`);
-        } catch (error) {
-            console.error("Error saving service ID to AsyncStorage:", error);
-            Alert.alert(t("error"), t("errorSavingServiceId"),
-                [
-                    {
-                        text: t("ok"),
-                    },
-                ]
-            ); // Use translation key
-        }
+        return;
+        await AsyncStorage.setItem("passServiceId", id.toString());
+        router.push(`/property-details`);
     };
 
 

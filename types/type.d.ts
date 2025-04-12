@@ -20,6 +20,7 @@ interface UserInfo {
   code: string;
   options: object;
   user_id: number;
+  is_both_access: boolean;
 }
 
 interface Subscription {

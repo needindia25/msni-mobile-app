@@ -32,7 +32,7 @@ const Profile = () => {
         if (role === selectedRole) return; // No change in role
         Alert.alert(
             t("switchUser"), // Use translation key
-            (role == 1 ? t("seekerSwitchonfirmation") : t("providerSwitchConfirmation")), // Use translation key
+            (role == 1 ? t("seekerSwitchConfirmation") : t("providerSwitchConfirmation")), // Use translation key
             [
                 { text: t("cancel"), style: "cancel" }, // Use translation key
                 {
@@ -65,20 +65,19 @@ const Profile = () => {
                 if (userInfo === null) return;
 
                 const token = await AsyncStorage.getItem('token');
-                const refresh = await AsyncStorage.getItem('refresh');
-                if (!token || !refresh) {
-                        Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-                          [
+                if (!token) {
+                    Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                        [
                             {
-                              text: t("ok"),
-                              onPress: () => {
-                                // Perform the action when "OK" is pressed
-                                router.replace("/(auth)/sign-in");
-                              },
+                                text: t("ok"),
+                                onPress: () => {
+                                    // Perform the action when "OK" is pressed
+                                    router.replace("/(auth)/sign-in");
+                                },
                             },
-                          ]
-                        );
-                      }
+                        ]
+                    );
+                }
                 const response = await fetchAPI(
                     `${constants.API_URL}/user/plan`,
                     t,
@@ -160,30 +159,33 @@ const Profile = () => {
                             {userInfo?.user_type_id === 1 ? t("seeker") : t("provider")}
                         </Text>
                     </View>
+                    {userInfo?.is_both_access && (
+                        <>
+                            {/* Switch Role Title */}
+                            <Text className="text-xl font-bold text-center text-gray-800 mb-4">
+                                {t("switchUser")}
+                            </Text>
 
-                    {/* Switch Role Title */}
-                    <Text className="text-xl font-bold text-center text-gray-800 mb-4">
-                        {t("switchUser")}
-                    </Text>
-
-                    {/* Switch Role Options */}
-                    <View className="flex-row justify-center mb-6">
-                        {[
-                            { code: 1, name: t("seeker") },
-                            { code: 2, name: t("provider") },
-                        ].map((role) => (
-                            <TouchableOpacity
-                                key={role.code}
-                                className={`rounded-full px-5 py-3 mx-2 shadow-md ${selectedRole === role.code
-                                    ? "bg-green-500"
-                                    : "bg-gray-300"
-                                    }`}
-                                onPress={() => handleSelectedRole(role.code)}
-                            >
-                                <Text className="text-white font-bold">{role.name}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
+                            {/* Switch Role Options */}
+                            <View className="flex-row justify-center mb-6">
+                                {[
+                                    { code: 1, name: t("seeker") },
+                                    { code: 2, name: t("provider") },
+                                ].map((role) => (
+                                    <TouchableOpacity
+                                        key={role.code}
+                                        className={`rounded-full px-5 py-3 mx-2 shadow-md ${selectedRole === role.code
+                                            ? "bg-green-500"
+                                            : "bg-gray-300"
+                                            }`}
+                                        onPress={() => handleSelectedRole(role.code)}
+                                    >
+                                        <Text className="text-white font-bold">{role.name}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </>
+                    )}
                     {/* Subscription Section */}
                     {subscriptionPlans.length > 0 ? (
                         <FlatList
@@ -241,11 +243,9 @@ const Profile = () => {
                             </TouchableOpacity>
                         ))}
                     </View>
-
                 </ScrollView>
             )}
         </SafeAreaView>
-
     );
 };
 
