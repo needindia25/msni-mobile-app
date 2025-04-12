@@ -67,17 +67,21 @@ const Profile = () => {
                 const token = await AsyncStorage.getItem('token');
                 const refresh = await AsyncStorage.getItem('refresh');
                 if (!token || !refresh) {
-                    Alert.alert(t("error"), t("noTokenError"),
-                        [
+                        Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                          [
                             {
-                                text: t("ok"),
+                              text: t("ok"),
+                              onPress: () => {
+                                // Perform the action when "OK" is pressed
+                                router.replace("/(auth)/sign-in");
+                              },
                             },
-                        ]
-                    ); // Use translation key
-                    return;
-                }
+                          ]
+                        );
+                      }
                 const response = await fetchAPI(
                     `${constants.API_URL}/user/plan`,
+                    t,
                     {
                         headers: {
                             'Content-Type': 'application/json',

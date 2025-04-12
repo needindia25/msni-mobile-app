@@ -25,8 +25,21 @@ const SearchList = () => {
         const checkAuth = async () => {
             const token = await AsyncStorage.getItem('token');
             await AsyncStorage.setItem("passServiceId", "");
+            if (!token) {
+                    Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                      [
+                        {
+                          text: t("ok"),
+                          onPress: () => {
+                            // Perform the action when "OK" is pressed
+                            router.replace("/(auth)/sign-in");
+                          },
+                        },
+                      ]
+                    );
+                  }
             if (!!token) {
-                const response: any = await fetchAPI(`${constants.API_URL}/search/`, {
+                const response: any = await fetchAPI(`${constants.API_URL}/search/`, t, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

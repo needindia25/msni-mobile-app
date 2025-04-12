@@ -16,7 +16,7 @@ const Layout = () => {
       const token = await AsyncStorage.getItem('token');
       const refresh = await AsyncStorage.getItem('refresh');
       if (!token || !refresh) {
-        Alert.alert(t("error"), t("logoutError"),
+        Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
           [
             {
               text: t("ok"),
@@ -26,11 +26,10 @@ const Layout = () => {
               },
             },
           ]
-        ); // Use translation key
-        return;
+        );
       }
 
-      const response = await fetchAPI(`${constants.API_URL}/auth/logout/`, {
+      const response = await fetchAPI(`${constants.API_URL}/auth/logout/`, t, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

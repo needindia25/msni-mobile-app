@@ -218,7 +218,7 @@ const Home = () => {
   useEffect(() => {
     const fetchStates = async () => {
       try {
-        const response = await fetchAPI(`${constants.API_URL}/master/states`); // Replace with your API endpoint
+        const response = await fetchAPI(`${constants.API_URL}/master/states`, t); // Replace with your API endpoint
         setStates(response);
         if (searchData.state) {
           fetchDistricts(searchData.state);
@@ -237,7 +237,7 @@ const Home = () => {
   const fetchDistricts = async (stateId: number) => {
     if (!stateId) return;
     try {
-      const response = await fetchAPI(`${constants.API_URL}/master/state/${stateId}/districts`);
+      const response = await fetchAPI(`${constants.API_URL}/master/state/${stateId}/districts`, t);
       setDistricts(response)
       districtOptions = response.map((district: any) => ({
         label: district.name,

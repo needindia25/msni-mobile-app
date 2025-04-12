@@ -31,19 +31,22 @@ const ChooseSubscription = () => {
                 if (userInfo === null) return;
 
                 const token = await AsyncStorage.getItem('token');
-                const refresh = await AsyncStorage.getItem('refresh');
-                if (!token || !refresh) {
-                    Alert.alert(t("error"), t("noTokenError"),
+                if (!token) {
+                    Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
                         [
                             {
                                 text: t("ok"),
-                                onPress: () => router.push('/(auth)/sign-in'),
+                                onPress: () => {
+                                    // Perform the action when "OK" is pressed
+                                    router.replace("/(auth)/sign-in");
+                                },
                             },
                         ]
                     );
                 }
                 const response = await fetchAPI(
                     `${constants.API_URL}/master/subscriotion/${userInfo.user_type_id}/list`,
+                    t,
                     {
                         headers: {
                             'Content-Type': 'application/json',

@@ -67,10 +67,23 @@ const PropertyDetails = () => {
                 }
                 console.log("Fetched service ID:", passServiceId);
                 const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                    Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                        [
+                            {
+                                text: t("ok"),
+                                onPress: () => {
+                                    // Perform the action when "OK" is pressed
+                                    router.replace("/(auth)/sign-in");
+                                },
+                            },
+                        ]
+                    );
+                }
                 console.log("Fetched token ID:", token);
                 if (passServiceId && token) {
                     console.log("Fetching service response...");
-                    const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/`, {
+                    const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/`, t, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`,
@@ -134,8 +147,21 @@ const PropertyDetails = () => {
                     style: "destructive",
                     onPress: async () => {
                         const token = await AsyncStorage.getItem('token');
+                        if (!token) {
+                            Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                                [
+                                    {
+                                        text: t("ok"),
+                                        onPress: () => {
+                                            // Perform the action when "OK" is pressed
+                                            router.replace("/(auth)/sign-in");
+                                        },
+                                    },
+                                ]
+                            );
+                        }
                         if (token) {
-                            await fetchAPI(`${constants.API_URL}/user-services/${id}/`, {
+                            await fetchAPI(`${constants.API_URL}/user-services/${id}/`, t, {
                                 method: "DELETE",
                                 headers: {
                                     'Authorization': `Bearer ${token}`,
@@ -187,8 +213,21 @@ const PropertyDetails = () => {
                     text: t("changeStatus"), // Use translation key
                     onPress: async () => {
                         const token = await AsyncStorage.getItem('token');
+                        if (!token) {
+                            Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                                [
+                                    {
+                                        text: t("ok"),
+                                        onPress: () => {
+                                            // Perform the action when "OK" is pressed
+                                            router.replace("/(auth)/sign-in");
+                                        },
+                                    },
+                                ]
+                            );
+                        }
                         if (token) {
-                            await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, {
+                            await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, t, {
                                 method: "PATCH",
                                 headers: {
                                     'Authorization': `Bearer ${token}`,

@@ -1,6 +1,6 @@
 import { Link, router } from "expo-router";
 import { ActivityIndicator, Alert, Image, ScrollView, Text, View } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import CustomButton from "@/components/CustomButton";
@@ -15,6 +15,13 @@ const SignIn = () => {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [showVerificationModal, setVerificationModal] = useState(false);
+
+  useEffect(() => {
+    const clearAsyncStorage = async () => {
+      await AsyncStorage.clear();
+    };
+    clearAsyncStorage();
+  }, []);
 
   const validateForm = () => {
     if (!username) {

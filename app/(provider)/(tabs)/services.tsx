@@ -20,9 +20,22 @@ const Services = () => {
     const checkAuth = async () => {
       const token = await AsyncStorage.getItem('token');
       await AsyncStorage.setItem("passServiceId", "");
-      console.log(`token: ${token}`);      
+      console.log(`token: ${token}`);
+      if (!token) {
+              Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                [
+                  {
+                    text: t("ok"),
+                    onPress: () => {
+                      // Perform the action when "OK" is pressed
+                      router.replace("/(auth)/sign-in");
+                    },
+                  },
+                ]
+              );
+            }
       if (!!token) {
-        const response: any = await fetchAPI(`${constants.API_URL}/user-services/my_property/`, {
+        const response: any = await fetchAPI(`${constants.API_URL}/user-services/my_property/`, t, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,

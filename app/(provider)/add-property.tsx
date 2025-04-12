@@ -87,17 +87,30 @@ const MultiStepForm = () => {
       try {
         const token = await AsyncStorage.getItem('token');
         const passServiceId = await AsyncStorage.getItem('passServiceId');
+        if (!token) {
+          Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+            [
+              {
+                text: t("ok"),
+                onPress: () => {
+                  // Perform the action when "OK" is pressed
+                  router.replace("/(auth)/sign-in");
+                },
+              },
+            ]
+          );
+        }
         if (token) {
           setToken(token);
         }
 
-        const response = await fetchAPI(`${constants.API_URL}/master/states`);
+        const response = await fetchAPI(`${constants.API_URL}/master/states`, t);
         setStates(response);
 
         if (passServiceId) {
           setServiceId(parseInt(passServiceId, 10));
           console.log(`URL : ${constants.API_URL}`)
-          const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/`, {
+          const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/`, t, {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${token}`,
@@ -142,7 +155,7 @@ const MultiStepForm = () => {
   const fetchDistricts = async (stateId: number) => {
     if (!stateId) return;
     try {
-      const response = await fetchAPI(`${constants.API_URL}/master/state/${stateId}/districts`);
+      const response = await fetchAPI(`${constants.API_URL}/master/state/${stateId}/districts`, t);
       setDistricts(response)
       districtOptions = response.map((district: any) => ({
         label: district.name,
@@ -272,6 +285,19 @@ const MultiStepForm = () => {
       );
       return;
     }
+    if (!token) {
+      Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+        [
+          {
+            text: t("ok"),
+            onPress: () => {
+              // Perform the action when "OK" is pressed
+              router.replace("/(auth)/sign-in");
+            },
+          },
+        ]
+      );
+    }
     try {
       let url = `${constants.API_URL}/user-services/`;
       let method = "POST";
@@ -281,7 +307,7 @@ const MultiStepForm = () => {
       }
       console.log("URL", url)
       console.log("METHOD", method)
-      const response = await fetchAPI(url, {
+      const response = await fetchAPI(url, t, {
         method: method,
         headers: {
           'Content-Type': 'application/json',

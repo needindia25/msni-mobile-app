@@ -75,10 +75,23 @@ const PropertyDetails = () => {
                 console.log("Fetched service ID:", passServiceId);
                 const token = await AsyncStorage.getItem('token');
                 console.log("Fetched token ID:", token);
+                if (!token) {
+                        Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                          [
+                            {
+                              text: t("ok"),
+                              onPress: () => {
+                                // Perform the action when "OK" is pressed
+                                router.replace("/(auth)/sign-in");
+                              },
+                            },
+                          ]
+                        );
+                      }
                 if (passServiceId && token) {
                     setToken(token);
                     console.log("Fetching service response...");
-                    const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/info/`, {
+                    const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/info/`, t, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`,
@@ -178,9 +191,22 @@ const PropertyDetails = () => {
     };
 
     const getOwnerDetails = async () => {
+        if (!token) {
+                Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                  [
+                    {
+                      text: t("ok"),
+                      onPress: () => {
+                        // Perform the action when "OK" is pressed
+                        router.replace("/(auth)/sign-in");
+                      },
+                    },
+                  ]
+                );
+              }
         if (id && token) {
             console.log("Add a request");
-            const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${id}/requests/`, {
+            const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${id}/requests/`, t, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -193,8 +219,21 @@ const PropertyDetails = () => {
     };
 
     const handleFavorites = async () => {
+        if (!token) {
+                Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                  [
+                    {
+                      text: t("ok"),
+                      onPress: () => {
+                        // Perform the action when "OK" is pressed
+                        router.replace("/(auth)/sign-in");
+                      },
+                    },
+                  ]
+                );
+              }
        if (id && token) {
-            const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${id}/favorites/`, {
+            const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${id}/favorites/`, t, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -207,10 +246,23 @@ const PropertyDetails = () => {
     };
 
     const handleRating = async (newRating: number) => {
+        if (!token) {
+                Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                  [
+                    {
+                      text: t("ok"),
+                      onPress: () => {
+                        // Perform the action when "OK" is pressed
+                        router.replace("/(auth)/sign-in");
+                      },
+                    },
+                  ]
+                );
+              }
         setRating(newRating); // Update the rating state
         console.log(`User rated: ${newRating} stars`);
         if (id && token) {
-            const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${id}/rating/`, {
+            const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${id}/rating/`, t, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

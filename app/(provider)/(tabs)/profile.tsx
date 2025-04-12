@@ -65,8 +65,22 @@ const Profile = () => {
                 if (userInfo === null) return;
 
                 const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                    Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                        [
+                            {
+                                text: t("ok"),
+                                onPress: () => {
+                                    // Perform the action when "OK" is pressed
+                                    router.replace("/(auth)/sign-in");
+                                },
+                            },
+                        ]
+                    );
+                }
                 const response = await fetchAPI(
                     `${constants.API_URL}/user/plan`,
+                    t,
                     {
                         headers: {
                             'Content-Type': 'application/json',

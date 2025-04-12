@@ -19,13 +19,28 @@ const Home = () => {
         const checkAuth = async () => {
             const token = await AsyncStorage.getItem('token');
             await AsyncStorage.setItem("passServiceId", "");
+            if (!token) {
+                Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                    [
+                        {
+                            text: t("ok"),
+                            onPress: () => {
+                                // Perform the action when "OK" is pressed
+                                router.replace("/(auth)/sign-in");
+                            },
+                        },
+                    ]
+                );
+            }
+            console.log("Token:", token); // Log the token for debugging
             if (!!token) {
-                const response: any = await fetchAPI(`${constants.API_URL}/user-services/my_property/`, {
+                const response: any = await fetchAPI(`${constants.API_URL}/user-services/my_property/`, t, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`,
                     },
                 });
+                console.log("Response:", response); // Log the response for debugging 
                 setListings(transformData(response));
             }
             setLoading(false);
@@ -51,19 +66,8 @@ const Home = () => {
     };
 
     const handleView = async (id: number) => {
-        try {
-            await AsyncStorage.setItem("passServiceId", id.toString());
-            router.push(`/property-details`);
-        } catch (error) {
-            console.error("Error saving service ID to AsyncStorage:", error);
-            Alert.alert(t("error"), t("errorSavingServiceId"),
-                [
-                    {
-                        text: t("ok"),
-                    },
-                ]
-            ); // Use translation key
-        }
+        await AsyncStorage.setItem("passServiceId", id.toString());
+        router.push(`/property-details`);
     };
 
     const handleDelete = (id: number) => {
@@ -77,8 +81,21 @@ const Home = () => {
                     style: "destructive",
                     onPress: async () => {
                         const token = await AsyncStorage.getItem('token');
+                        if (!token) {
+                            Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                                [
+                                    {
+                                        text: t("ok"),
+                                        onPress: () => {
+                                            // Perform the action when "OK" is pressed
+                                            router.replace("/(auth)/sign-in");
+                                        },
+                                    },
+                                ]
+                            );
+                        }
                         if (token) {
-                            await fetchAPI(`${constants.API_URL}/user-services/${id}/`, {
+                            await fetchAPI(`${constants.API_URL}/user-services/${id}/`, t, {
                                 method: "DELETE",
                                 headers: {
                                     'Authorization': `Bearer ${token}`,
@@ -130,8 +147,21 @@ const Home = () => {
                     text: t("changeStatus"), // Use translation key
                     onPress: async () => {
                         const token = await AsyncStorage.getItem('token');
+                        if (!token) {
+                            Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                                [
+                                    {
+                                        text: t("ok"),
+                                        onPress: () => {
+                                            // Perform the action when "OK" is pressed
+                                            router.replace("/(auth)/sign-in");
+                                        },
+                                    },
+                                ]
+                            );
+                        }
                         if (token) {
-                            await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, {
+                            await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, t, {
                                 method: "PATCH",
                                 headers: {
                                     'Authorization': `Bearer ${token}`,
