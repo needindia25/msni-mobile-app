@@ -122,39 +122,47 @@ const Home = () => {
   const [selectedCommercialTypes, setSelectedCommercialTypes] = useState<string[]>([]);
 
   const toggleBhkType = (type: string) => {
+    let updateList = [];
     if (selectedBhkTypes.includes(type)) {
-      setSelectedBhkTypes(selectedBhkTypes.filter((item) => item !== type));
+      updateList = selectedBhkTypes.filter((item) => item !== type);
     } else {
-      setSelectedBhkTypes([...selectedBhkTypes, type]);
+      updateList = [...selectedBhkTypes, type];
     }
-    handleInputChange("bhkType", selectedBhkTypes);
+    setSelectedBhkTypes(updateList);
+    handleInputChange("bhkType", updateList);
   };
 
   const toggleHousingType = (type: string) => {
+    let updateList = [];
     if (selectedHousingTypes.includes(type)) {
-      setSelectedHousingTypes(selectedHousingTypes.filter((item) => item !== type));
+      updateList = selectedHousingTypes.filter((item) => item !== type)
     } else {
-      setSelectedHousingTypes([...selectedHousingTypes, type]);
+      updateList = [...selectedHousingTypes, type]
     }
-    handleInputChange("housingType", selectedHousingTypes);
+    handleInputChange("housingType", updateList);
+    setSelectedHousingTypes(updateList);
   };
 
   const toggleRoomType = (type: string) => {
+    let updateList = [];
     if (selectedRoomTypes.includes(type)) {
-      setSelectedRoomTypes(selectedRoomTypes.filter((item) => item !== type));
+      updateList = selectedRoomTypes.filter((item) => item !== type)
     } else {
-      setSelectedRoomTypes([...selectedRoomTypes, type]);
+      updateList = [...selectedRoomTypes, type]
     }
-    handleInputChange("housingType", selectedRoomTypes);
+    handleInputChange("housingType", updateList);
+    setSelectedRoomTypes(updateList);
   };
 
   const toggleCommercialType = (type: string) => {
+    let updateList = [];
     if (selectedCommercialTypes.includes(type)) {
-      setSelectedCommercialTypes(selectedCommercialTypes.filter((item) => item !== type));
+      updateList = selectedCommercialTypes.filter((item) => item !== type)
     } else {
-      setSelectedCommercialTypes([...selectedCommercialTypes, type]);
+      updateList = [...selectedCommercialTypes, type]
     }
-    handleInputChange("commercialType", selectedCommercialTypes);
+    handleInputChange("commercialType", updateList);
+    setSelectedCommercialTypes(updateList);
   };
 
   const [loading, setLoading] = useState(true);
@@ -357,7 +365,7 @@ const Home = () => {
                     className={`rounded-lg p-3 mb-3 ${searchData.propertyType === propertyType.value ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
                     style={{
                       width: '48%', // Ensures two items fit per row
-                      marginRight: searchData.propertyType.indexOf(propertyType.value) % 2 === 0 ? '2%' : 0, // Adds margin to the right for the first item in the row
+                      // marginRight: searchData.propertyType.indexOf(propertyType.value) % 2 === 0 ? '2%' : 0, // Adds margin to the right for the first item in the row
                     }}
                     onPress={() => handleInputChange("propertyType", propertyType.value)}
                   >
@@ -403,7 +411,7 @@ const Home = () => {
                         className={`rounded-lg p-3 mb-3 ${searchData.familyPreference === familyPreference.value ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
                         style={{
                           width: '48%', // Ensures two items fit per row
-                          marginRight: searchData.familyPreference.indexOf(familyPreference.value) % 2 === 0 ? '2%' : 0, // Adds margin to the right for the first item in the row
+                          // marginRight: searchData.familyPreference.indexOf(familyPreference.value) % 2 === 0 ? '2%' : 0, // Adds margin to the right for the first item in the row
                         }}
                         onPress={() => handleInputChange("familyPreference", familyPreference.value)}
                       >

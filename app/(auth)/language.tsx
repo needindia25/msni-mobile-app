@@ -15,6 +15,8 @@ const LanguageSelector = () => {
       if (savedLanguage) {
         i18n.changeLanguage(savedLanguage); // Set the saved language
         router.replace("/(auth)/welcome"); // Redirect to the welcome page
+      } else {
+        i18n.changeLanguage("A"); // Default to English if no language is saved
       }
     };
     checkLanguage();
@@ -33,7 +35,7 @@ const LanguageSelector = () => {
 
   return (
     <ScrollView className="flex-1 bg-white">
-      <View className="flex-1 bg-white">
+      <View className="flex-1 bg-white mx-2">
         {/* Logo */}
         <View className="w-full justify-center items-center mt-10">
           <Image source={images.HorizontalLogo} className="z-0 w-[250px] h-[100px]" />
