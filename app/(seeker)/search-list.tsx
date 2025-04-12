@@ -8,10 +8,10 @@ import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 import en from '../locales/en';
+import ImageCarousel from '@/components/ImageCarousel';
 
 const SearchList = () => {
     const { t } = useTranslation(); // Initialize translation hook
-    const screenWidth = Dimensions.get('window').width;
     const router = useRouter();
     const { searchData } = useLocalSearchParams(); // Use useLocalSearchParams instead of useSearchParams
     const filtersData = typeof searchData === 'string' ? JSON.parse(searchData) : {}; // Ensure searchData is a string before parsing
@@ -77,7 +77,7 @@ const SearchList = () => {
     };
 
     const handleView = async (id: number) => {
-        return;
+        // return;
         await AsyncStorage.setItem("passServiceId", id.toString());
         router.push(`/property-details`);
     };
@@ -118,7 +118,7 @@ const SearchList = () => {
                                     </TouchableOpacity> */}
 
                                     {/* Image Carousel */}
-                                    <ScrollView horizontal pagingEnabled className="flex-row mb-3">
+                                    {/* <ScrollView horizontal pagingEnabled className="flex-row mb-3">
                                         {listing.images.map((image: string, index: number) => (
                                             <View key={index} className="relative">
                                                 <Image
@@ -126,13 +126,13 @@ const SearchList = () => {
                                                     style={{ width: screenWidth - 40 }}
                                                     className="h-48 rounded-lg mr-2"
                                                 />
-                                                {/* Add an overlay for image count */}
                                                 <View className="absolute bottom-2 right-2 bg-black bg-opacity-50 px-2 py-1 rounded-full">
                                                     <Text className="text-white text-xs">{`${index + 1}/${listing.images.length}`}</Text>
                                                 </View>
                                             </View>
                                         ))}
-                                    </ScrollView>
+                                    </ScrollView> */}
+                                    <ImageCarousel images={listing.images} />
 
                                     {/* Title */}
                                     <Text className="text-xl font-bold mb-2 text-gray-800">{listing.title}</Text>

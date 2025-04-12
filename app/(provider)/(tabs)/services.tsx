@@ -1,6 +1,7 @@
 import { constants, icons } from '@/constants';
 import { fetchAPI } from '@/lib/fetch';
 import { Listing } from '@/types/type';
+import ImageCarousel from "@/components/ImageCarousel";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -79,7 +80,7 @@ const Services = () => {
             {listings.length > 0 ? (
               listings.map((listing: any) => (
                 <View key={listing.id} className="bg-white rounded-lg shadow-md mb-5 p-5">
-                  <ScrollView horizontal pagingEnabled className="flex-row mb-3">
+                  {/* <ScrollView horizontal pagingEnabled className="flex-row mb-3">
                     {listing.images.map((image: string, index: number) => (
                       <Image
                         key={index}
@@ -88,7 +89,8 @@ const Services = () => {
                         className="h-48 rounded-lg mr-2"
                       />
                     ))}
-                  </ScrollView>
+                  </ScrollView> */}
+                  <ImageCarousel images={listing.images} />
                   <Text className="text-xl font-bold mb-1">{listing.title}</Text>
                   <Text className="text-gray-500 mb-1">{listing.location}</Text>
 

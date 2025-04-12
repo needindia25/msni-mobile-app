@@ -5,6 +5,7 @@ import { View, Text, Image, ScrollView, TouchableOpacity, Dimensions, Alert, Act
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons"; // Import icons
 import { constants, icons } from "@/constants";
+import ImageCarousel from "@/components/ImageCarousel";
 import { fetchAPI } from "@/lib/fetch";
 import { useTranslation } from "react-i18next"; // Import useTranslation
 import en from '../locales/en';
@@ -307,7 +308,7 @@ const PropertyDetails = () => {
 
                     <View className="bg-white rounded-lg shadow-md mb-5 p-5">
                         {/* Image Carousel */}
-                        <ScrollView horizontal pagingEnabled className="flex-row mb-3">
+                        {/* <ScrollView horizontal pagingEnabled className="flex-row mb-3">
                             {formData.images.map((image, index) => (
                                 <Image
                                     key={index}
@@ -316,7 +317,8 @@ const PropertyDetails = () => {
                                     className="h-48 rounded-lg mr-2"
                                 />
                             ))}
-                        </ScrollView>
+                        </ScrollView> */}
+                        <ImageCarousel images={formData.images} />
 
                         {/* Title and Address */}
                         <Text className="text-2xl font-bold mb-2">{formData.title}</Text>

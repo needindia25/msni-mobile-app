@@ -8,6 +8,7 @@ import { constants, icons } from "@/constants";
 import { fetchAPI } from "@/lib/fetch";
 import { useTranslation } from "react-i18next"; // Import useTranslation
 import en from '../locales/en';
+import ImageCarousel from '@/components/ImageCarousel';
 
 const PropertyDetails = () => {
     const { t } = useTranslation(); // Initialize translation hook
@@ -289,7 +290,7 @@ const PropertyDetails = () => {
 
                     <View className="bg-white rounded-lg shadow-md mb-5 p-5">
                         {/* Image Carousel */}
-                        <ScrollView horizontal pagingEnabled className="flex-row mb-3">
+                        {/* <ScrollView horizontal pagingEnabled className="flex-row mb-3">
                             {formData.images.map((image, index) => (
                                 <Image
                                     key={index}
@@ -298,7 +299,8 @@ const PropertyDetails = () => {
                                     className="h-48 rounded-lg mr-2"
                                 />
                             ))}
-                        </ScrollView>
+                        </ScrollView> */}
+                        <ImageCarousel images={formData.images} />
 
                         {/* Title and Address */}
                         <Text className="text-2xl font-bold mb-2">{formData.title}</Text>
