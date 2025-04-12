@@ -83,7 +83,6 @@ export const getStaticData = (t: TFunction) => ({
         { label: t("supplyWater"), value: "Supply Water" },
         { label: t("borewell"), value: "Borewell" },
         { label: t("handPump"), value: "Hand Pump" },
-        { label: t("allThree"), value: "All Three" },
         { label: t("other"), value: "Other" },
     ],
     floors: [
@@ -123,10 +122,11 @@ export const getStaticData = (t: TFunction) => ({
         { label: "4+", value: 4 },
     ],
     bathRooms: [
-        { label: "1", value: 1 },
-        { label: "2", value: 2 },
-        { label: "3", value: 3 },
-        { label: "4", value: 4 },
+        { label: t("1BathRoom"), value: "1 Bath Room" },
+        { label: t("2BathRooms"), value: "2 Bath Rooms" },
+        { label: t("3BathRooms"), value: "3 Bath Rooms" },
+        { label: t("4BathRooms"), value: "4 Bath Rooms" },
+        { label: t("commonBathRomm"), value: "Common Bath Room" },
     ],
     ageOfProperty: [
         { label: t("new"), value: 0 },

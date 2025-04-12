@@ -1,9 +1,23 @@
 import { useState, useEffect, useCallback } from "react";
+import { Alert } from "react-native";
+import { router } from "expo-router";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 export const fetchAPI = async (url: string, options?: RequestInit) => {
+  const { t } = useTranslation(); // Initialize translation hook
   try {
     const response = await fetch(url, options);
     console.log("fetchAPI: ", response)
+
+    if (response.status === 401) {
+      Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"), [
+        {
+          text: t("ok"),
+          onPress: () => router.push(`/(auth)/sign-in`),
+        },
+      ]);
+      return;
+    }
     if (!response.ok) {
       new Error(`HTTP error! status: ${response.status}`);
     }

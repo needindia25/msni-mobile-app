@@ -43,13 +43,13 @@ const PropertyDetails = () => {
         floorNumber: 0,
         numberOfBedRooms: 1,
         numberOfBalconies: 0,
-        numberOfBathRooms: 0,
+        numberOfBathRooms: [] as string[],
         ageOfProperty: 0,
         furnishing: "",
         parking: "",
         basicAmenities: [] as string[],
         additionalAmenities: [] as string[],
-        sourceOfWater: "",
+        sourceOfWater: [] as string[],
         images: [] as string[],
         date_updated: "",
         date_created: "",
@@ -92,7 +92,17 @@ const PropertyDetails = () => {
                             basicAmenities: serviceResponse["options"].basicAmenities && serviceResponse["options"].basicAmenities.length > 0 ?
                                 serviceResponse["options"].basicAmenities.filter((amenity: any) => amenity !== "None") : [],
                             additionalAmenities: serviceResponse["options"].additionalAmenities && serviceResponse["options"].additionalAmenities.length > 0 ?
-                                serviceResponse["options"].additionalAmenities.filter((amenity: any) => amenity !== "None") : []
+                                serviceResponse["options"].additionalAmenities.filter((amenity: any) => amenity !== "None") : [],
+                            sourceOfWater: serviceResponse["options"].sourceOfWater
+                                ? (typeof serviceResponse["options"].sourceOfWater === "string"
+                                    ? [serviceResponse["options"].sourceOfWater]
+                                    : serviceResponse["options"].sourceOfWater)
+                                : [],
+                            numberOfBathRooms: serviceResponse["options"].numberOfBathRooms
+                                ? (typeof serviceResponse["options"].numberOfBathRooms === "number"
+                                    ? [serviceResponse["options"].numberOfBathRooms + " Bath Room" + (serviceResponse["options"].numberOfBathRooms > 1 ? "s" : "")]
+                                    : serviceResponse["options"].numberOfBathRooms)
+                                : [],
                         }
                     }));
                     console.log(serviceResponse);
@@ -439,13 +449,25 @@ const PropertyDetails = () => {
                                 </View>
                                 <Text className="text-black font-semibold">{getKeyByValue(formData.rentNegotiable) || t("notAvailable")}</Text>
                             </View>
-                            <View className="flex-row justify-between">
-                                {/* Source of Water */}
+                            {/* <View className="flex-row justify-between">
                                 <View className="flex-row items-center">
                                     <MaterialIcons name="water-drop" size={20} color="black" />
                                     <Text className="text-gray-500 ml-2">{t("sourceOfWater")}</Text>
                                 </View>
                                 <Text className="text-black font-semibold">{getKeyByValue(formData.sourceOfWater) || t("notAvailable")}</Text>
+                            </View> */}
+                            <Text className="text-lg font-bold mb-1">{t("additionalAmenities")}</Text>
+                            <View className="flex-row flex-wrap mb-3">
+                                {formData.sourceOfWater.length > 0 ? (
+                                    formData.sourceOfWater.map((source, index) => (
+                                        <View key={index} className="flex-row items-center bg-gray-200 rounded-full px-3 py-1 mr-2 mb-2">
+                                            <MaterialIcons name="check" size={16} color="green" />
+                                            <Text className="ml-1 text-black">{getKeyByValue(source)}</Text>
+                                        </View>
+                                    ))
+                                ) : (
+                                    <Text className="text-gray-500">{t("notAvailable")}</Text>
+                                )}
                             </View>
                         </View>
 
@@ -470,13 +492,29 @@ const PropertyDetails = () => {
                                             </View>
                                             <Text className="text-black font-semibold">{formData.numberOfBalconies || t("notAvailable")}</Text>
                                         </View>
-                                        <View className="flex-row justify-between mb-4">
-                                            {/* Number of Bathrooms */}
+                                        {/* <View className="flex-row justify-between mb-4">
                                             <View className="flex-row items-center">
                                                 <MaterialIcons name="bathtub" size={20} color="black" />
                                                 <Text className="text-gray-500 ml-2">{t("numberOfBathRooms")}</Text>
                                             </View>
-                                            <Text className="text-black font-semibold">{formData.numberOfBathRooms || t("notAvailable")}</Text>
+                                            <Text className="text-black font-semibold">{formData.numberOfBathRooms.join(", ") || t("notAvailable")}</Text>
+                                        </View> */}
+                                        {/* <Text className="text-lg font-bold mb-1">{t("numberOfBathRooms")}</Text> */}
+                                        <View className="flex-row items-center">
+                                            <MaterialIcons name="bathtub" size={20} color="black" />
+                                            <Text className="text-gray-500 ml-2">{t("numberOfBathRooms")}</Text>
+                                        </View>
+                                        <View className="flex-row flex-wrap mb-4 mt-4">
+                                            {formData.numberOfBathRooms.length > 0 ? (
+                                                formData.numberOfBathRooms.map((bathRoom, index) => (
+                                                    <View key={index} className="flex-row items-center bg-gray-200 rounded-full px-3 py-1 mr-2 mb-2">
+                                                        <MaterialIcons name="check" size={16} color="green" />
+                                                        <Text className="ml-1 text-black">{getKeyByValue(bathRoom)}</Text>
+                                                    </View>
+                                                ))
+                                            ) : (
+                                                <Text className="text-gray-500">{t("notAvailable")}</Text>
+                                            )}
                                         </View>
                                     </>
                                 )}

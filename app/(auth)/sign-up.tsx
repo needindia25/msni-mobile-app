@@ -116,7 +116,15 @@ const SignUp = () => {
           district: form.district,
         }),
       });
-
+      if (response.status === 401) {
+        Alert.alert("Session expired", "Please login again.", [
+          {
+            text: "OK",
+            onPress: () => router.push(`/(auth)/sign-in`),
+          },
+        ]);
+        return;
+      }
       if (response.ok) {
         setShowSuccessModal(true);
       } else {

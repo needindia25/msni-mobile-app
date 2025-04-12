@@ -37,10 +37,10 @@ const ChooseSubscription = () => {
                         [
                             {
                                 text: t("ok"),
+                                onPress: () => router.push('/(auth)/sign-in'),
                             },
                         ]
-                    ); // Use translation key
-                    return;
+                    );
                 }
                 const response = await fetchAPI(
                     `${constants.API_URL}/master/subscriotion/${userInfo.user_type_id}/list`,

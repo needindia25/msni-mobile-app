@@ -1,6 +1,7 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Image, TouchableOpacity, Text, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { router } from "expo-router";
 import { constants } from '@/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
@@ -105,6 +106,14 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
         }),
       });
       console.log("imge upload response:", response);
+      if (response.status === 401) {
+        Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"), [
+          {
+            text: t("ok"),
+            onPress: () => router.push(`/(auth)/sign-in`),
+          },
+        ]);
+      }
       if (response.ok) {
         const data = await response.json();
         return data.filePath;

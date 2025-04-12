@@ -14,6 +14,7 @@ const Page = () => {
       const token = await AsyncStorage.getItem('token');
       console.log(`token: ${token}`)
       setIsSignedIn(!!token);
+      
       if (!!token) {
         const userInfo = await AsyncStorage.getItem('user_info');
         console.log(`userInfo: ${userInfo}`)

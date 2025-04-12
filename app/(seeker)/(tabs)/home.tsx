@@ -279,8 +279,8 @@ const Home = () => {
           </View>
         ) : (
           <>
-            <Text className="text-2xl font-bold text-center mb-5">{t("searchProperties")}</Text>
-            <View className="mb-5">
+            <Text className="text-2xl font-bold text-center mt-4">{t("searchProperties")}</Text>
+            <View className="mt-4">
               <View>
                 <View className="flex-row flex-wrap justify-between mt-5">
                   {staticData.propertyForOptions.map((pref) => (
@@ -375,7 +375,7 @@ const Home = () => {
             </View>
             {searchData.propertyType === 'Full House' && (
               <>
-                <View className="mb-5">
+                <View className="mt-4">
                   <Text className="text-lg font-bold mb-3">{t("housingType")}</Text>
                   <TouchableOpacity
                     className="bg-gray-100 rounded-lg p-3 mb-3 w-full"
@@ -385,7 +385,7 @@ const Home = () => {
                   </TouchableOpacity>
                 </View>
 
-                <View className="mb-5">
+                <View className="mt-4">
                   <Text className="text-lg font-bold mb-3">{t("bhkType")}</Text>
                   <TouchableOpacity
                     className="bg-gray-100 rounded-lg p-3 mb-3 w-full"
@@ -394,7 +394,7 @@ const Home = () => {
                     <Text className="text-center">{selectedBhkTypes.length > 0 ? selectedBhkTypes.map((val) => { return getKeyByValue(val) }).join(', ') : t("selectBhkType")}</Text>
                   </TouchableOpacity>
                 </View>
-                <View className="mb-5">
+                <View className="mt-4">
                   <Text className="text-lg font-bold mb-3">{t("familyPreference")}</Text>
                   <View className="flex-row flex-wrap justify-between">
                     {staticData.familyPreferenceOptions.map((familyPreference, index) => (
@@ -419,7 +419,7 @@ const Home = () => {
                     ))}
                   </View>
                 </View>
-                {/* <View className="mb-5">
+                {/* <View className="mt-4">
                   <Text className="text-lg font-bold mb-3">{t("furnishing")}</Text>
                   <View>
                     <CustomRadioGroup
@@ -430,7 +430,7 @@ const Home = () => {
                   </View>
                 </View> */}
 
-                {/* <View className="mb-5">
+                {/* <View className="mt-4">
                   <Text className="text-lg font-bold mb-3">{t("foodPreference")}</Text>
                   <View>
                     <CustomRadioGroup
@@ -444,7 +444,7 @@ const Home = () => {
             )}
             {(searchData.propertyType === 'PG/Hostel') && (
               <>
-                <View className="mb-5">
+                <View className="mt-4">
                   <Text className="text-lg font-bold mb-3">{t("roomType")}</Text>
                   <TouchableOpacity
                     className="bg-gray-100 rounded-lg p-3 mb-3 w-full"
@@ -453,7 +453,7 @@ const Home = () => {
                     <Text className="text-center">{selectedRoomTypes.length > 0 ? selectedRoomTypes.map((val) => { return getKeyByValue(val) }).join(', ') : t("selectRoomType")}</Text>
                   </TouchableOpacity>
                 </View>
-                <View className="mb-5">
+                <View className="mt-4">
                   <Text className="text-lg font-bold mb-3">{t("genderPreference")}</Text>
                   <View className="flex-row justify-between mb-3">
                     {staticData.genderPreferenceOptions.map((genderPreference, index) => (
@@ -477,7 +477,7 @@ const Home = () => {
               </>
             )}
             {searchData.propertyType === 'Commercial' && (
-              <View className="mb-5">
+              <View className="mt-4">
                 <Text className="text-lg font-bold mb-3">{t("commercialType")}</Text>
                 <TouchableOpacity
                   className="bg-gray-100 rounded-lg p-3 mb-3 w-full"

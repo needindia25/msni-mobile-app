@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { MaterialIcons } from "@expo/vector-icons"; // Import icons
-import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const Services = () => {
@@ -20,7 +20,7 @@ const Services = () => {
     const checkAuth = async () => {
       const token = await AsyncStorage.getItem('token');
       await AsyncStorage.setItem("passServiceId", "");
-      console.log(`token: ${token}`);
+      console.log(`token: ${token}`);      
       if (!!token) {
         const response: any = await fetchAPI(`${constants.API_URL}/user-services/my_property/`, {
           headers: {

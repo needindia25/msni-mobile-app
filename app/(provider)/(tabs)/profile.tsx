@@ -16,36 +16,55 @@ const Profile = () => {
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
     const [subscriptions, setSubscription] = useState<Subscription[]>([]);
     const [selectedLanguage, setSelectedLanguage] = useState<string>(i18n.language); // Track selected language
+    const [selectedRole, setSelectedRole] = useState(1); // Track selected language
 
     useEffect(() => {
         const checkAuth = async () => {
-            const token = await AsyncStorage.getItem('token');
-            if (!!token) {
-                const userInfo = await AsyncStorage.getItem('user_info');
-                setUserInfo(userInfo ? JSON.parse(userInfo) : null);
-            }
+            const userInfo = await AsyncStorage.getItem('user_info');
+            setUserInfo(userInfo ? JSON.parse(userInfo) : null);
+            setSelectedRole(userInfo ? JSON.parse(userInfo).user_type_id : 1);
             setLoading(false);
         };
         checkAuth();
     }, []);
 
+    const handleSelectedRole = async (role: number) => {
+        if (role === selectedRole) return; // No change in role
+        Alert.alert(
+            t("switchUser"), // Use translation key
+            (role == 1 ? t("seekerSwitchonfirmation") : t("providerSwitchConfirmation")), // Use translation key
+            [
+                { text: t("cancel"), style: "cancel" }, // Use translation key
+                {
+                    text: t("ok"), // Use translation key
+                    style: "destructive",
+                    onPress: async () => {
+                        let userInfo = await AsyncStorage.getItem('user_info');
+                        console.log('user info:', userInfo);
+                        const parsedUserInfo = userInfo ? JSON.parse(userInfo) : null;
+                        if (parsedUserInfo) {
+                            parsedUserInfo.user_type_id = role;
+                            setUserInfo(parsedUserInfo);
+                            console.log('Updated user info:', parsedUserInfo);
+                            await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
+                            if (role === 1) {
+                                router.push('/(seeker)/(tabs)/home');
+                            }
+                            else if (role === 2) {
+                                router.push('/(provider)/(tabs)/home');
+                            }
+                        }
+                    },
+                },
+            ]
+        );
+    }
     useEffect(() => {
         const fetchSubscriptions = async () => {
             try {
                 if (userInfo === null) return;
 
                 const token = await AsyncStorage.getItem('token');
-                const refresh = await AsyncStorage.getItem('refresh');
-                if (!token || !refresh) {
-                    Alert.alert(t("error"), t("noTokenError"),
-                        [
-                            {
-                                text: t("ok"),
-                            },
-                        ]
-                    ); // Use translation key
-                    return;
-                }
                 const response = await fetchAPI(
                     `${constants.API_URL}/user/plan`,
                     {
@@ -109,7 +128,7 @@ const Profile = () => {
                 <ScrollView contentContainerStyle={{ paddingBottom: 30 }} showsVerticalScrollIndicator={false}>
                     {/* Profile Title */}
                     <Text className="text-3xl font-extrabold text-center text-gray-800 mb-6">
-                        {t("profile")}
+                        {userInfo?.user_type_id === 1 ? t("seekerProfile") : t("providerProfile")}
                     </Text>
 
                     {/* User Info */}
@@ -123,34 +142,33 @@ const Profile = () => {
                         <Text className="text-gray-600 text-sm">+91 {userInfo?.email.split('@')[0]}</Text>
                         <Text className="text-gray-600 text-sm">{userInfo?.code}</Text>
                         <Text className="text-green-600 text-base mt-1 font-medium">
-                            {userInfo?.user_type_id === 1 ? "Seeker" : "Provider"}
+                            {userInfo?.user_type_id === 1 ? t("seeker") : t("provider")}
                         </Text>
                     </View>
 
-                    {/* Language Selector Title */}
+                    {/* Switch Role Title */}
                     <Text className="text-xl font-bold text-center text-gray-800 mb-4">
-                        {t("selectLanguage")}
+                        {t("switchUser")}
                     </Text>
 
-                    {/* Language Options */}
+                    {/* Switch Role Options */}
                     <View className="flex-row justify-center mb-6">
                         {[
-                            { code: "en", name: "English" },
-                            { code: "hi", name: "हिंदी" },
-                        ].map((lang) => (
+                            { code: 1, name: t("seeker") },
+                            { code: 2, name: t("provider") },
+                        ].map((role) => (
                             <TouchableOpacity
-                                key={lang.code}
-                                className={`rounded-full px-5 py-3 mx-2 shadow-md ${selectedLanguage === lang.code
-                                        ? "bg-green-500"
-                                        : "bg-gray-300"
+                                key={role.code}
+                                className={`rounded-full px-5 py-3 mx-2 shadow-md ${selectedRole === role.code
+                                    ? "bg-green-500"
+                                    : "bg-gray-300"
                                     }`}
-                                onPress={() => changeLanguage(lang.code)}
+                                onPress={() => handleSelectedRole(role.code)}
                             >
-                                <Text className="text-white font-bold">{lang.name}</Text>
+                                <Text className="text-white font-bold">{role.name}</Text>
                             </TouchableOpacity>
                         ))}
                     </View>
-
                     {/* Subscription Section */}
                     {subscriptionPlans.length > 0 ? (
                         <FlatList
@@ -170,7 +188,7 @@ const Profile = () => {
                             )}
                         />
                     ) : (
-                        <View className="items-center bg-yellow-50 rounded-xl p-6 shadow-sm mt-6">
+                        <View className="items-center bg-yellow-50 rounded-xl p-6 shadow-sm mt-6 mb-6 ">
                             <Text className="text-xl font-bold text-gray-800 mb-3">
                                 {t("noActiveSubscription")}
                             </Text>
@@ -184,6 +202,31 @@ const Profile = () => {
                             </TouchableOpacity>
                         </View>
                     )}
+
+                    {/* Language Selector Title */}
+                    <Text className="text-xl font-bold text-center text-gray-800 mb-4">
+                        {t("selectLanguage")}
+                    </Text>
+
+                    {/* Language Options */}
+                    <View className="flex-row justify-center mb-6">
+                        {[
+                            { code: "en", name: "English" },
+                            { code: "hi", name: "हिंदी" },
+                        ].map((lang) => (
+                            <TouchableOpacity
+                                key={lang.code}
+                                className={`rounded-full px-5 py-3 mx-2 shadow-md ${selectedLanguage === lang.code
+                                    ? "bg-green-500"
+                                    : "bg-gray-300"
+                                    }`}
+                                onPress={() => changeLanguage(lang.code)}
+                            >
+                                <Text className="text-white font-bold">{lang.name}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+
                 </ScrollView>
             )}
         </SafeAreaView>

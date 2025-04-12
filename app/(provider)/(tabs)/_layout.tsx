@@ -2,6 +2,8 @@ import { Tabs } from "expo-router";
 import { Image, ImageSourcePropType, View, Text } from "react-native";
 import { icons } from "@/constants";
 import { useTranslation } from "react-i18next"; // Import useTranslation
+// import Profile from "@/components/profile";
+// import Support from "@/components/support";
 
 const TabIcon = ({
     source,

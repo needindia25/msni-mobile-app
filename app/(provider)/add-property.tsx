@@ -51,13 +51,13 @@ const MultiStepForm = () => {
     floorNumber: 0,
     numberOfBedRooms: 1,
     numberOfBalconies: 0,
-    numberOfBathRooms: 0,
+    numberOfBathRooms: [] as string[],
     ageOfProperty: 0,
     furnishing: "",
     parking: "",
     basicAmenities: [] as string[],
     additionalAmenities: [] as string[],
-    sourceOfWater: "",
+    sourceOfWater: [] as string[],
     images: [] as string[],
   });
 
@@ -66,12 +66,12 @@ const MultiStepForm = () => {
   const [districts, setDistricts] = useState<{ id: number; name: string }[]>([]);
   const staticData = getStaticData(t); // Get static data with translations
 
-  const {
-    userAddress,
-    destinationAddress,
-    setDestinationLocation,
-    setUserLocation,
-  } = useLocationStore();
+  // const {
+  //   userAddress,
+  //   destinationAddress,
+  //   setDestinationLocation,
+  //   setUserLocation,
+  // } = useLocationStore();
   const stateOptions = states.map((state) => ({
     label: state.name,
     value: state.id,
@@ -110,7 +110,17 @@ const MultiStepForm = () => {
             ...{
               images: serviceResponse["options"].images && serviceResponse["options"].images.length > 0
                 ? serviceResponse["options"].images.map((image: string) => image.replace("www.", "admin.")) // Replace "www." with "admin."
-                : [`${constants.BASE_URL}/media/no-image-found.png`],
+                : [],
+              sourceOfWater: serviceResponse["options"].sourceOfWater
+                ? (typeof serviceResponse["options"].sourceOfWater === "string"
+                  ? [serviceResponse["options"].sourceOfWater]
+                  : serviceResponse["options"].sourceOfWater)
+                : [],
+              numberOfBathRooms: serviceResponse["options"].numberOfBathRooms
+                ? (typeof serviceResponse["options"].numberOfBathRooms === "number"
+                  ? [serviceResponse["options"].numberOfBathRooms + " Bath Room" + (serviceResponse["options"].numberOfBathRooms > 1 ? "s" : "")]
+                  : serviceResponse["options"].numberOfBathRooms)
+                : [],
             }
           }));
 
@@ -589,7 +599,7 @@ const MultiStepForm = () => {
                   {errors.address && <Text className="text-red-500">{errors.address}</Text>}
 
                   {/* <View className="mb-[20px]"></View> */}
-                    {/* <GoogleTextInput
+                  {/* <GoogleTextInput
                         icon={icons.target}
                         initialLocation={userAddress ? (() => {
                           const parsedAddress = typeof userAddress === "string" ? JSON.parse(userAddress) : userAddress;
@@ -680,12 +690,12 @@ const MultiStepForm = () => {
                         placeholder={t("selectNumberOfBalconies")}
                         onChange={(selectedItem: DropdownProps) => handleInputChange("numberOfBalconies", selectedItem.value)}
                       />
-                      <CustomDropdown
+                      <CustomMultiDropdown
                         label={t("numberOfBathRooms")}
                         data={staticData.bathRooms}
                         value={formData.numberOfBathRooms}
                         placeholder={t("selectNumberOfBathRooms")}
-                        onChange={(selectedItem: DropdownProps) => handleInputChange("numberOfBathRooms", selectedItem.value)}
+                        onChange={(selectedItems: DropdownProps[]) => handleInputChange("numberOfBathRooms", selectedItems.map(item => item.value))}
                       />
                     </>
                   )}
@@ -737,12 +747,12 @@ const MultiStepForm = () => {
                     onChange={(selectedItems: DropdownProps[]) => handleInputChange("additionalAmenities", selectedItems.map(item => item.value))}
                   />
 
-                  <CustomDropdown
+                  <CustomMultiDropdown
                     label={t("sourceOfWater")}
                     data={staticData.sourceOfWaterOptions}
                     value={formData.sourceOfWater}
                     placeholder={t("selectSourceOfWater")}
-                    onChange={(selectedItem: DropdownProps) => handleInputChange("sourceOfWater", selectedItem.value)}
+                    onChange={(selectedItems: DropdownProps[]) => handleInputChange("sourceOfWater", selectedItems.map(item => item.value))}
                   />
                 </View>
               )}

@@ -58,6 +58,15 @@ const SignIn = () => {
         },
         body: JSON.stringify({ username, password: constants.DEFAULT_PASSWORD }),
       });
+      if (response.status === 401) {
+        Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"), [
+          {
+            text: t("ok"),
+            onPress: () => router.push(`/(auth)/sign-in`),
+          },
+        ]);
+        return;
+      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null); // Handle JSON parsing errors
