@@ -3,7 +3,7 @@ import { Alert, View, Text, TouchableOpacity, SafeAreaView, ScrollView, TextInpu
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import CustomCheckBox from '@/components/CustomCheckBox';
 import CustomRadioGroup from '@/components/CustomRadioGroup';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 // import ComingSoon from '@/components/ComingSoon';
 import { fetchAPI } from "@/lib/fetch";
 import { Dropdown } from 'react-native-element-dropdown';
@@ -167,8 +167,17 @@ const Home = () => {
 
   const [loading, setLoading] = useState(true);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      const resetTab = async () => {
+        await AsyncStorage.setItem("selectedTab", "");
+      };
+      resetTab();
+    }, [])
+  );
+
   const validateForm = () => {
-    console.log("Form data:", searchData);
+    // console.log("Form data:", searchData);
     if (searchData.state === 0) {
       Alert.alert(
         t("error"),
@@ -211,7 +220,7 @@ const Home = () => {
     if (!validateForm()) {
       return;
     }
-    
+
     // saveSearchData(searchData);
     router.push({
       pathname: '/(seeker)/search-list',

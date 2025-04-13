@@ -47,7 +47,7 @@ const SearchList = () => {
                     },
                     body: JSON.stringify(filtersData), // Send filters as JSON
                 });
-                console.log("API Response:", response); // Log the API response
+                // console.log("API Response:", response); // Log the API response
                 setListings(transformData(response));
             }
             setLoading(false);

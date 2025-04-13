@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, Alert, FlatList, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { Subscription, UserInfo } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { constants } from '@/constants';
@@ -9,7 +9,7 @@ import SubscriptionCard from '@/components/SubscriptionCard';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 
-const Profile = () => {
+const ProfilePage = () => {
     const { t, i18n } = useTranslation(); // Initialize translation hook
     const router = useRouter();
     const [loading, setLoading] = useState(true);
@@ -27,6 +27,15 @@ const Profile = () => {
         };
         checkAuth();
     }, []);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            const resetTab = async () => {
+                await AsyncStorage.setItem("selectedTab", "");
+            };
+            resetTab();
+        }, [])
+    );
 
     const handleSelectedRole = async (role: number) => {
         if (role === selectedRole) return; // No change in role
@@ -251,4 +260,4 @@ const Profile = () => {
     );
 };
 
-export default Profile;
+export default ProfilePage;

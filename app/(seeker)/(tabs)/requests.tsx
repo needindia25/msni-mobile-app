@@ -1,54 +1,80 @@
-import { constants, icons } from '@/constants';
+import { constants } from '@/constants';
 import { fetchAPI } from '@/lib/fetch';
 import { Listing } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
+// import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useState } from 'react';
-import { MaterialIcons } from "@expo/vector-icons";
-import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Alert } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
-import en from '../../locales/en';
-
+import ListingCard from '@/components/ListingCard';
 
 const Requests = () => {
     const { t } = useTranslation(); // Initialize translation hook
-    const screenWidth = Dimensions.get('window').width;
     const router = useRouter();
-    
-    const [loading, setLoading] = useState(true);
-    const [listings, setListings] = useState<Listing[]>([]);
+    // const isFocused = useIsFocused();
+    const defaultTab = true;
 
-    useEffect(() => {
-        const checkAuth = async () => {
-            const token = await AsyncStorage.getItem('token');
-            await AsyncStorage.setItem("passServiceId", "");
-            if (!token) {
-                    Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-                      [
-                        {
-                          text: t("ok"),
-                          onPress: () => {
-                            // Perform the action when "OK" is pressed
-                            router.replace("/(auth)/sign-in");
-                          },
-                        },
-                      ]
-                    );
-                  }
-            if (!!token) {
-                const response: any = await fetchAPI(`${constants.API_URL}/user-services/my_requested_services/`, t, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
+    const [loading, setLoading] = useState(true);
+    const [requestListings, setRequestListings] = useState<Listing[]>([]);
+    const [favouriteListings, setFavouriteListings] = useState<Listing[]>([]);
+    const [showRequests, setShowRequests] = useState(defaultTab); // State to toggle between Requests and Favorites
+
+    const fetchDetails = async () => {
+        const token = await AsyncStorage.getItem('token');
+        await AsyncStorage.setItem("passServiceId", "");
+        if (!token) {
+            Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"), [
+                {
+                    text: t("ok"),
+                    onPress: () => {
+                        router.replace("/(auth)/sign-in");
                     },
-                });
-                console.log("API Response:", response); // Log the API response
-                setListings(transformData(response));
-            }
-            setLoading(false);
-        };
-        checkAuth();
-    }, []);
+                },
+            ]);
+            return;
+        }
+        if (!!token) {
+            const requestResponse: any = await fetchAPI(`${constants.API_URL}/user-services/my_requested_services/`, t, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            // console.log("API Response:", requestResponse); // Log the API response
+            setRequestListings(transformData(requestResponse));
+
+            const favouriteResponse: any = await fetchAPI(`${constants.API_URL}/user-services/my_favorite_services/`, t, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            // console.log("API Response:", favouriteResponse); // Log the API response
+            setFavouriteListings(transformData(favouriteResponse));
+        }
+        setLoading(false);
+    };
+    useEffect(() => {        
+        fetchDetails();
+    }, [showRequests]);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            const fetchData = async () => {
+                console.log("Request screen is focused");
+                const selectedTab = await AsyncStorage.getItem('selectedTab');
+                console.log("Request screen is focused", selectedTab);
+                setShowRequests(selectedTab === "favorites" ? false : (selectedTab === "requests" ? true : defaultTab));
+            };
+            fetchData();
+        }, [])
+    );
+
+    const handleShowRequests = async (value: boolean) => {
+        setShowRequests(value);
+        await AsyncStorage.setItem("selectedTab", value ? "requests" : "favorites");
+    };
 
     const transformData = (data: any[]): Listing[] => {
         const sortedData = data.sort((a, b) => b.id - a.id);
@@ -72,34 +98,32 @@ const Requests = () => {
     };
 
     const handleView = async (id: number) => {
-        try {
-            await AsyncStorage.setItem("passServiceId", id.toString());
-            router.push(`/(seeker)/property-details`);
-        } catch (error) {
-            console.error("Error saving service ID to AsyncStorage:", error);
-            Alert.alert(t("error"), t("errorSavingServiceId"),
-                [
-                    {
-                        text: t("ok"),
-                    },
-                ]
-            ); // Use translation key
-        }
+        await AsyncStorage.setItem("passServiceId", id.toString());
+        router.push(`/(seeker)/property-details`);
     };
 
-
-    const getKeyByValue = (value: string): string => {
-        // Find the key by value
-        const key = Object.keys(en.translation).find((k) => en.translation[k as keyof typeof en.translation] === value);
-
-        // Return the key or fallback to the lowercase version of the value
-        if (key) {
-            return t(key);
-        }
-        return value;
-    };
     return (
         <>
+            <View className="flex-row justify-center bg-white p-4">
+                <TouchableOpacity
+                    className={`flex-1 px-4 py-2 rounded-lg ${showRequests ? "bg-green-500" : "bg-gray-300"}`}
+                    onPress={() => handleShowRequests(true)}
+                >
+                    <Text className={`text-center font-bold ${showRequests ? "text-white" : "text-gray-700"}`}>
+                        {t("myRequests")}
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    className={`flex-1 px-4 py-2 rounded-lg ml-2 ${!showRequests ? "bg-green-500" : "bg-gray-300"}`}
+                    onPress={() => handleShowRequests(false)}
+                >
+                    <Text className={`text-center font-bold ${!showRequests ? "text-white" : "text-gray-700"}`}>
+                        {t("myFavorites")}
+                    </Text>
+                </TouchableOpacity>
+            </View>
+
+            {/* Listings */}
             <ScrollView className="bg-gray-100 p-5">
                 {loading ? (
                     <View className="flex-1 justify-center mt-[60%] items-center">
@@ -108,74 +132,25 @@ const Requests = () => {
                     </View>
                 ) : (
                     <>
-                        {listings.length > 0 ? (
-                            listings.map((listing: any) => (
-                                <View key={listing.id} className="bg-white rounded-lg shadow-md mb-5 p-5 relative">
-                                    {/* Favorite Button */}
-                                    {/* <TouchableOpacity
-                                        className="absolute top-3 right-3 bg-gray-200 p-2 rounded-full"
-                                        onPress={() => console.log("Favorite clicked")}
-                                    >
-                                        <FontAwesome5 name="heart" size={16} color="#FF7F19" />
-                                    </TouchableOpacity> */}
-
-                                    {/* Image Carousel */}
-                                    <ScrollView horizontal pagingEnabled className="flex-row mb-3">
-                                        {listing.images.map((image: string, index: number) => (
-                                            <View key={index} className="relative">
-                                                <Image
-                                                    source={{ uri: image }}
-                                                    style={{ width: screenWidth - 40 }}
-                                                    className="h-48 rounded-lg mr-2"
-                                                />
-                                                {/* Add an overlay for image count */}
-                                                <View className="absolute bottom-2 right-2 bg-black bg-opacity-50 px-2 py-1 rounded-full">
-                                                    <Text className="text-white text-xs">{`${index + 1}/${listing.images.length}`}</Text>
-                                                </View>
-                                            </View>
-                                        ))}
-                                    </ScrollView>
-
-                                    {/* Title */}
-                                    <Text className="text-xl font-bold mb-2 text-gray-800">{listing.title}</Text>
-
-                                    {/* Location */}
-                                    <View className="flex-row items-center mb-3">
-                                        <MaterialIcons name="location-on" size={20} color="#4CAF50" />
-                                        <Text className="text-gray-600 ml-2">
-                                            {listing.city}, {listing.districtName}, {listing.stateName}
-                                        </Text>
-                                    </View>
-
-                                    {/* Price */}
-                                    <View className="flex-row justify-between items-center mb-3">
-                                        <Text className="text-blue-600 text-lg font-bold">
-                                            {listing.price} <Text className="text-sm text-gray-500">{t("pricePerMonth")}</Text>
-                                        </Text>
-                                    </View>
-
-                                    {/* Property Type */}
-                                    <View className="flex-row justify-between items-center mb-3">
-                                        <Text className="text-gray-700 text-base font-medium">
-                                            {getKeyByValue(listing.propertyType)}
-                                        </Text>
-                                    </View>
-
-                                    {/* View Details Button */}
-                                    <TouchableOpacity
-                                        className="bg-blue-500 py-2 px-5 rounded-lg mt-3"
-                                        onPress={() => handleView(listing.id)}
-                                    >
-                                        <Text className="text-white text-center font-bold">{t("viewDetails")}</Text>
-                                    </TouchableOpacity>
+                        {showRequests ? (
+                            requestListings.length > 0 ? (
+                                requestListings.map((listing: any) => (
+                                    <ListingCard key={listing.id} listing={listing} handleView={handleView} />
+                                ))
+                            ) : (
+                                <View className="flex-1 items-center justify-center bg-white p-5">
+                                    <Text className="text-xl font-bold text-black mb-2">{t("noRequestFound")}</Text>
+                                    <Text className="text-base text-gray-600 text-center mb-5">{t("noRequestMessage")}</Text>
                                 </View>
+                            )
+                        ) : favouriteListings.length > 0 ? (
+                            favouriteListings.map((listing: any) => (
+                                <ListingCard key={listing.id} listing={listing} handleView={handleView} />
                             ))
                         ) : (
                             <View className="flex-1 items-center justify-center bg-white p-5">
-                                <Text className="text-xl font-bold text-black mb-2">{t("noRequestFound")}</Text>
-                                <Text className="text-base text-gray-600 text-center mb-5">
-                                    {t("noRequestMessage")} {/* Message for no properties matching the filter */}
-                                </Text>
+                                <Text className="text-xl font-bold text-black mb-2">{t("noFavoritesFound")}</Text>
+                                <Text className="text-base text-gray-600 text-center mb-5">{t("noFavoritesMessage")}</Text>
                             </View>
                         )}
                     </>

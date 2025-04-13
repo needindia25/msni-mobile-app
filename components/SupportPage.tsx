@@ -1,12 +1,22 @@
 import { icons } from '@/constants';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text, SafeAreaView, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Support = () => {
+const SupportPage = () => {
   const { t } = useTranslation(); // Initialize translation hook
-  const router = useRouter();
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const resetTab = async () => {
+        await AsyncStorage.setItem("selectedTab", "");
+      };
+      resetTab();
+    }, [])
+  );
 
   return (
     <SafeAreaView className="flex h-full items-center justify-between bg-white">
@@ -30,4 +40,4 @@ const Support = () => {
   );
 };
 
-export default Support;
+export default SupportPage;

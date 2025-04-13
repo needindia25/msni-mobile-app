@@ -5,9 +5,8 @@ import { router } from "expo-router";
 export const fetchAPI = async (url: string, t: (key: string) => string, options?: RequestInit) => {
   try {
     const response = await fetch(url, options);
-    console.log("fetchAPI: ", response)
-
     if (response.status === 401) {
+      console.log("fetchAPI: ", response)
       Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"), [
         {
           text: t("ok"),

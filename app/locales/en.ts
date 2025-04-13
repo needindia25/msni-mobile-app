@@ -316,6 +316,10 @@ const en = {
         commonBathRomm: "Common Bath Room",
         sessionExpired: "Session expired",
         pleaseLoginAgain: "Please login again.",
+        myRequests: "My Requests",
+        myFavorites: "My Favorites",
+        noFavoritesFound: "No Favorites Found",
+        noFavoritesMessage: "You have not added any favorites yet.",
     },
 };
 

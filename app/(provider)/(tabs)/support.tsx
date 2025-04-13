@@ -1,5 +1,5 @@
-import Support from "@/components/support";
+import SupportPage from "@/components/SupportPage";
 
-export default function SupportScreen() {
-    return <Support />;
+export default function Support() {
+    return <SupportPage />;
 }
