@@ -320,6 +320,8 @@ const en = {
         myFavorites: "My Favorites",
         noFavoritesFound: "No Favorites Found",
         noFavoritesMessage: "You have not added any favorites yet.",
+        serviceRequests: "Service Requests",
+        requestedOn: "Requested On",
     },
 };
 

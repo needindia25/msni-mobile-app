@@ -12,7 +12,6 @@ import en from '../locales/en';
 
 const PropertyDetails = () => {
     const { t } = useTranslation(); // Initialize translation hook
-    const screenWidth = Dimensions.get('window').width;
     const router = useRouter();
     const [id, setId] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);

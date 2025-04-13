@@ -85,6 +85,7 @@ const Layout = () => {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="add-property" options={{ headerShown: false }} />
         <Stack.Screen name="property-details" options={{ headerShown: false }} />
+        <Stack.Screen name="service-requests" options={{ headerShown: false }} />
       </Stack>
     </>
   );

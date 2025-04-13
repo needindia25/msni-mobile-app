@@ -1,53 +1,40 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 interface Request {
     initials: string;
     name: string;
     phone: string;
-    property: string;
-    location: string;
-    rating: number;
-    price: string;
-    duration: string;
-    expiration: string;
-    favorites: number;
+    date_created: string;
 }
 
 const RequestCard: React.FC<{ request: Request }> = ({ request }) => {
+    const { t } = useTranslation();
+
     return (
-        <View className="border border-gray-300 rounded-lg p-5 mb-5 mx-2 flex-1">
-            <View className="flex-row mb-3">
-                <View className="flex-1 pr-2 items-center">
-                    <View className="bg-gray-300 rounded-full w-12 h-12 items-center justify-center mr-3">
-                        <Text className="text-xl text-white">{request.initials}</Text>
-                    </View>
-                    <View>
-                        <Text className="text-lg font-semibold">{request.name}</Text>
-                        <Text className="text-gray-500">{request.phone}</Text>
-                    </View>
+        <View className="border border-gray-300 rounded-lg p-5 mb-5 mx-2 bg-white shadow-md">
+            {/* Header Row */}
+            <View className="flex-row items-center mb-4">
+                <View className="bg-blue-500 rounded-full w-14 h-14 items-center justify-center mr-4">
+                    <Text className="text-xl text-white font-bold">{request.initials}</Text>
                 </View>
-                <View className="flex-1 pl-2">
-                    <Text className="text-lg font-bold text-black mb-1">{request.property}</Text>
-                    <Text className="text-gray-500 mb-1">{request.location}</Text>
-                    <View className="flex-row items-center mb-1">
-                        <Text className="text-yellow-500">★</Text>
-                        <Text className="text-yellow-500">★</Text>
-                        <Text className="text-yellow-500">★</Text>
-                        <Text className="text-yellow-500">★</Text>
-                        <Text className="text-yellow-500">★</Text>
-                        <Text className="text-gray-500 ml-1">{request.rating}</Text>
-                    </View>
-                    <Text className="text-1xl text-blue-500 mb-1">
-                        {request.price} {"  "}
-                        <Text className="text-gray-600 mb-5 pl-5">{request.duration}</Text>
-                    </Text>
+                <View className="flex-1">
+                    <Text className="text-lg font-semibold text-gray-800">{request.name}</Text>
                 </View>
+                <TouchableOpacity className="flex-row items-center">
+                    <MaterialIcons name="phone" size={24} color="#4CAF50" />
+                    <Text className="text-lg font-semibold text-gray-800 ml-2">+91 {request.phone}</Text>
+                </TouchableOpacity>
             </View>
-            <Text className="text-gray-500 mb-1 absolute bottom-2 left-2">{request.expiration}</Text>
-            <View className="flex-row items-center absolute bottom-2 right-2">
-                <Text className="text-red-500">❤</Text>
-                <Text className="text-gray-500 ml-1">{request.favorites}</Text>
+
+            {/* Divider */}
+            <View className="border-t border-gray-200 my-3"></View>
+
+            {/* Date Row */}
+            <View className="flex-row justify-between items-center">
+                <Text className="text-gray-500 text-sm">{`${t("requestedOn")}: ${request.date_created}`}</Text>
             </View>
         </View>
     );

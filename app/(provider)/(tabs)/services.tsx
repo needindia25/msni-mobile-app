@@ -11,11 +11,30 @@ import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const Services = () => {
   const { t } = useTranslation(); // Initialize translation hook
-  const screenWidth = Dimensions.get('window').width;
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
   const [listings, setListings] = useState<Listing[]>([]);
+
+  const handleViewRequests = async (service: any) => {
+    const token = await AsyncStorage.getItem('token');
+    if (!token) {
+      Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+        [
+          {
+            text: t("ok"),
+            onPress: () => {
+              // Perform the action when "OK" is pressed
+              router.replace("/(auth)/sign-in");
+            },
+          },
+        ]
+      );
+    } else {
+      await AsyncStorage.setItem("passService", JSON.stringify(service));
+      router.push('/(provider)/service-requests');
+    }
+  }
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -23,18 +42,18 @@ const Services = () => {
       await AsyncStorage.setItem("passServiceId", "");
       console.log(`token: ${token}`);
       if (!token) {
-              Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-                [
-                  {
-                    text: t("ok"),
-                    onPress: () => {
-                      // Perform the action when "OK" is pressed
-                      router.replace("/(auth)/sign-in");
-                    },
-                  },
-                ]
-              );
-            }
+        Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+          [
+            {
+              text: t("ok"),
+              onPress: () => {
+                // Perform the action when "OK" is pressed
+                router.replace("/(auth)/sign-in");
+              },
+            },
+          ]
+        );
+      }
       if (!!token) {
         const response: any = await fetchAPI(`${constants.API_URL}/user-services/my_property/`, t, {
           headers: {
@@ -80,16 +99,6 @@ const Services = () => {
             {listings.length > 0 ? (
               listings.map((listing: any) => (
                 <View key={listing.id} className="bg-white rounded-lg shadow-md mb-5 p-5">
-                  {/* <ScrollView horizontal pagingEnabled className="flex-row mb-3">
-                    {listing.images.map((image: string, index: number) => (
-                      <Image
-                        key={index}
-                        source={{ uri: image }}
-                        style={{ width: screenWidth - 40 }}
-                        className="h-48 rounded-lg mr-2"
-                      />
-                    ))}
-                  </ScrollView> */}
                   <ImageCarousel images={listing.images} />
                   <Text className="text-xl font-bold mb-1">{listing.title}</Text>
                   <Text className="text-gray-500 mb-1">{listing.location}</Text>
@@ -114,7 +123,13 @@ const Services = () => {
 
                   {/* Requests and Favorites Row */}
                   <View className="flex-row justify-between items-center mb-3">
-                    <Text className="text-gray-500">{listing.requests} {t("requests")}</Text>
+                    {listing.requests > 0 ? (
+                      <TouchableOpacity onPress={() => handleViewRequests(listing)}>
+                        <Text className="text-blue-500 underline">{listing.requests} {t("requests")}</Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <Text className="text-gray-500">{listing.requests} {t("requests")}</Text>
+                    )}
                     <View className="flex-row items-center">
                       <Text className="text-red-500 mr-1">❤</Text>
                       <Text className="text-gray-500">{listing.favorites} {t("favorites")}</Text>

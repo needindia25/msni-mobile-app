@@ -322,6 +322,8 @@ const hi = {
         myFavorites: "मेरे पसंदीदा",
         noFavoritesFound: "कोई पसंदीदा नहीं मिला",
         noFavoritesMessage: "आपने अभी तक कोई पसंदीदा नहीं जोड़ा है।",
+        serviceRequests: "सेवा अनुरोध",
+        requestedOn: "अनुरोध किया गया",
     },
 };
 
