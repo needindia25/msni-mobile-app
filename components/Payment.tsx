@@ -9,6 +9,7 @@ import { fetchAPI } from "@/lib/fetch";
 import { PaymentProps } from "@/types/type";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const Payment = ({
   fullName,
@@ -16,6 +17,7 @@ const Payment = ({
   amount,
   subscriptionId,
 }: PaymentProps) => {
+  const { t } = useTranslation(); // Initialize translation hook
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
   const router = useRouter();
@@ -49,6 +51,7 @@ const Payment = ({
         ) => {
           const { paymentIntent, customer } = await fetchAPI(
             "/(api)/(stripe)/create",
+            t,
             {
               method: "POST",
               headers: {
@@ -64,7 +67,7 @@ const Payment = ({
           );
 
           if (paymentIntent.client_secret) {
-            const { result } = await fetchAPI("/(api)/(stripe)/pay", {
+            const { result } = await fetchAPI("/(api)/(stripe)/pay", t, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -91,6 +94,7 @@ const Payment = ({
               }
               const response = await fetchAPI(
                 `${constants.API_URL}/user/payment`,
+                t,
                 {
                   method: 'POST',
                   headers: {
