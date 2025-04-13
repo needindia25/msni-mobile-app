@@ -740,22 +740,24 @@ const MultiStepForm = () => {
               {step === 4 && (
                 <View>
                   {formData.propertyType !== "Land" && (
-                    <CustomDropdown
-                      label={t("furnishing")}
-                      data={staticData.furnishingOptions}
-                      value={formData.furnishing}
-                      placeholder={t("selectFurnishingType")}
-                      onChange={(selectedItem: DropdownProps) => handleInputChange("furnishing", selectedItem.value)}
-                    />
-                  )}
+                    <>
+                      <CustomDropdown
+                        label={t("furnishing")}
+                        data={staticData.furnishingOptions}
+                        value={formData.furnishing}
+                        placeholder={t("selectFurnishingType")}
+                        onChange={(selectedItem: DropdownProps) => handleInputChange("furnishing", selectedItem.value)}
+                      />
 
-                  <CustomDropdown
-                    label={t("parking")}
-                    data={staticData.parkingOptions}
-                    value={formData.parking}
-                    placeholder={t("selectParkingType")}
-                    onChange={(selectedItem: DropdownProps) => handleInputChange("parking", selectedItem.value)}
-                  />
+                      <CustomDropdown
+                        label={t("parking")}
+                        data={staticData.parkingOptions}
+                        value={formData.parking}
+                        placeholder={t("selectParkingType")}
+                        onChange={(selectedItem: DropdownProps) => handleInputChange("parking", selectedItem.value)}
+                      />
+                    </>
+                  )}
 
                   <CustomMultiDropdown
                     label={t("basicAmenities")}
