@@ -12,7 +12,7 @@ const TabIcon = ({
     focused: boolean;
     label: string;
 }) => (
-    <View className="flex items-center">
+    <View className="flex items-center w-16">
         <Image
             source={source}
             resizeMode="contain"
