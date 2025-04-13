@@ -156,7 +156,7 @@ const SignUp = () => {
   useEffect(() => {
     const fetchStates = async () => {
       try {
-        const response = await fetchAPI(`${constants.API_URL}/master/states`);
+        const response = await fetchAPI(`${constants.API_URL}/master/states`, t);
         setStates(response);
       } catch (error) {
         console.error("Error fetching states:", error);
@@ -172,7 +172,7 @@ const SignUp = () => {
       if (form.state) {
         try {
           const response = await fetchAPI(
-            `${constants.API_URL}/master/state/${form.state}/districts`
+            `${constants.API_URL}/master/state/${form.state}/districts`, t
           );
           setDistricts(response);
         } catch (error) {

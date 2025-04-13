@@ -318,6 +318,10 @@ const hi = {
         commonBathRomm: "साझा स्नान कक्ष",
         sessionExpired: "सत्र समाप्त हो गया",
         pleaseLoginAgain: "कृपया फिर से लॉगिन करें।",
+        myRequests: "मेरे अनुरोध",
+        myFavorites: "मेरे पसंदीदा",
+        noFavoritesFound: "कोई पसंदीदा नहीं मिला",
+        noFavoritesMessage: "आपके पास अभी तक कोई पसंदीदा नहीं है।",
     },
 };
 

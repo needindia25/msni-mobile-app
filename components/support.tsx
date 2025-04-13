@@ -1,12 +1,10 @@
 import { icons } from '@/constants';
-import { useRouter } from 'expo-router';
 import React from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, SafeAreaView, Image } from 'react-native';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const Support = () => {
   const { t } = useTranslation(); // Initialize translation hook
-  const router = useRouter();
 
   return (
     <SafeAreaView className="flex h-full items-center justify-between bg-white">

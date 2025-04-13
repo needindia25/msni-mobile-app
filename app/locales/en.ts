@@ -71,8 +71,8 @@ const en = {
         subscribeNow: "Subscribe Now",
         subscriptionError: "Error fetching subscription plans.",
         pricePerMonth: "/month",
-        requests: "request",
-        favorites: "favorites",
+        requests: "Request",
+        favorites: "Favorites",
         contactUs: "Please contact",
         email: "Email",
         phone: "Phone",
@@ -316,6 +316,10 @@ const en = {
         commonBathRomm: "Common Bath Room",
         sessionExpired: "Session expired",
         pleaseLoginAgain: "Please login again.",
+        myRequests: "My Requests",
+        myFavorites: "My Favorites",
+        noFavoritesFound: "No Favorites Found",
+        noFavoritesMessage: "You have no favorites yet.",
     },
 };
 
