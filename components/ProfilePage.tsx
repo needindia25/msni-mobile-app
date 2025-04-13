@@ -116,7 +116,10 @@ const ProfilePage = () => {
     }, [userInfo]);
 
     const getInitialURL = (name: string) => {
-        const names = name.split(' ');
+        let names = name.split(' ');
+        console.log("Names:", names);
+        names = names.filter((n) => n.length > 0); // Filter out any empty strings
+        if (names.length === 0) return "NI"; // Return empty string if no names found
         return names.length > 1 ? names[0][0] + names[1][0] : names[0][0];
     };
 

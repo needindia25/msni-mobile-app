@@ -54,7 +54,10 @@ const ServiceRequests = () => {
   }, []);
 
   const getInitialURL = (name: string) => {
-    const names = name.split(' ');
+    let names = name.split(' ');
+    console.log("Names:", names);
+    names = names.filter((n) => n.length > 0); // Filter out any empty strings
+    if (names.length === 0) return "NI"; // Return empty string if no names found
     return names.length > 1 ? names[0][0] + names[1][0] : names[0][0];
   };
 
@@ -78,7 +81,7 @@ const ServiceRequests = () => {
   return (
     <SafeAreaView className="flex h-full bg-gray-100">
       {/* Header */}
-      <View className="bg-blue-500 py-4 px-5 shadow-md">
+      <View className="bg-blue-500 py-4 px-10 shadow-md">
         <TouchableOpacity onPress={() => router.back()} className="absolute left-5 top-5">
           <MaterialIcons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>

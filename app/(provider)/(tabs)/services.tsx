@@ -70,7 +70,8 @@ const Services = () => {
   }, []);
 
   const transformData = (data: any[]): Listing[] => {
-    const sortedData = data.sort((a, b) => b.id - a.id);
+    let sortedData = data.sort((a, b) => b.id - a.id);
+    sortedData = sortedData.filter((property) => property.service_request_count.requests > 0 || property.service_request_count.favorites > 0 || property.service_request_count.avg_rating > 0);
     return sortedData.map((property) => ({
       id: property.id,
       title: property.title,
