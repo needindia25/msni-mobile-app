@@ -300,6 +300,36 @@ const PropertyDetails = () => {
                             </Text>
                         </View>
 
+                         {/* Rating and Favorite */}
+                         <View className="flex-row justify-between items-center mb-3">
+                            {/* Rating */}
+                            <View className="flex-row items-center">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <TouchableOpacity key={star} onPress={() => handleRating(star)}>
+                                        <MaterialIcons
+                                            name={star <= rating ? "star" : "star-border"}
+                                            size={20}
+                                            color="#FFD700"
+                                        />
+                                    </TouchableOpacity>
+                                ))}
+                                <Text className="text-gray-500 ml-2">({rating})</Text>
+                            </View>
+
+                            {/* Favorite Button */}
+                            <TouchableOpacity
+                                className="bg-gray-200 p-2 rounded-full"
+                                onPress={() => handleFavorites()}
+                            >
+                                <FontAwesome5
+                                    name="heart"
+                                    size={16}
+                                    solid={favorites} // Use solid style for filled heart
+                                    color={favorites ? "#FF7F19" : "gray"} // Orange for filled, gray for empty
+                                />
+                            </TouchableOpacity>
+                        </View>
+
                         {/* Rent and Deposit */}
                         <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
                             <View className="flex-row justify-between mb-3">
