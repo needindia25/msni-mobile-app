@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import Payment from "@/components/Payment";
 import { UserInfo } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NativeModules, Platform, ToastAndroid } from 'react-native';
+const {SabPaisaSDK} = NativeModules
 
 interface SubscriptionCardProps {
     subscriptionId: number;
@@ -50,6 +52,15 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         };
         checkAuth();
     }, []);
+
+    const handleOnPress = () =>{
+        SabPaisaSDK.openSabpaisaSDK(["450","testHellow","sabpaisa","7234323432","sabpaisa@gmail.com",],(errpr:any,message:String,clientTxnId:string)=>{
+          console.log("sdk integrated. Transaction Status: "+message);
+          if (Platform.OS === 'android') {
+            ToastAndroid.show(clientTxnId, ToastAndroid.SHORT);
+          }
+        })
+      }
     if (loading) return null;
     return (
         <View className={`rounded-lg p-5 mb-5 ${isPremium ? 'bg-orange-500' : 'border border-gray-300'}`}>
