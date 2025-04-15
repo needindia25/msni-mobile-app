@@ -4,7 +4,22 @@ export const getStaticData = (t: TFunction) => ({
     propertyForOptions: [
         { label: t("rent"), value: "Rent" },
         { label: t("lease"), value: "Lease" }
-    ],
+    ],    
+    propertyTypeOptionsForSearch: {
+        "Lease": [
+            { label: t("any"), value: "Any" },
+            { label: t("fullHouse"), value: "Full House" },
+            { label: t("commercial"), value: "Commercial" },
+            { label: t("Land"), value: "Land" },
+        ],
+        "Rent": [
+            { label: t("any"), value: "Any" },
+            { label: t("fullHouse"), value: "Full House" },
+            { label: t("pgHostel"), value: "PG/Hostel" },
+            { label: t("commercial"), value: "Commercial" },
+            { label: t("land"), value: "Land" },
+        ],
+    },
     propertyTypeOptions: {
         "Lease": [
             { label: t("fullHouse"), value: "Full House" },
@@ -86,6 +101,7 @@ export const getStaticData = (t: TFunction) => ({
         { label: t("other"), value: "Other" },
     ],
     floors: [
+        { label: t("basement"), value: -1 },
         { label: t("groundFloor"), value: 0 },
         { label: t("1stFloor"), value: 1 },
         { label: t("2ndFloor"), value: 2 },

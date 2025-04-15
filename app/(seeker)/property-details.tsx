@@ -32,7 +32,7 @@ const PropertyDetails = () => {
         districtName: "",
         city: "",
         zip: "",
-        housingType: "",
+        housingType: [] as string[],
         bhkType: "",
         familyPreference: "",
         foodPreference: "",
@@ -120,6 +120,11 @@ const PropertyDetails = () => {
                                 ? (typeof serviceResponse["options"].sourceOfWater === "string"
                                     ? [serviceResponse["options"].sourceOfWater]
                                     : serviceResponse["options"].sourceOfWater)
+                                : [],
+                            housingType: serviceResponse["options"].housingType
+                                ? (typeof serviceResponse["options"].housingType === "string"
+                                    ? [serviceResponse["options"].housingType]
+                                    : serviceResponse["options"].housingType)
                                 : [],
                             numberOfBathRooms: serviceResponse["options"].numberOfBathRooms
                                 ? (typeof serviceResponse["options"].numberOfBathRooms === "number"
@@ -300,8 +305,8 @@ const PropertyDetails = () => {
                             </Text>
                         </View>
 
-                         {/* Rating and Favorite */}
-                         <View className="flex-row justify-between items-center mb-3">
+                        {/* Rating and Favorite */}
+                        <View className="flex-row justify-between items-center mb-3">
                             {/* Rating */}
                             <View className="flex-row items-center">
                                 {[1, 2, 3, 4, 5].map((star) => (
@@ -391,54 +396,38 @@ const PropertyDetails = () => {
                         {formData.propertyType === "Full House" && (
                             <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
                                 {/* Housing Type and BHK Type */}
-                                <View className="flex-row justify-between items-center mb-4">
-                                    <View className="flex-row items-center">
-                                        <MaterialIcons name="home" size={20} color="black" />
-                                        <Text className="text-gray-500 ml-2">{t("housingType")}</Text>
-                                    </View>
-                                    <Text className="text-black font-semibold">{getKeyByValue(formData.housingType) || t("notAvailable")}</Text>
+                                <View className="flex-row items-center">
+                                    <MaterialIcons name="home" size={20} color="black" />
+                                    <Text className="text-gray-500 ml-2">{t("housingType")}</Text>
+                                </View>
+                                <View className="flex-row flex-wrap mb-4 mt-4">
+                                    {formData.housingType.length > 0 ? (
+                                        formData.housingType.map((housingType, index) => (
+                                            <View key={index} className="flex-row items-center bg-gray-200 rounded-full px-3 py-1 mr-2 mb-2">
+                                                <MaterialIcons name="check" size={16} color="green" />
+                                                <Text className="ml-1 text-black">{getKeyByValue(housingType)}</Text>
+                                            </View>
+                                        ))
+                                    ) : (
+                                        <Text className="text-gray-500">{t("notAvailable")}</Text>
+                                    )}
                                 </View>
 
-                                <View className="flex-row justify-between items-center mb-4">
-                                    <View className="flex-row items-center">
-                                        <MaterialIcons name="hotel" size={20} color="black" />
-                                        <Text className="text-gray-500 ml-2">{t("bhkType")}</Text>
-                                    </View>
-                                    <Text className="text-black font-semibold">{getKeyByValue(formData.bhkType) || t("notAvailable")}</Text>
+                                <View className="flex-row items-center">
+                                    <MaterialIcons name="home" size={20} color="black" />
+                                    <Text className="text-gray-500 ml-2">{t("roomType")}</Text>
                                 </View>
-
-                                {/* Preferred Tenancy */}
-                                <View className="flex-row justify-between items-center mb-4">
-                                    <View className="flex-row items-center">
-                                        <MaterialIcons name="group" size={20} color="black" />
-                                        <Text className="text-gray-500 ml-2">{t("preferredTenancy")}</Text>
-                                    </View>
-                                    <Text className="text-black font-semibold">{getKeyByValue(formData.familyPreference) || t("notAvailable")}</Text>
-                                </View>
-
-                                <View className="flex-row justify-between items-center">
-                                    {/* Food Preference */}
-                                    <View className="flex-row items-center">
-                                        <MaterialIcons name="restaurant" size={20} color="black" />
-                                        <Text className="text-gray-500 ml-2">{t("foodPreference")}</Text>
-                                    </View>
-                                    <Text className="text-black font-semibold">
-                                        {formData.foodPreference === "" ? t("notAvailable") : getKeyByValue(formData.foodPreference)}
-                                    </Text>
-                                </View>
-                            </View>
-                        )}
-
-                        {formData.propertyType === "PG/Hostel" && (
-                            <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
-                                {/* <Text className="text-lg font-bold mb-3">{t("roomDetails")}</Text> */}
-
-                                <View className="flex-row justify-between items-center mb-4">
-                                    <View className="flex-row items-center">
-                                        <MaterialIcons name="hotel" size={20} color="black" />
-                                        <Text className="text-gray-500 ml-2">{t("roomType")}</Text>
-                                    </View>
-                                    <Text className="text-black font-semibold">{getKeyByValue(formData.housingType) || t("notAvailable")}</Text>
+                                <View className="flex-row flex-wrap mb-4 mt-4">
+                                    {formData.housingType.length > 0 ? (
+                                        formData.housingType.map((housingType, index) => (
+                                            <View key={index} className="flex-row items-center bg-gray-200 rounded-full px-3 py-1 mr-2 mb-2">
+                                                <MaterialIcons name="check" size={16} color="green" />
+                                                <Text className="ml-1 text-black">{getKeyByValue(housingType)}</Text>
+                                            </View>
+                                        ))
+                                    ) : (
+                                        <Text className="text-gray-500">{t("notAvailable")}</Text>
+                                    )}
                                 </View>
                                 {/* Gender Preference */}
                                 <View className="flex-row justify-between items-center mb-4">
@@ -464,12 +453,21 @@ const PropertyDetails = () => {
                         {formData.propertyType === "Commercial" && (
                             <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
                                 {/* <Text className="text-lg font-bold mb-3">{t("commercialDetails")}</Text> */}
-                                <View className="flex-row justify-between items-center">
-                                    <View className="flex-row items-center">
-                                        <MaterialIcons name="business" size={20} color="black" /> {/* Icon for Commercial Type */}
-                                        <Text className="text-gray-500 ml-2">{t("commercialType")}</Text>
-                                    </View>
-                                    <Text className="text-black font-semibold">{getKeyByValue(formData.housingType) || t("notAvailable")}</Text>
+                                <View className="flex-row items-center">
+                                    <MaterialIcons name="home" size={20} color="black" />
+                                    <Text className="text-gray-500 ml-2">{t("commercialType")}</Text>
+                                </View>
+                                <View className="flex-row flex-wrap mb-4 mt-4">
+                                    {formData.housingType.length > 0 ? (
+                                        formData.housingType.map((housingType, index) => (
+                                            <View key={index} className="flex-row items-center bg-gray-200 rounded-full px-3 py-1 mr-2 mb-2">
+                                                <MaterialIcons name="check" size={16} color="green" />
+                                                <Text className="ml-1 text-black">{getKeyByValue(housingType)}</Text>
+                                            </View>
+                                        ))
+                                    ) : (
+                                        <Text className="text-gray-500">{t("notAvailable")}</Text>
+                                    )}
                                 </View>
                             </View>
                         )}
@@ -539,7 +537,7 @@ const PropertyDetails = () => {
                                         <MaterialIcons name="stairs" size={20} color="black" />
                                         <Text className="text-gray-500 ml-2">{t("floorNumber")}</Text>
                                     </View>
-                                    <Text className="text-black font-semibold">{getKeyByValue(floorNumber[formData.floorNumber]) || t("notAvailable")}</Text>
+                                    <Text className="text-black font-semibold">{getKeyByValue(formData.floorNumber == -1 ? t("basement") : floorNumber[formData.floorNumber]) || t("notAvailable")}</Text>
                                 </View>
                                 <View className="flex-row justify-between mb-4">
                                     {/* Age of Property */}

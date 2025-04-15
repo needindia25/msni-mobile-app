@@ -31,7 +31,7 @@ const Home = () => {
     state: 0,
     district: 0,
     city: "",
-    propertyType: "Full House",
+    propertyType: "Any",
     housingType: [] as string[],
     bhkType: [] as string[],
     familyPreference: "Any",
@@ -59,7 +59,7 @@ const Home = () => {
     console.log("=> Updated Data:", updatedData);
     if (field === "propertyFor") {
       updatedData = {
-        propertyType: "Full House",
+        propertyType: "Any",
         housingType: [] as string[],
         bhkType: [] as string[],
         familyPreference: "Any",
@@ -368,7 +368,7 @@ const Home = () => {
             <View className="mt-4">
               <Text className="text-lg font-bold mb-3">{t("propertyType")}</Text>
               <View className="flex-row flex-wrap justify-between">
-                {staticData.propertyTypeOptions[searchData.propertyFor as keyof typeof staticData.propertyTypeOptions].map((propertyType, index) => (
+                {staticData.propertyTypeOptionsForSearch[searchData.propertyFor as keyof typeof staticData.propertyTypeOptionsForSearch].map((propertyType, index) => (
                   <TouchableOpacity
                     key={index}
                     className={`rounded-lg p-3 mb-3 ${searchData.propertyType === propertyType.value ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
@@ -390,7 +390,7 @@ const Home = () => {
                 ))}
               </View>
             </View>
-            {searchData.propertyType === 'Full House' && (
+            {/* {searchData.propertyType === 'Full House' && (
               <>
                 <View className="mt-4">
                   <Text className="text-lg font-bold mb-3">{t("housingType")}</Text>
@@ -436,7 +436,7 @@ const Home = () => {
                     ))}
                   </View>
                 </View>
-                {/* <View className="mt-4">
+                <View className="mt-4">
                   <Text className="text-lg font-bold mb-3">{t("furnishing")}</Text>
                   <View>
                     <CustomRadioGroup
@@ -445,9 +445,9 @@ const Home = () => {
                       onValueChange={(value: string) => handleInputChange("furnishing", value)}
                     />
                   </View>
-                </View> */}
+                </View>
 
-                {/* <View className="mt-4">
+                <View className="mt-4">
                   <Text className="text-lg font-bold mb-3">{t("foodPreference")}</Text>
                   <View>
                     <CustomRadioGroup
@@ -456,10 +456,10 @@ const Home = () => {
                       onValueChange={(value: string) => handleInputChange("foodPreference", value)}
                     />
                   </View>
-                </View> */}
+                </View>
               </>
-            )}
-            {(searchData.propertyType === 'PG/Hostel') && (
+            )} */}
+            {/* {(searchData.propertyType === 'PG/Hostel') && (
               <>
                 <View className="mt-4">
                   <Text className="text-lg font-bold mb-3">{t("roomType")}</Text>
@@ -503,8 +503,8 @@ const Home = () => {
                   <Text className="text-center">{selectedCommercialTypes.length > 0 ? selectedCommercialTypes.map((val) => { return getKeyByValue(val) }).join(', ') : 'Select Commercial Type'}</Text>
                 </TouchableOpacity>
               </View>
-            )}
-            <Modal
+            )} */}
+            {/* <Modal
               visible={housingTypeModalVisible}
               transparent={true}
               animationType="slide"
@@ -611,7 +611,7 @@ const Home = () => {
                   </TouchableOpacity>
                 </View>
               </View>
-            </Modal>
+            </Modal> */}
             <TouchableOpacity className="bg-teal-500 rounded-lg p-3 mt-5 mb-10 w-full"
               onPress={() => onProprtySearchPress()}>
               <Text className="text-white text-center text-lg">{t("search")}</Text>

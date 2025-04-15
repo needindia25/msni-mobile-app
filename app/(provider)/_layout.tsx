@@ -29,30 +29,42 @@ const Layout = () => {
         );
       }
 
-      const response = await fetchAPI(`${constants.API_URL}/auth/logout/`, t, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ refresh: refresh }),
-      });
-
-      console.log(response);
-      await AsyncStorage.clear();
       Alert.alert(
-        t("success"),
-        t("logoutSuccess"),
+        t("logout"), // Use translation key
+        t("logoutMessage"), // Use translation key
         [
+          { text: t("no"), style: "cancel" }, // Use translation key
           {
-            text: t("ok"),
-            onPress: () => {
-              // Perform the action when "OK" is pressed
-              router.replace("/(auth)/sign-in");
+            text: t("yes"), // Use translation key
+            onPress: async () => {
+              const response = await fetchAPI(`${constants.API_URL}/auth/logout/`, t, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ refresh: refresh }),
+              });
+
+              console.log(response);
+              await AsyncStorage.clear();
+              Alert.alert(
+                t("success"),
+                t("logoutSuccess"),
+                [
+                  {
+                    text: t("ok"),
+                    onPress: () => {
+                      // Perform the action when "OK" is pressed
+                      router.replace("/(auth)/sign-in");
+                    },
+                  },
+                ]
+              );
             },
           },
         ]
-      ); // Use translation keys      
+      );
     } catch (err) {
       Alert.alert(
         t("error"),

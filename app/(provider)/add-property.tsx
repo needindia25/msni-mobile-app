@@ -40,7 +40,7 @@ const MultiStepForm = () => {
     districtName: "",
     city: "",
     zip: "",
-    housingType: "",
+    housingType: [] as string[],
     bhkType: "",
     familyPreference: "",
     foodPreference: "",
@@ -128,6 +128,11 @@ const MultiStepForm = () => {
                 ? (typeof serviceResponse["options"].sourceOfWater === "string"
                   ? [serviceResponse["options"].sourceOfWater]
                   : serviceResponse["options"].sourceOfWater)
+                : [],
+              housingType: serviceResponse["options"].housingType
+                ? (typeof serviceResponse["options"].housingType === "string"
+                  ? [serviceResponse["options"].housingType]
+                  : serviceResponse["options"].housingType)
                 : [],
               numberOfBathRooms: serviceResponse["options"].numberOfBathRooms
                 ? (typeof serviceResponse["options"].numberOfBathRooms === "number"
@@ -468,9 +473,9 @@ const MultiStepForm = () => {
                   <CustomDropdown
                     label={t("housingType")}
                     data={staticData.housingTypeOptions}
-                    value={formData.housingType}
+                    value={formData.housingType.length ? formData.housingType[0] : ""}
                     placeholder={t("selectHousingType")}
-                    onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", selectedItem.value)}
+                    onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", [selectedItem.value])}
                   />
 
                   {/* BHK Type Dropdown */}
@@ -508,9 +513,9 @@ const MultiStepForm = () => {
                   <CustomDropdown
                     label={t("roomType")}
                     data={staticData.roomTypeOptions}
-                    value={formData.housingType}
+                    value={formData.housingType.length ? formData.housingType[0] : ""}
                     placeholder={t("selectRoomType")}
-                    onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", selectedItem.value)}
+                    onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", [selectedItem.value])}
                   />
 
                   {/* Gender Preference Dropdown */}
@@ -536,12 +541,12 @@ const MultiStepForm = () => {
               {step === 1 && formData.propertyType === "Commercial" && (
                 <View>
                   {/* Commercial Type Dropdown */}
-                  <CustomDropdown
+                  <CustomMultiDropdown
                     label={t("commercialType")}
                     data={staticData.commercialTypeOptions}
                     value={formData.housingType}
                     placeholder={t("selectCommercialType")}
-                    onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", selectedItem.value)}
+                    onChange={(selectedItems: DropdownProps[]) => handleInputChange("housingType", selectedItems.map(item => item.value))}
                   />
                 </View>
               )}
