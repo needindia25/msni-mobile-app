@@ -29,6 +29,7 @@ interface Subscription {
   amount: number;
   period: number;
   credits: number;
+  descriptions: string;
   isPremium: boolean;
   used?: number;
   expired_on?: string;

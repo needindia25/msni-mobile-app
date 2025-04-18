@@ -325,6 +325,8 @@ const en = {
         noFavoritesMessage: "You have not added any favorites yet.",
         serviceRequests: "Service Requests",
         requestedOn: "Requested On",
+        months: "months",
+        unlimitedSearch: "Unlimited Search",
     },
 };
 

@@ -9,6 +9,7 @@ interface SubscriptionCardProps {
     planName: string;
     price: number;
     duration: string;
+    descriptions: string;
     services: string;
     isPremium?: boolean;
     used?: number;
@@ -20,6 +21,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
     planName,
     price,
     duration,
+    descriptions,
     services,
     isPremium = false,
     used = 0,
@@ -54,20 +56,23 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
     return (
         <View className={`rounded-lg p-5 mb-5 ${isPremium ? 'bg-orange-500' : 'border border-gray-300'}`}>
             <View className="flex-row justify-between mb-3">
-                <Text className={`text-lg font-bold ${isPremium ? 'text-white' : 'text-black'}`}>{planName}</Text>
-                <View>
-                    <View className="flex rounded-full px-3 mb-1 py-1 bg-blue-100">
-                        <Text className="text-sm text-blue-500">{services}</Text>
-                    </View>
-                    {used !== 0 && (
-                        <View className="flex rounded-full px-3 mb-1 py-1 bg-orange-500 items-center">
-                            <Text className="text-sm text-white">{used} Used</Text>
-                        </View>
-                    )}
-                </View>
+                <Text className={`text-2xl font-bold ${isPremium ? 'text-white' : 'text-black'}`}>{planName}</Text>
+                <Text className={`text-2xl ${isPremium ? 'text-white' : 'text-blue-500'} mb-1`}>
+                    ₹ {price}
+                    <Text className={`ml-5 text-base ${isPremium ? 'text-white' : 'text-gray-600'}`}>{duration}</Text>
+                </Text>
             </View>
-            <Text className={`text-2xl ${isPremium ? 'text-white' : 'text-blue-500'} mb-1`}>₹ {price}</Text>
-            <Text className={`mb-5 ${isPremium ? 'text-white' : 'text-gray-600'}`}>{duration}</Text>
+            <View className="flex-row justify-between mb-3">
+                <View className="flex rounded-full px-3 mb-1 py-1 bg-blue-100">
+                    <Text className="text-sm text-blue-500">{services}</Text>
+                </View>
+                {used !== 0 && (
+                    <View className="flex rounded-full px-3 mb-1 py-1 bg-orange-500 items-center">
+                        <Text className="text-sm text-white">{used} Used</Text>
+                    </View>
+                )}
+            </View>
+            <Text className={`mb-5 ${isPremium ? 'text-white' : 'text-gray-600'}`}>{descriptions}</Text>
             {used === 0 && (
                 <Payment
                     fullName={userInfo?.full_name!}

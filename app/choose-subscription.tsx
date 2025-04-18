@@ -29,7 +29,6 @@ const ChooseSubscription = () => {
         const fetchSubscriptions = async () => {
             try {
                 if (userInfo === null) return;
-
                 const token = await AsyncStorage.getItem('token');
                 if (!token) {
                     Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
@@ -44,8 +43,12 @@ const ChooseSubscription = () => {
                         ]
                     );
                 }
+                let user_type_id = userInfo.user_type_id;
+                if (userInfo.is_both_access) {
+                    user_type_id = 3;
+                }
                 const response = await fetchAPI(
-                    `${constants.API_URL}/master/subscriotion/${userInfo.user_type_id}/list`,
+                    `${constants.API_URL}/master/subscriotion/${user_type_id}/list`,
                     t,
                     {
                         headers: {
@@ -77,8 +80,9 @@ const ChooseSubscription = () => {
         id: subscription.id,
         planName: subscription.title,
         price: subscription.amount,
-        duration: `/ ${subscription.period / 28} months`,
-        services: subscription.credits === -1 ? "Unlimited Search" : `${subscription.credits} Services`,
+        descriptions: subscription.descriptions,
+        duration: `/ ${subscription.period} ${t("months")}`,
+        services: subscription.credits === -1 ? t("unlimitedSearch") : `${subscription.credits} ${t("services")}`,
         isPremium: subscription.title.indexOf("Basic") === -1,
     })) || [];
 
@@ -124,6 +128,7 @@ const ChooseSubscription = () => {
                                         planName={item.planName}
                                         price={item.price}
                                         duration={item.duration}
+                                        descriptions={item.descriptions}
                                         services={item.services}
                                         isPremium={item.isPremium}
                                     />
