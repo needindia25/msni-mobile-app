@@ -88,7 +88,7 @@ const ServiceRequests = () => {
         <Text className="text-xl font-bold text-white text-center">{t("serviceRequests")}</Text>
       </View>
 
-
+    <ScrollView className="flex-1 p-5">
       {/* Service Details */}
       <View key={serviceData?.id} className="bg-white rounded-lg shadow-md mb-5 p-5">
         <ImageCarousel images={serviceData ? serviceData?.images : []} />
@@ -125,7 +125,7 @@ const ServiceRequests = () => {
       
 
       {/* Content */}
-      <ScrollView className="flex-1 p-5">
+      {/* <ScrollView className="flex-1 p-5"> */}
         {loading ? (
           <View className="flex-1 justify-center items-center mt-10">
             <ActivityIndicator size="large" color="#4CAF50" />

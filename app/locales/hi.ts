@@ -208,7 +208,7 @@ const hi = {
         resendCode: "कोड पुनः भेजें",
         timeRemaining: "शेष समय",
         invalidOtp: "अमान्य ओटीपी। कृपया पुनः प्रयास करें।",
-        generatedOtp: "उत्पन्न ओटीपी:",
+        generatedOtp: "आपका नया ओटीपी भेज दिया गया है:",
         seeker: "खोजकर्ता",
         provider: "प्रदाता",
         both: "दोनों",

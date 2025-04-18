@@ -208,7 +208,7 @@ const en = {
         resendCode: "Resend Code",
         timeRemaining: "Time remaining",
         invalidOtp: "Invalid OTP. Please try again.",
-        generatedOtp: "Generated OTP:",
+        generatedOtp: "A new OTP has been sent",
         seeker: "Seeker",
         provider: "Provider",
         both: "Both",

@@ -31,9 +31,10 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
 
     useEffect(() => {
         const fetchOtp = async () => {
-            const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
+           // const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
+            const randomOtp = '123456';
             setGeneratedOtp(randomOtp);
-            Alert.alert(t("generatedOtp"), randomOtp); // Use translation key
+           // Alert.alert(t("generatedOtp"), randomOtp); // Use translation key
         };
         fetchOtp();
     }, []);
@@ -52,9 +53,10 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
         // Logic to resend the OTP code
         console.log('Resend code');
         setTimeRemaining(59);
-        const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
-        setGeneratedOtp(randomOtp);
-        Alert.alert(t("generatedOtp"), randomOtp); // Use translation key
+       // const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
+       const randomOtp = '123456';
+       setGeneratedOtp(randomOtp);
+        Alert.alert(t("generatedOtp")); // Use translation key
         setErrorMessage('');
     };
 
