@@ -29,7 +29,6 @@ const ChooseSubscription = () => {
         const fetchSubscriptions = async () => {
             try {
                 if (userInfo === null) return;
-
                 const token = await AsyncStorage.getItem('token');
                 if (!token) {
                     Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
@@ -102,7 +101,7 @@ const ChooseSubscription = () => {
                         <View className="flex-1 bg-white p-5">
                             <View className="flex-row items-center mb-5">
                                 <TouchableOpacity
-                                    onPress={() => userInfo?.user_type_id === 1 ? router.push('/(seeker)/(tabs)/profile') : router.push('/(provider)/(tabs)/profile')}
+                                    onPress={() => router.back()}
                                     className="p-5"
                                 >
                                     <Image

@@ -1,6 +1,6 @@
 import { constants, icons } from '@/constants';
 import { fetchAPI } from '@/lib/fetch';
-import { Listing } from '@/types/type';
+import { Listing, UserInfo } from '@/types/type';
 import ImageCarousel from "@/components/ImageCarousel";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
@@ -10,14 +10,16 @@ import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const Home = () => {
     const { t } = useTranslation(); // Initialize translation hook
-    const screenWidth = Dimensions.get('window').width;
     const router = useRouter();
 
     const [loading, setLoading] = useState(true);
     const [listings, setListings] = useState<Listing[]>([]);
+    const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
     useEffect(() => {
         const checkAuth = async () => {
+            const userInfo = await AsyncStorage.getItem('user_info');
+            setUserInfo(userInfo ? JSON.parse(userInfo) : null);
             const token = await AsyncStorage.getItem('token');
             await AsyncStorage.setItem("passServiceId", "");
             if (!token) {
@@ -194,12 +196,34 @@ const Home = () => {
         );
     };
 
+    const handleAdd = () => {
+        console.log(userInfo)
+        // router.push('/add-property')
+        if (userInfo?.has_subscription) {
+            router.push('/add-property')
+        } else {
+            Alert.alert(
+                t("error"),
+                t("noSubscriptionMessage"),
+                [
+                    {
+                        text: t("subscribeNow"),
+                        onPress: () => router.push("../../choose-subscription"),
+                    },
+                    {
+                        text: t("subscribeLater"),
+                    },
+                ]
+            );
+        }
+    }
+
     return (
         <>
             {listings.length > 0 && (
                 <TouchableOpacity
                     className="absolute top-5 right-5 bg-green-500 rounded-full p-5 shadow-lg"
-                    onPress={() => router.push('/add-property')}
+                    onPress={() => handleAdd()}
                     style={{ zIndex: 1000 }}
                 >
                     <Text className="text-white text-base font-bold">+ {t("addNextProperty")}</Text> {/* Wrap "+" in <Text> */}

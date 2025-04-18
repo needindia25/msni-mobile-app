@@ -1,6 +1,6 @@
 import { constants, icons } from '@/constants';
 import { fetchAPI } from '@/lib/fetch';
-import { Listing } from '@/types/type';
+import { Listing, UserInfo } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -20,24 +20,27 @@ const SearchList = () => {
 
     const [loading, setLoading] = useState(true);
     const [listings, setListings] = useState<Listing[]>([]);
+    const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
     useEffect(() => {
         const checkAuth = async () => {
             const token = await AsyncStorage.getItem('token');
+            const userInfo = await AsyncStorage.getItem('user_info');
+            setUserInfo(userInfo ? JSON.parse(userInfo) : null);
             await AsyncStorage.setItem("passServiceId", "");
             if (!token) {
-                    Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-                      [
+                Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                    [
                         {
-                          text: t("ok"),
-                          onPress: () => {
-                            // Perform the action when "OK" is pressed
-                            router.replace("/(auth)/sign-in");
-                          },
+                            text: t("ok"),
+                            onPress: () => {
+                                // Perform the action when "OK" is pressed
+                                router.replace("/(auth)/sign-in");
+                            },
                         },
-                      ]
-                    );
-                  }
+                    ]
+                );
+            }
             if (!!token) {
                 const response: any = await fetchAPI(`${constants.API_URL}/search/`, t, {
                     method: 'POST',
@@ -77,9 +80,22 @@ const SearchList = () => {
     };
 
     const handleView = async (id: number) => {
-        // return;
-        await AsyncStorage.setItem("passServiceId", id.toString());
-        router.push(`/property-details`);
+        console.log(userInfo)
+        if (userInfo?.has_subscription) {
+            await AsyncStorage.setItem("passServiceId", id.toString());
+            router.push(`/property-details`);
+        } else {
+            Alert.alert(
+                t("error"),
+                t("noSubscriptionMessage"),
+                [
+                    {
+                        text: t("subscribeNow"),
+                        onPress: () => router.push("../../choose-subscription"),
+                    },
+                ]
+            );
+        }
     };
 
 

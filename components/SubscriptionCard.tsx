@@ -51,8 +51,9 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         checkAuth();
     }, []);
     if (loading) return null;
+    isPremium = true;
     return (
-        <View className={`rounded-lg p-5 mb-5 ${isPremium ? 'bg-orange-500' : 'border border-gray-300'}`}>
+        <View className={`rounded-lg p-5 mb-5 ${isPremium ? 'bg-orange-500' : 'border border-orange-500'}`}>
             <View className="flex-row justify-between mb-3">
                 <Text className={`text-lg font-bold ${isPremium ? 'text-white' : 'text-black'}`}>{planName}</Text>
                 <View>
