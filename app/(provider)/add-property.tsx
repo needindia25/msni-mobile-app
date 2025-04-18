@@ -321,7 +321,7 @@ const MultiStepForm = () => {
         body: JSON.stringify(method === "POST" ? {
           title: formData.title,
           options: formData,
-          service_id: 1,
+          service: 1,
           is_active: true
         } : {
           title: formData.title,
