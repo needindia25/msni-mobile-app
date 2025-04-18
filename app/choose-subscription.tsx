@@ -78,7 +78,7 @@ const ChooseSubscription = () => {
         planName: subscription.title,
         price: subscription.amount,
         duration: `/ ${subscription.period / 28} months`,
-        services: `${subscription.credits} Services`,
+        services: subscription.credits === -1 ? "Unlimited Search" : `${subscription.credits} Services`,
         isPremium: subscription.title.indexOf("Basic") === -1,
     })) || [];
 
