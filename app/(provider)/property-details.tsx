@@ -118,7 +118,7 @@ const PropertyDetails = () => {
                                     : serviceResponse["options"].housingType)
                                 : [],
                             numberOfBathRooms: serviceResponse["options"].numberOfBathRooms
-                                ? (typeof serviceResponse["options"].numberOfBathRooms === "number"
+                                ? ((typeof serviceResponse["options"].numberOfBathRooms === "string" || typeof serviceResponse["options"].numberOfBathRooms === "number")
                                     ? [serviceResponse["options"].numberOfBathRooms + " Bath Room" + (serviceResponse["options"].numberOfBathRooms > 1 ? "s" : "")]
                                     : serviceResponse["options"].numberOfBathRooms)
                                 : [],
@@ -128,8 +128,8 @@ const PropertyDetails = () => {
                             longitude: parseFloat(String(serviceResponse["options"].longitude || "0"))
                         }
                     }));
-                    console.log(serviceResponse);
-                    console.log(formData);
+                    console.log("serviceResponse: ", serviceResponse);
+                    console.log("formData, ", formData);
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);

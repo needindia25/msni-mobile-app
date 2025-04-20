@@ -127,7 +127,7 @@ const PropertyDetails = () => {
                                     : serviceResponse["options"].housingType)
                                 : [],
                             numberOfBathRooms: serviceResponse["options"].numberOfBathRooms
-                                ? (typeof serviceResponse["options"].numberOfBathRooms === "number"
+                                ? ((typeof serviceResponse["options"].numberOfBathRooms === "string" || typeof serviceResponse["options"].numberOfBathRooms === "number")
                                     ? [serviceResponse["options"].numberOfBathRooms + " Bath Room" + (serviceResponse["options"].numberOfBathRooms > 1 ? "s" : "")]
                                     : serviceResponse["options"].numberOfBathRooms)
                                 : [],
