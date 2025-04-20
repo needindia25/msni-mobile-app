@@ -10,7 +10,7 @@ export const getStaticData = (t: TFunction) => ({
             { label: t("any"), value: "Any" },
             { label: t("fullHouse"), value: "Full House" },
             { label: t("commercial"), value: "Commercial" },
-            { label: t("Land"), value: "Land" },
+            { label: t("land"), value: "Land" },
         ],
         "Rent": [
             { label: t("any"), value: "Any" },
@@ -24,7 +24,7 @@ export const getStaticData = (t: TFunction) => ({
         "Lease": [
             { label: t("fullHouse"), value: "Full House" },
             { label: t("commercial"), value: "Commercial" },
-            { label: t("Land"), value: "Land" },
+            { label: t("land"), value: "Land" },
         ],
         "Rent": [
             { label: t("fullHouse"), value: "Full House" },
