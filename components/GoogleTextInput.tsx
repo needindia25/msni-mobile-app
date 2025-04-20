@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, Image, Alert, PermissionsAndroid } from "react-native";
+import { View, Image, Text, PermissionsAndroid } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import MapView, { Marker } from "react-native-maps";
+import { MaterialIcons } from "@expo/vector-icons"; // Import icons
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import { useTranslation } from "react-i18next";
@@ -187,6 +188,16 @@ const GoogleTextInput = ({
           />
         )}
       </MapView>
+      {(selectedLocation?.draggable && selectedLocation.address) && (
+        <View className="bg-gray-100 p-4 rounded-lg shadow-md mt-5">
+          <View className="flex-row items-center mb-3">
+            <MaterialIcons name="location-on" size={20} color="gray" />
+            <Text className="text-gray-500 ml-1">
+              {selectedLocation.address}
+            </Text>
+          </View>
+        </View>
+      )}
     </View>
   );
 };
