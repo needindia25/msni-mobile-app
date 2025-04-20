@@ -1,10 +1,10 @@
-import { View, Image, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Image, Alert, PermissionsAndroid } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-import MapView, { Marker } from "react-native-maps"; // Import MapView and Marker
-import 'react-native-get-random-values'; // Polyfill for crypto.getRandomValues
+import MapView, { Marker } from "react-native-maps";
+import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
-import { useState } from "react";
-import { useTranslation } from "react-i18next"; // Import useTranslation
+import { useTranslation } from "react-i18next";
 
 import { constants, icons } from "@/constants";
 import { GoogleInputProps } from "@/types/type";
@@ -16,26 +16,52 @@ const GoogleTextInput = ({
   initialLocation,
   handlePress,
 }: GoogleInputProps) => {
-  const { t } = useTranslation(); // Initialize translation hook
+  const { t } = useTranslation();
 
   interface LocationData {
     latitude: number;
     longitude: number;
     address: string;
-    address_components: Array<any> | undefined;
+    draggable: boolean;
   }
 
-  const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(null);
-
-  // Default region for the map
+  const [selectedLocation, setSelectedLocation] = useState<LocationData | null>({
+    latitude: parseFloat(String(initialLocation?.latitude || "0")),
+    longitude: parseFloat(String(initialLocation?.longitude || "0")),
+    address: String(initialLocation?.address || ""),
+    draggable: Boolean(initialLocation?.draggable)
+  });
   const [region, setRegion] = useState({
-    latitude: initialLocation?.latitude || 24.799644726160327,
-    longitude: initialLocation?.longitude || 85.06087840697387,
-    latitudeDelta: 0.0175,
-    longitudeDelta: 0.0175,
+    latitude: parseFloat(String(initialLocation?.latitude || "0")),
+    longitude: parseFloat(String(initialLocation?.longitude || "0")),
+    latitudeDelta: 0.00275,
+    longitudeDelta: 0.00275,
   });
 
-  // Function to fetch address using Google Geocoding API
+  async function requestPermissions() {
+    try {
+      const granted = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+      ]);
+
+      if (
+        granted[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION] === PermissionsAndroid.RESULTS.GRANTED &&
+        granted[PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION] === PermissionsAndroid.RESULTS.GRANTED
+      ) {
+        console.log("Location permissions granted");
+      } else {
+        console.log("Location permissions denied");
+      }
+    } catch (err) {
+      console.warn("Error requesting permissions:", err);
+    }
+  }
+  useEffect(() => {
+    console.log("initial Location data: ", initialLocation)
+    requestPermissions();
+  }, []);
+
   const getAddressFromCoordinates = async (latitude: number, longitude: number) => {
     try {
       const response = await fetch(
@@ -48,14 +74,15 @@ const GoogleTextInput = ({
           latitude,
           longitude,
           address,
-          address_components: data.results[0].address_components,
+          draggable: true,
         });
-        handlePress({
-          latitude,
-          longitude,
-          address,
-          address_components: data.results[0].address_components,
-        });
+        if (handlePress) {
+          handlePress({
+            latitude,
+            longitude,
+            address
+          });
+        }
       }
     } catch (error) {
       console.error("Error fetching address:", error);
@@ -64,82 +91,90 @@ const GoogleTextInput = ({
 
   return (
     <View className="flex-1 bg-gray-100">
-      {/* Google Places Input */}
-      <View className="z-50">
-        <GooglePlacesAutocomplete
-          fetchDetails={true}
-          placeholder={t("searchPlaceholder")} // Use translation key
-          debounce={200}
-          styles={{
-            textInputContainer: {
-              alignItems: "center",
-              justifyContent: "center",
-              shadowColor: "#000",
-              borderWidth: 1,
-              borderColor: '#D1D5DB',
-              borderRadius: 10,
-              padding: 12,
-              backgroundColor: '#FFFFFF',
-            },
-            textInput: {
-              backgroundColor: "white",
-              fontSize: 16,
-              fontWeight: "600",
-              width: "100%",
-              borderRadius: 10,
-            },
-            listView: {
-              backgroundColor: "white",
-              position: "absolute",
-              top: 50,
-              width: "100%",
-              borderRadius: 10,
-              shadowColor: "#d4d4d4",
-              zIndex: 99,
-            },
-          }}
-          onPress={(data, details = null) => {
-            if (!details) return;
-            const locationData = {
-              latitude: details.geometry.location.lat,
-              longitude: details.geometry.location.lng,
-              address: data.description,
-              address_components: details.address_components,
-            };
-            setSelectedLocation(locationData);
-            setRegion({
-              latitude: locationData.latitude,
-              longitude: locationData.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            });
-            handlePress(locationData);
-          }}
-          query={{
-            key: googlePlacesApiKey,
-            language: "en",
-          }}
-          renderLeftButton={() => (
-            <View className="justify-center items-center w-6 h-6">
-              <Image
-                source={icon || icons.search}
-                className="w-6 h-6"
-                resizeMode="contain"
-              />
-            </View>
-          )}
-          textInputProps={{
-            placeholderTextColor: "gray",
-            placeholder: t("searchPlaceholder"), // Use translation key
-          }}
-        />
-      </View>
+      {selectedLocation?.draggable && (
+        <View style={{ zIndex: 10, elevation: 10 }} className="">
+          <GooglePlacesAutocomplete
+            fetchDetails={true}
+            placeholder={t("searchPlaceholder")}
+            debounce={200}
+            styles={{
+              textInputContainer: {
+                alignItems: "center",
+                justifyContent: "center",
+                shadowColor: "#000",
+                borderWidth: 1,
+                borderColor: "#D1D5DB",
+                borderRadius: 10,
+                padding: 12,
+                backgroundColor: "#FFFFFF",
+              },
+              textInput: {
+                backgroundColor: "white",
+                fontSize: 16,
+                fontWeight: "600",
+                width: "100%",
+                borderRadius: 10,
+              },
+              listView: {
+                backgroundColor: "white",
+                position: "absolute",
+                top: 50,
+                width: "100%",
+                borderRadius: 10,
+                shadowColor: "#d4d4d4",
+                zIndex: 99,
+                elevation: 99,
+              },
+            }}
+            onPress={(data, details = null) => {
+              if (!details) return;
+              const locationData = {
+                latitude: details.geometry.location.lat,
+                longitude: details.geometry.location.lng,
+                address: data.description,
+                draggable: true
+              };
+              setSelectedLocation(locationData);
+              setRegion({
+                latitude: locationData.latitude,
+                longitude: locationData.longitude,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+              });
+              if (handlePress) {
+                handlePress(locationData);
+              }
+            }}
+            query={{
+              key: googlePlacesApiKey,
+              language: "en",
+            }}
+            renderLeftButton={() => (
+              <View className="justify-center items-center w-6 h-6">
+                <Image
+                  source={icon || icons.search}
+                  className="w-6 h-6"
+                  resizeMode="contain"
+                />
+              </View>
+            )}
+            textInputProps={{
+              placeholderTextColor: "gray",
+              placeholder: t("searchPlaceholder"),
+            }}
+          />
+        </View>
+      )}
 
-      {/* MapView */}
       <MapView
-        style={{ height: 300, width: "100%", marginTop: 20 }} // Adjust height and width as needed
+        style={{ height: 300, width: "100%", marginTop: 10 }}
         region={region}
         onRegionChangeComplete={(newRegion) => setRegion(newRegion)}
+        onMarkerDragEnd={(e) => {
+          console.log("on Marker Drag End:", e.nativeEvent.coordinate);
+          const { latitude, longitude } = e.nativeEvent.coordinate;
+          getAddressFromCoordinates(latitude, longitude);
+        }}
       >
         {selectedLocation && (
           <Marker
@@ -147,11 +182,7 @@ const GoogleTextInput = ({
               latitude: selectedLocation.latitude,
               longitude: selectedLocation.longitude,
             }}
-            draggable // Make the marker draggable
-            onDragEnd={(e) => {
-              const { latitude, longitude } = e.nativeEvent.coordinate;
-              getAddressFromCoordinates(latitude, longitude); // Fetch address for new coordinates
-            }}
+            draggable={selectedLocation.draggable || false}
             title={selectedLocation.address}
           />
         )}

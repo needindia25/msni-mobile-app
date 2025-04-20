@@ -1,6 +1,3 @@
-import { Stripe } from "stripe";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(request: Request) {
   try {
@@ -13,16 +10,9 @@ export async function POST(request: Request) {
         JSON.stringify({ error: "Missing required fields" }),
         { status: 400 },
       );
-    }
+    }    
 
-    const paymentMethod = await stripe.paymentMethods.attach(
-      payment_method_id,
-      { customer: customer_id },
-    );
-
-    const result = await stripe.paymentIntents.confirm(payment_intent_id, {
-      payment_method: paymentMethod.id,
-    });
+    const result = {}
 
     return new Response(
       JSON.stringify({

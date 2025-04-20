@@ -1,17 +1,18 @@
 import { useRouter } from 'expo-router';
 import { format } from "date-fns";
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity, Dimensions, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons"; // Import icons
+import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import { constants, icons } from "@/constants";
 import { fetchAPI } from "@/lib/fetch";
-import { useTranslation } from "react-i18next"; // Import useTranslation
+import { useTranslation } from "react-i18next";
 import en from '../locales/en';
 import ImageCarousel from '@/components/ImageCarousel';
+import GoogleTextInput from '@/components/GoogleTextInput';
 
 const PropertyDetails = () => {
-    const { t } = useTranslation(); // Initialize translation hook
+    const { t } = useTranslation();
     const [showContactInfo, setShowContactInfo] = useState(false);
     const router = useRouter();
     const [id, setId] = useState<number | null>(null);
@@ -60,8 +61,8 @@ const PropertyDetails = () => {
         status: false,
     });
 
-    const [rating, setRating] = useState(4); // State to track the current rating
-    const [favorites, setFavorites] = useState(false); // State to track the current rating
+    const [rating, setRating] = useState(4);
+    const [favorites, setFavorites] = useState(false);
 
     useEffect(() => {
         console.log("PropertyDetails component mounted");
@@ -81,7 +82,6 @@ const PropertyDetails = () => {
                             {
                                 text: t("ok"),
                                 onPress: () => {
-                                    // Perform the action when "OK" is pressed
                                     router.replace("/(auth)/sign-in");
                                 },
                             },
@@ -110,7 +110,7 @@ const PropertyDetails = () => {
                             owner_contact: serviceResponse["owner_contact"],
                             owner_name: serviceResponse["owner_name"],
                             images: serviceResponse["options"].images && serviceResponse["options"].images.length > 0
-                                ? serviceResponse["options"].images.map((image: string) => image.replace("www.", "admin.")) // Replace "www." with "admin."
+                                ? serviceResponse["options"].images.map((image: string) => image.replace("www.", "admin."))
                                 : [`${constants.BASE_URL}/media/no-image-found.png`],
                             basicAmenities: serviceResponse["options"].basicAmenities && serviceResponse["options"].basicAmenities.length > 0 ?
                                 serviceResponse["options"].basicAmenities.filter((amenity: any) => amenity !== "None") : [],
@@ -131,6 +131,10 @@ const PropertyDetails = () => {
                                     ? [serviceResponse["options"].numberOfBathRooms + " Bath Room" + (serviceResponse["options"].numberOfBathRooms > 1 ? "s" : "")]
                                     : serviceResponse["options"].numberOfBathRooms)
                                 : [],
+                        },                        
+                        ...{
+                            latitude: parseFloat(String(serviceResponse["options"].latitude || "0")),
+                            longitude: parseFloat(String(serviceResponse["options"].longitude || "0"))
                         }
                     }));
 
@@ -156,7 +160,6 @@ const PropertyDetails = () => {
     const formatDate = (dateString: string) => {
         if (!dateString) return t("notAvailable");
         const date = new Date(dateString);
-        // return format(date, "do MMMM yyyy HH:mm");
         return format(date, "do MMMM, yyyy");
     };
 
@@ -185,10 +188,8 @@ const PropertyDetails = () => {
     ];
 
     const getKeyByValue = (value: string): string => {
-        // Find the key by value
         const key = Object.keys(en.translation).find((k) => en.translation[k as keyof typeof en.translation] === value);
 
-        // Return the key or fallback to the lowercase version of the value
         if (key) {
             return t(key);
         }
@@ -202,7 +203,6 @@ const PropertyDetails = () => {
                     {
                         text: t("ok"),
                         onPress: () => {
-                            // Perform the action when "OK" is pressed
                             router.replace("/(auth)/sign-in");
                         },
                     },
@@ -230,7 +230,6 @@ const PropertyDetails = () => {
                     {
                         text: t("ok"),
                         onPress: () => {
-                            // Perform the action when "OK" is pressed
                             router.replace("/(auth)/sign-in");
                         },
                     },
@@ -257,14 +256,13 @@ const PropertyDetails = () => {
                     {
                         text: t("ok"),
                         onPress: () => {
-                            // Perform the action when "OK" is pressed
                             router.replace("/(auth)/sign-in");
                         },
                     },
                 ]
             );
         }
-        setRating(newRating); // Update the rating state
+        setRating(newRating);
         console.log(`User rated: ${newRating} stars`);
         if (id && token) {
             const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${id}/rating/`, t, {
@@ -293,10 +291,8 @@ const PropertyDetails = () => {
                     </TouchableOpacity>
 
                     <View className="bg-white rounded-lg shadow-md mb-5 p-5">
-                        {/* Image Carousel */}
                         <ImageCarousel images={formData.images} />
 
-                        {/* Title and Address */}
                         <Text className="text-2xl font-bold mb-2">{formData.title}</Text>
                         <View className="flex-row items-center mb-3">
                             <MaterialIcons name="location-on" size={20} color="gray" />
@@ -305,9 +301,7 @@ const PropertyDetails = () => {
                             </Text>
                         </View>
 
-                        {/* Rating and Favorite */}
                         <View className="flex-row justify-between items-center mb-3">
-                            {/* Rating */}
                             <View className="flex-row items-center">
                                 {[1, 2, 3, 4, 5].map((star) => (
                                     <TouchableOpacity key={star} onPress={() => handleRating(star)}>
@@ -321,7 +315,6 @@ const PropertyDetails = () => {
                                 <Text className="text-gray-500 ml-2">({rating})</Text>
                             </View>
 
-                            {/* Favorite Button */}
                             <TouchableOpacity
                                 className="bg-gray-200 p-2 rounded-full"
                                 onPress={() => handleFavorites()}
@@ -329,13 +322,12 @@ const PropertyDetails = () => {
                                 <FontAwesome5
                                     name="heart"
                                     size={16}
-                                    solid={favorites} // Use solid style for filled heart
-                                    color={favorites ? "#FF7F19" : "gray"} // Orange for filled, gray for empty
+                                    solid={favorites}
+                                    color={favorites ? "#FF7F19" : "gray"}
                                 />
                             </TouchableOpacity>
                         </View>
 
-                        {/* Rent and Deposit */}
                         <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
                             <View className="flex-row justify-between mb-3">
                                 <View className="flex-row items-center">
@@ -352,7 +344,6 @@ const PropertyDetails = () => {
                                 <Text className="text-black font-semibold">{formData.advance || t("notAvailable")}</Text>
                             </View>
                             <View className="flex-row justify-between">
-                                {/* Is Rent Negotiable */}
                                 <View className="flex-row items-center">
                                     <FontAwesome5 name="rupee-sign" size={16} color="black" />
                                     <Text className="text-gray-500 ml-2">{t("isRentNegotiable")}</Text>
@@ -361,7 +352,6 @@ const PropertyDetails = () => {
                             </View>
                         </View>
 
-                        {/* Area */}
                         <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
                             <View className="flex-row justify-between mb-3">
                                 <View className="flex-row items-center">
@@ -372,13 +362,11 @@ const PropertyDetails = () => {
                             </View>
                         </View>
 
-                        {/* Description */}
                         <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
                             <Text className="text-lg font-bold mb-2">{t("description")}</Text>
                             <Text className="text-gray-500">{formData.description || t("notAvailable")}</Text>
                         </View>
 
-                        {/* Overview */}
                         <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
                             <Text className="text-lg font-bold mb-2">{t("overview")}</Text>
                             <View className="flex-row justify-between mb-3">
@@ -395,7 +383,6 @@ const PropertyDetails = () => {
 
                         {formData.propertyType === "Full House" && (
                             <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
-                                {/* Housing Type and BHK Type */}
                                 <View className="flex-row items-center">
                                     <MaterialIcons name="home" size={20} color="black" />
                                     <Text className="text-gray-500 ml-2">{t("housingType")}</Text>
@@ -429,7 +416,6 @@ const PropertyDetails = () => {
                                         <Text className="text-gray-500">{t("notAvailable")}</Text>
                                     )}
                                 </View>
-                                {/* Gender Preference */}
                                 <View className="flex-row justify-between items-center mb-4">
                                     <View className="flex-row items-center">
                                         <MaterialIcons name="group" size={20} color="black" />
@@ -438,7 +424,6 @@ const PropertyDetails = () => {
                                     <Text className="text-black font-semibold">{getKeyByValue(formData.familyPreference) || t("notAvailable")}</Text>
                                 </View>
                                 <View className="flex-row justify-between items-center">
-                                    {/* Food Preference */}
                                     <View className="flex-row items-center">
                                         <MaterialIcons name="restaurant" size={20} color="black" />
                                         <Text className="text-gray-500 ml-2">{t("foodPreference")}</Text>
@@ -452,7 +437,6 @@ const PropertyDetails = () => {
 
                         {formData.propertyType === "Commercial" && (
                             <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
-                                {/* <Text className="text-lg font-bold mb-3">{t("commercialDetails")}</Text> */}
                                 <View className="flex-row items-center">
                                     <MaterialIcons name="home" size={20} color="black" />
                                     <Text className="text-gray-500 ml-2">{t("commercialType")}</Text>
@@ -476,7 +460,6 @@ const PropertyDetails = () => {
                             <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
                                 <Text className="text-lg font-bold mb-3">{t("otherDetails")}</Text>
                                 <View className="flex-row justify-between mb-4">
-                                    {/* Furnishing */}
                                     <View className="flex-row items-center">
                                         <MaterialIcons name="weekend" size={20} color="black" />
                                         <Text className="text-gray-500 ml-2">{t("furnishing")}</Text>
@@ -486,7 +469,6 @@ const PropertyDetails = () => {
                                     </Text>
                                 </View>
                                 <View className="flex-row justify-between mb-4">
-                                    {/* Parking */}
                                     <View className="flex-row items-center">
                                         <MaterialIcons name="local-parking" size={20} color="black" />
                                         <Text className="text-gray-500 ml-2">{t("parking")}</Text>
@@ -532,7 +514,6 @@ const PropertyDetails = () => {
                                     </>
                                 )}
                                 <View className="flex-row justify-between mb-4">
-                                    {/* Floor Number */}
                                     <View className="flex-row items-center">
                                         <MaterialIcons name="stairs" size={20} color="black" />
                                         <Text className="text-gray-500 ml-2">{t("floorNumber")}</Text>
@@ -540,7 +521,6 @@ const PropertyDetails = () => {
                                     <Text className="text-black font-semibold">{getKeyByValue(formData.floorNumber == -1 ? t("basement") : floorNumber[formData.floorNumber]) || t("notAvailable")}</Text>
                                 </View>
                                 <View className="flex-row justify-between mb-4">
-                                    {/* Age of Property */}
                                     <View className="flex-row items-center">
                                         <MaterialIcons name="calendar-today" size={20} color="black" />
                                         <Text className="text-gray-500 ml-2">{t("ageOfProperty")}</Text>
@@ -554,7 +534,6 @@ const PropertyDetails = () => {
                             </View>
                         )}
 
-                        {/* Amenities */}
                         <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
                             <Text className="text-lg font-bold mb-1">{t("amenities")}</Text>
                             <View className="flex-row flex-wrap mb-3">
@@ -570,7 +549,6 @@ const PropertyDetails = () => {
                                 )}
                             </View>
 
-                            {/* Additional Amenities */}
                             <Text className="text-lg font-bold mb-1">{t("additionalAmenities")}</Text>
                             <View className="flex-row flex-wrap mb-3">
                                 {formData.additionalAmenities.length > 0 ? (
@@ -599,16 +577,7 @@ const PropertyDetails = () => {
                             </View>
                         </View>
 
-                        {/* Dates */}
                         <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
-                            {/* <Text className="text-lg font-bold mb-3">{t("dates")}</Text>
-                            <View className="flex-row justify-between mb-2">
-                                <View className="flex-row items-center">
-                                    <MaterialIcons name="update" size={20} color="black" />
-                                    <Text className="text-gray-500 ml-2">{t("lastUpdated")}</Text>
-                                </View>
-                                <Text className="text-black font-semibold">{formatDate(formData.date_updated)}</Text>
-                            </View> */}
                             <View className="flex-row justify-between">
                                 <View className="flex-row items-center">
                                     <MaterialIcons name="calendar-today" size={20} color="black" />
@@ -617,6 +586,21 @@ const PropertyDetails = () => {
                                 <Text className="text-black font-semibold">{formatDate(formData.date_created)}</Text>
                             </View>
                         </View>
+                        {
+                            (formData?.latitude != 0 && formData?.longitude != 0) && (
+                                <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
+                                    <GoogleTextInput
+                                        icon={icons.target}
+                                        initialLocation={{
+                                            latitude: formData?.latitude,
+                                            longitude: formData?.longitude,
+                                            address: String(formData?.location),
+                                            draggable: false
+                                        }}
+                                    />
+                                </View>
+                            )
+                        }
                         {showContactInfo && (
                             <View className="bg-[#FF7F19] p-4 rounded-lg shadow-md mb-5">
                                 <Text className="text-lg text-white font-bold mb-3">{t("ownerDetails")}</Text>

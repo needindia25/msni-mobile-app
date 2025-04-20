@@ -9,6 +9,7 @@ import ImageCarousel from "@/components/ImageCarousel";
 import { fetchAPI } from "@/lib/fetch";
 import { useTranslation } from "react-i18next"; // Import useTranslation
 import en from '../locales/en';
+import GoogleTextInput from '@/components/GoogleTextInput';
 
 const PropertyDetails = () => {
     const { t } = useTranslation(); // Initialize translation hook
@@ -121,6 +122,10 @@ const PropertyDetails = () => {
                                     ? [serviceResponse["options"].numberOfBathRooms + " Bath Room" + (serviceResponse["options"].numberOfBathRooms > 1 ? "s" : "")]
                                     : serviceResponse["options"].numberOfBathRooms)
                                 : [],
+                        },
+                        ...{
+                            latitude: parseFloat(String(serviceResponse["options"].latitude || "0")),
+                            longitude: parseFloat(String(serviceResponse["options"].longitude || "0"))
                         }
                     }));
                     console.log(serviceResponse);
@@ -639,6 +644,23 @@ const PropertyDetails = () => {
                                 <Text className="text-black font-semibold">{formatDate(formData.date_created)}</Text>
                             </View>
                         </View>
+
+                        {
+                            (formData?.latitude != 0 && formData?.longitude != 0) && (
+                                <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
+                                    <GoogleTextInput
+                                        icon={icons.target}
+                                        initialLocation={{
+                                            latitude: formData?.latitude,
+                                            longitude: formData?.longitude,
+                                            address: String(formData?.location),
+                                            draggable: false
+                                        }}
+                                    />
+                                </View>
+                            )
+                        }
+
                     </View>
 
                     <View className="flex-row justify-between mb-[40px] mt-[20px]">

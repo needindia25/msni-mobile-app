@@ -11,10 +11,9 @@ import { useRouter } from "expo-router";
 import CustomMultiDropdown from "@/components/CustomMultiDropdown";
 import ImagePickerComponent from "@/components/ImagePicker";
 import GoogleTextInput from "@/components/GoogleTextInput";
-import { useLocationStore } from "@/store";
 
-import { getStaticData } from "@/constants/staticData"; // Import static data
-import { useTranslation } from "react-i18next"; // Import useTranslation
+import { getStaticData } from "@/constants/staticData";
+import { useTranslation } from "react-i18next";
 
 
 const MultiStepForm = () => {
@@ -64,14 +63,7 @@ const MultiStepForm = () => {
   const [serviceId, setServiceId] = useState<number | null>(null);
   const [states, setStates] = useState<{ id: number; name: string; code: string }[]>([]);
   const [districts, setDistricts] = useState<{ id: number; name: string }[]>([]);
-  const staticData = getStaticData(t); // Get static data with translations
-
-  // const {
-  //   userAddress,
-  //   destinationAddress,
-  //   setDestinationLocation,
-  //   setUserLocation,
-  // } = useLocationStore();
+  const staticData = getStaticData(t);
   const stateOptions = states.map((state) => ({
     label: state.name,
     value: state.id,
@@ -93,7 +85,6 @@ const MultiStepForm = () => {
               {
                 text: t("ok"),
                 onPress: () => {
-                  // Perform the action when "OK" is pressed
                   router.replace("/(auth)/sign-in");
                 },
               },
@@ -154,9 +145,8 @@ const MultiStepForm = () => {
     };
 
     fetchData();
-  }, []); // Empty dependency array ensures this runs only once
+  }, []);
 
-  // Fetch Cities when state changes
   const fetchDistricts = async (stateId: number) => {
     if (!stateId) return;
     try {
@@ -189,7 +179,7 @@ const MultiStepForm = () => {
     }));
     setErrors((prev) => ({
       ...prev,
-      [field]: "", // Clear the error when the user starts typing
+      [field]: "",
     }));
 
     if (field === "propertyFor" || field === "propertyType") {
@@ -199,7 +189,7 @@ const MultiStepForm = () => {
       }));
       setErrors((prev) => ({
         ...prev,
-        title: "", // Clear the error when the user starts typing
+        title: "",
       }));
     }
   };
@@ -218,56 +208,55 @@ const MultiStepForm = () => {
 
     if (step === 1) {
       if (!formData.propertyFor) {
-        newErrors.city = t("selectValidCity"); // Use translation key
+        newErrors.city = t("selectValidCity");
       }
 
       if (!formData.title) {
-        newErrors.title = t("titleRequired"); // Use translation key
+        newErrors.title = t("titleRequired");
       }
       if (!formData.description) {
-        newErrors.description = t("descriptionError"); // Use translation key
+        newErrors.description = t("descriptionError");
       }
       if (formData.description && formData.description.length < 4) {
-        newErrors.description = t("descriptionMinError"); // Use translation key
+        newErrors.description = t("descriptionMinError");
       }
       if (formData.description && formData.description.length > 200) {
-        newErrors.description = t("descriptionMaxLenError"); // Use translation key
+        newErrors.description = t("descriptionMaxLenError");
       }
       if (!formData.propertyType) {
-        newErrors.propertyType = t("propertyTypeRequired"); // Use translation key
+        newErrors.propertyType = t("propertyTypeRequired");
       }
     } else if (step === 2) {
       if (!formData.address || formData.address.length < 4) {
-        newErrors.address = t("addressError"); // Use translation key
+        newErrors.address = t("addressError");
       }
 
       if (!formData.state || formData.state < 1) {
-        newErrors.state = t("selectValidState"); // Use translation key
+        newErrors.state = t("selectValidState");
       }
 
       if (!formData.district || formData.district < 1) {
-        newErrors.district = t("selectValidDistrict"); // Use translation key
+        newErrors.district = t("selectValidDistrict");
       }
 
       if (!formData.city) {
-        newErrors.city = t("cityError"); // Use translation key
+        newErrors.city = t("cityError");
       }
 
       if (formData.city && formData.city.length < 2) {
-        newErrors.city = t("cityMinError"); // Use translation key
+        newErrors.city = t("cityMinError");
       }
       if (formData.city && formData.city.length > 30) {
-        newErrors.city = t("cityMaxLenError"); // Use translation key
+        newErrors.city = t("cityMaxLenError");
       }
 
       if (!formData.zip || !/^\d{6}$/.test(formData.zip)) {
-        newErrors.zip = t("zipError"); // Use translation key
+        newErrors.zip = t("zipError");
       }
     }
 
     setErrors(newErrors);
 
-    // Return true if there are no errors
     return Object.values(newErrors).every((error) => error === "");
   };
 
@@ -275,7 +264,6 @@ const MultiStepForm = () => {
     router.push("/(provider)/(tabs)/home");
   };
 
-  // Handle Form Submission
   const handleSubmit = async (formData: any, stepIndex: number = 0) => {
     console.log("Form values:", formData);
     if (!validateForm()) {
@@ -296,7 +284,6 @@ const MultiStepForm = () => {
           {
             text: t("ok"),
             onPress: () => {
-              // Perform the action when "OK" is pressed
               router.replace("/(auth)/sign-in");
             },
           },
@@ -340,12 +327,11 @@ const MultiStepForm = () => {
             {
               text: t("ok"),
               onPress: () => {
-                // Perform the action when "OK" is pressed
                 router.push("/(provider)/(tabs)/home");
               },
             },
           ]
-        ); // Use translation keys
+        );
       }
       setStep(step + stepIndex);
     } catch (error) {
@@ -355,7 +341,7 @@ const MultiStepForm = () => {
             text: t("ok"),
           },
         ]
-      ); // Use translation keys
+      );
       console.error("Error saving data:", error);
     }
   };
@@ -373,15 +359,13 @@ const MultiStepForm = () => {
           behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={{ flex: 1 }}
         >
-          {/* <FlatList
-            data={[{ key: "form" }]} // Dummy data to render the form
-            renderItem={() => ( */}
-          <ScrollView className="bg-gray-100 p-5">
+          <ScrollView className="bg-gray-100 p-5"
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ flexGrow: 1 }} >
             <View className="p-5 bg-gray-100">
               <Text className="text-base font-bold text-center mb-5">
                 {serviceId ? t("editProperty") : t("addProperty")}
               </Text>
-              {/* Step Indicator */}
               <View className="flex-row justify-between mb-5">
                 {[1, 2, 3, 4, 5].map((num) => (
                   <Text key={num} className={`text-base font-bold ${step === num ? "text-blue-500" : "text-gray-400"}`}>
@@ -403,7 +387,7 @@ const MultiStepForm = () => {
                           <Image
                             source={formData.propertyFor === pref.value ? icons.radioChecked : icons.radioUnchecked}
                             className="w-6 h-6 mr-2"
-                            style={{ tintColor: "white" }} // Apply white tint color
+                            style={{ tintColor: "white" }}
                           />
                           <Text className="text-center text-base font-bold text-white">
                             {t(pref.label)}
@@ -427,14 +411,14 @@ const MultiStepForm = () => {
                   <TextInput
                     placeholder={t("enterTitle")}
                     className={`border rounded-lg p-3 bg-white ${errors.title ? "border-red-500" : "border-gray-300"
-                      }`} // Highlight border in red if there's an error
+                      }`}
                     value={formData.title}
                     onChangeText={(value) => handleInputChange("title", value)}
                     onBlur={() => {
                       if (!formData.title) {
                         setErrors((prev) => ({
                           ...prev,
-                          title: t("titleRequired"), // Use translation key for error message
+                          title: t("titleRequired"),
                         }));
                       }
                     }}
@@ -449,27 +433,22 @@ const MultiStepForm = () => {
                       if (!formData.description || formData.description.length < 4) {
                         setErrors((prev) => ({
                           ...prev,
-                          description: t("descriptionError"), // Use translation key for error message
+                          description: t("descriptionError"),
                         }));
                       } else if (!formData.description || formData.description.length > 200) {
                         setErrors((prev) => ({
                           ...prev,
-                          description: t("descriptionMaxLenError"), // Use translation key for error message
+                          description: t("descriptionMaxLenError"),
                         }));
                       }
                     }}
                   />
-                  {errors.description && <Text className="text-red-500">{errors.description}</Text>} {/* Display error message */}
+                  {errors.description && <Text className="text-red-500">{errors.description}</Text>}
                 </View>
               )}
 
-              {/* {step === 1 && formData.propertyType === "Land" && (
-                <View className="mb-[120px]"></View>
-              )} */}
-
               {step === 1 && formData.propertyType === "Full House" && (
                 <View>
-                  {/* Housing Type Dropdown */}
                   <CustomDropdown
                     label={t("housingType")}
                     data={staticData.housingTypeOptions}
@@ -478,7 +457,6 @@ const MultiStepForm = () => {
                     onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", [selectedItem.value])}
                   />
 
-                  {/* BHK Type Dropdown */}
                   <CustomDropdown
                     label={t("bhkType")}
                     data={staticData.bhkTypeOptions}
@@ -487,7 +465,6 @@ const MultiStepForm = () => {
                     onChange={(selectedItem: DropdownProps) => handleInputChange("bhkType", selectedItem.value)}
                   />
 
-                  {/* Family Preference Dropdown */}
                   <CustomDropdown
                     label={t("familyPreference")}
                     data={staticData.familyPreferenceOptions}
@@ -496,7 +473,6 @@ const MultiStepForm = () => {
                     onChange={(selectedItem: DropdownProps) => handleInputChange("familyPreference", selectedItem.value)}
                   />
 
-                  {/* Food Preference Dropdown */}
                   <CustomDropdown
                     label={t("foodPreference")}
                     data={staticData.foodPreferenceOptions}
@@ -509,7 +485,6 @@ const MultiStepForm = () => {
 
               {step === 1 && formData.propertyType === "PG/Hostel" && (
                 <View>
-                  {/* Room Type Dropdown */}
                   <CustomDropdown
                     label={t("roomType")}
                     data={staticData.roomTypeOptions}
@@ -518,7 +493,6 @@ const MultiStepForm = () => {
                     onChange={(selectedItem: DropdownProps) => handleInputChange("housingType", [selectedItem.value])}
                   />
 
-                  {/* Gender Preference Dropdown */}
                   <CustomDropdown
                     label={t("genderPreference")}
                     data={staticData.genderPreferenceOptions}
@@ -527,7 +501,6 @@ const MultiStepForm = () => {
                     onChange={(selectedItem: DropdownProps) => handleInputChange("familyPreference", selectedItem.value)}
                   />
 
-                  {/* Food Preference Dropdown */}
                   <CustomDropdown
                     label={t("foodPreference")}
                     data={staticData.foodPreferenceOptions}
@@ -540,7 +513,6 @@ const MultiStepForm = () => {
 
               {step === 1 && formData.propertyType === "Commercial" && (
                 <View>
-                  {/* Commercial Type Dropdown */}
                   <CustomMultiDropdown
                     label={t("commercialType")}
                     data={staticData.commercialTypeOptions}
@@ -584,44 +556,44 @@ const MultiStepForm = () => {
                   <TextInput
                     placeholder={t("enterCity")}
                     className={`border rounded-lg p-3 bg-white ${errors.city ? "border-red-500" : "border-gray-300"
-                      }`} // Highlight border in red if there's an error
+                      }`}
                     value={formData.city}
-                    onChangeText={(value) => handleInputChange("city", value)} // Update formData on change
+                    onChangeText={(value) => handleInputChange("city", value)}
                   />
-                  {errors.city && <Text className="text-red-500">{errors.city}</Text>} {/* Display error message */}
+                  {errors.city && <Text className="text-red-500">{errors.city}</Text>}
 
                   <Text className="text-base font-bold mt-3 mb-3">{t("pincode")}</Text>
                   <TextInput
                     placeholder={t("enterPincode")}
                     className={`border rounded-lg p-3 bg-white ${errors.zip ? "border-red-500" : "border-gray-300"
-                      }`} // Highlight border in red if there's an error
+                      }`}
                     keyboardType="numeric"
                     value={formData.zip}
-                    onChangeText={(value) => handleInputChange("zip", value)} // Update formData on change
+                    onChangeText={(value) => handleInputChange("zip", value)}
                     onBlur={(value) => {
                       if (!formData.zip || !/^\d{6}$/.test(formData.zip)) {
                         setErrors((prev) => ({
                           ...prev,
-                          zip: t("zipError"), // Use translation key for error message
+                          zip: t("zipError"),
                         }));
                       }
                     }}
                   />
-                  {errors.zip && <Text className="text-red-500">{errors.zip}</Text>} {/* Display error message */}
+                  {errors.zip && <Text className="text-red-500">{errors.zip}</Text>}
 
                   <Text className="text-base font-bold mt-3 mb-3">{t("address")}</Text>
                   <View>
                     <TextInput
-                      placeholder={t("enterAddressManually")} // Translation key for "Enter address manually"
+                      placeholder={t("enterAddressManually")}
                       className={`border rounded-lg p-3 bg-white mt-3 ${errors.address ? "border-red-500" : "border-gray-300"
-                        }`} // Highlight border in red if there's an error
+                        }`}
                       value={formData.address}
-                      onChangeText={(value) => handleInputChange("address", value)} // Update formData on change
+                      onChangeText={(value) => handleInputChange("address", value)}
                       onBlur={() => {
                         if (!formData.address || formData.address.length < 4) {
                           setErrors((prev) => ({
                             ...prev,
-                            address: t("addressError"), // Use translation key for error message
+                            address: t("addressError"),
                           }));
                         }
                       }}
@@ -629,22 +601,25 @@ const MultiStepForm = () => {
                   </View>
                   {errors.address && <Text className="text-red-500">{errors.address}</Text>}
 
-                  {/* <View className="mb-[20px]"></View> */}
-                  {/* <GoogleTextInput
-                        icon={icons.target}
-                        initialLocation={userAddress ? (() => {
-                          const parsedAddress = typeof userAddress === "string" ? JSON.parse(userAddress) : userAddress;
-                          return { latitude: parseFloat(parsedAddress?.latitude || "0"), longitude: parseFloat(parsedAddress?.longitude || "0") };
-                        })() : undefined}
-                        handlePress={async (location) => {
-                          setUserLocation(location);
-                          console.log("location", location)
-                          formData.latitude = location.latitude;
-                          formData.longitude = location.longitude;
-                          formData.location = location.address;
-                        }}
-                      /> */}
-                  {/* <View className="mb-[120px]"></View> */}
+                  <View className="mb-[20px]"></View>
+                  <GoogleTextInput
+                    icon={icons.target}
+                    initialLocation={{
+                      latitude: parseFloat(String(formData?.latitude || "0")),
+                      longitude: parseFloat(String(formData?.longitude || "0")),
+                      address: String(formData?.location),
+                      draggable: true
+                    }}
+                    handlePress={async (location) => {
+                      console.log("location", location);
+                      setFormData((prev) => ({
+                        ...prev,
+                        "latitude": location.latitude,
+                        "longitude": location.longitude,
+                        "location": location.address
+                      }));
+                    }}
+                  />
                 </View>
               )}
 
@@ -678,7 +653,7 @@ const MultiStepForm = () => {
                           <Image
                             source={formData.rentNegotiable === pref ? icons.radioChecked : icons.radioUnchecked}
                             className="w-6 h-6 mr-2"
-                            style={{ tintColor: "white" }} // Apply white tint color
+                            style={{ tintColor: "white" }}
                           />
                           <Text className="text-center text-base font-bold text-white">
                             {t(pref.toLowerCase())}
@@ -808,12 +783,9 @@ const MultiStepForm = () => {
                       console.log(formData);
                     }}
                   />
-                  {/* <View className="mb-[120px]"></View> */}
                 </View>
               )}
-              {step === 6 && (<ComingSoon />)}
 
-              {/* Navigation Buttons */}
               <View className={`flex-row ${step > 1 ? "justify-between" : "justify-end"} mt-5 mb-10`}>
                 {step > 1 && <TouchableOpacity onPress={() => { handleSubmit(formData, -1); }} className="bg-gray-500 py-3 px-5 rounded-lg">
                   <Text className="text-white text-base font-bold">{t("back")}</Text>
@@ -833,10 +805,6 @@ const MultiStepForm = () => {
               </View>
             </View>
           </ScrollView>
-          {/*    )}
-          //   keyExtractor={(item) => item.key}
-          //   keyboardShouldPersistTaps="handled"
-          // />*/}
         </KeyboardAvoidingView>
       )}
     </SafeAreaView>

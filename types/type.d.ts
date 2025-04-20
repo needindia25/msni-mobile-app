@@ -99,19 +99,17 @@ declare interface ButtonProps extends TouchableOpacityProps {
 
 declare interface GoogleInputProps {
   icon?: string;
-  initialLocation?: { latitude: number; longitude: number };
+  initialLocation?: { latitude: number; longitude: number, address: string, draggable: boolean };
   containerStyle?: string;
   textInputBackgroundColor?: string;
-  handlePress: ({
+  handlePress?: ({
     latitude,
     longitude,
     address,
-    address_components,
   }: {
     latitude: number;
     longitude: number;
     address: string;
-    address_components: Array;
   }) => void;
 }
 
@@ -150,23 +148,19 @@ declare interface LocationStore {
     latitude,
     longitude,
     address,
-    address_components,
   }: {
     latitude: number;
     longitude: number;
     address: string;
-    address_components: Array;
   }) => void;
   setDestinationLocation: ({
     latitude,
     longitude,
     address,
-    address_components,
   }: {
     latitude: number;
     longitude: number;
     address: string;
-    address_components: Array;
   }) => void;
 }
 
