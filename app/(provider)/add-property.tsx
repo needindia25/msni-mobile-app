@@ -3,7 +3,7 @@ import CustomDropdown from "@/components/CustomDropdown";
 import CustomTextarea from "@/components/CustomTextarea";
 import { constants, icons } from "@/constants";
 import { fetchAPI } from "@/lib/fetch";
-import { DropdownProps } from "@/types/type";
+import { DropdownProps, UserInfo } from "@/types/type";
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, SafeAreaView, ActivityIndicator, Alert, KeyboardAvoidingView, FlatList, Platform, Image, ScrollView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -23,6 +23,7 @@ const MultiStepForm = () => {
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(1);
   const [token, setToken] = useState<string | null>(null);
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
   const [formData, setFormData] = useState({
     propertyFor: "Rent",
@@ -94,9 +95,16 @@ const MultiStepForm = () => {
         if (token) {
           setToken(token);
         }
+        const userInfoString = await AsyncStorage.getItem('user_info');
+        const userInfoJson = userInfoString ? JSON.parse(userInfoString) : null
+        setUserInfo(userInfoJson)
 
         const response = await fetchAPI(`${constants.API_URL}/master/states`, t);
-        setStates(response);
+        if (response) {
+          setStates(response);
+        } else {
+          return;
+        }
 
         if (passServiceId) {
           setServiceId(parseInt(passServiceId, 10));
@@ -107,6 +115,9 @@ const MultiStepForm = () => {
               'Authorization': `Bearer ${token}`,
             },
           });
+          if (response === null || response === undefined) {
+            return;
+          }
 
           setFormData((prevFormData: any) => ({
             ...prevFormData,
@@ -151,6 +162,9 @@ const MultiStepForm = () => {
     if (!stateId) return;
     try {
       const response = await fetchAPI(`${constants.API_URL}/master/state/${stateId}/districts`, t);
+      if (response === null || response === undefined) {
+        return;
+      }
       setDistricts(response)
       districtOptions = response.map((district: any) => ({
         label: district.name,
@@ -309,13 +323,25 @@ const MultiStepForm = () => {
           title: formData.title,
           options: formData,
           service: 1,
-          is_active: true
+          is_active: true,
+          plan_id: userInfo?.plan_id
         } : {
           title: formData.title,
           options: formData,
           service_id: 1,
+          plan_id: userInfo?.plan_id
         }),
       });
+      console.log("===========================================")
+      console.log("===========================================")
+      console.log("===========================================")
+      console.log("response: ", response)
+      console.log("===========================================")
+      console.log("===========================================")
+      console.log("===========================================")
+      if (response === null || response === undefined) {
+        return;
+      }
       if (method === "POST") {
         setServiceId(response.id)
       }

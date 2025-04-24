@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { icons, images } from "@/constants";
 import { UserInfo } from '@/types/type';
@@ -15,6 +15,19 @@ const NoSubscription = () => {
         const checkAuth = async () => {
             const token = await AsyncStorage.getItem('token');
             console.log(`token: ${token}`);
+
+            if (!token) {
+                Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                    [
+                        {
+                            text: t("ok"),
+                            onPress: () => {
+                                router.replace("/(auth)/sign-in");
+                            },
+                        },
+                    ]
+                );
+            }
             if (!!token) {
                 const userInfo = await AsyncStorage.getItem('user_info');
                 console.log(`userInfo: ${userInfo}`);

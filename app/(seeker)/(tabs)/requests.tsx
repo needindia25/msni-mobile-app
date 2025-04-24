@@ -41,6 +41,9 @@ const Requests = () => {
                     'Authorization': `Bearer ${token}`,
                 },
             });
+            if (requestResponse === null || requestResponse === undefined) {
+                return;
+            }
             // console.log("API Response:", requestResponse); // Log the API response
             setRequestListings(transformData(requestResponse));
 
@@ -50,6 +53,9 @@ const Requests = () => {
                     'Authorization': `Bearer ${token}`,
                 },
             });
+            if (favouriteResponse === null || favouriteResponse === undefined) {
+                return;
+            }
             // console.log("API Response:", favouriteResponse); // Log the API response
             setFavouriteListings(transformData(favouriteResponse));
         }

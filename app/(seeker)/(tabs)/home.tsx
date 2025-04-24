@@ -236,6 +236,10 @@ const Home = () => {
     const fetchStates = async () => {
       try {
         const response = await fetchAPI(`${constants.API_URL}/master/states`, t); // Replace with your API endpoint
+
+        if (response === null || response === undefined) {
+          return;
+        }
         setStates(response);
         if (searchData.state) {
           fetchDistricts(searchData.state);
@@ -255,6 +259,10 @@ const Home = () => {
     if (!stateId) return;
     try {
       const response = await fetchAPI(`${constants.API_URL}/master/state/${stateId}/districts`, t);
+
+      if (response === null || response === undefined) {
+        return;
+      }
       setDistricts(response)
       districtOptions = response.map((district: any) => ({
         label: district.name,

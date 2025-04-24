@@ -26,14 +26,13 @@ const Home = () => {
                         {
                             text: t("ok"),
                             onPress: () => {
-                                // Perform the action when "OK" is pressed
                                 router.replace("/(auth)/sign-in");
                             },
                         },
                     ]
                 );
             }
-            console.log("Token:", token); // Log the token for debugging
+            console.log("Token:", token);
             if (!!token) {
                 const response: any = await fetchAPI(`${constants.API_URL}/user-services/my_property/`, t, {
                     headers: {
@@ -41,7 +40,10 @@ const Home = () => {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
-                console.log("Response:", response); // Log the response for debugging 
+                if (response === null || response === undefined) {
+                    return;
+                }
+                console.log("Response:", response);
                 setListings(transformData(response));
             }
             setLoading(false);
@@ -88,7 +90,6 @@ const Home = () => {
                                     {
                                         text: t("ok"),
                                         onPress: () => {
-                                            // Perform the action when "OK" is pressed
                                             router.replace("/(auth)/sign-in");
                                         },
                                     },
@@ -96,12 +97,15 @@ const Home = () => {
                             );
                         }
                         if (token) {
-                            await fetchAPI(`${constants.API_URL}/user-services/${id}/`, t, {
+                            const response = await fetchAPI(`${constants.API_URL}/user-services/${id}/`, t, {
                                 method: "DELETE",
                                 headers: {
                                     'Authorization': `Bearer ${token}`,
                                 },
                             });
+                            if (response === null || response === undefined) {
+                                return;
+                            }
                             Alert.alert(
                                 t("success"),
                                 t("propertyDeleted"),
@@ -109,7 +113,6 @@ const Home = () => {
                                     {
                                         text: t("ok"),
                                         onPress: () => {
-                                            // Perform the action when "OK" is pressed
                                             setListings((prev) => prev.filter((listing) => listing.id !== id));
                                         },
                                     },
@@ -154,7 +157,6 @@ const Home = () => {
                                     {
                                         text: t("ok"),
                                         onPress: () => {
-                                            // Perform the action when "OK" is pressed
                                             router.replace("/(auth)/sign-in");
                                         },
                                     },
@@ -162,12 +164,15 @@ const Home = () => {
                             );
                         }
                         if (token) {
-                            await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, t, {
+                            const response = await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, t, {
                                 method: "PATCH",
                                 headers: {
                                     'Authorization': `Bearer ${token}`,
                                 },
                             });
+                            if (response === null || response === undefined) {
+                                return;
+                            }
                             Alert.alert(
                                 t("success"),
                                 t("statusUpdated"),
@@ -175,7 +180,6 @@ const Home = () => {
                                     {
                                         text: t("ok"),
                                         onPress: () => {
-                                            // Perform the action when "OK" is pressed
                                             setListings((prevListings) =>
                                                 prevListings.map((listing) =>
                                                     listing.id === id

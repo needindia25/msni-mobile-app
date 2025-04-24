@@ -4,8 +4,8 @@ import { router } from "expo-router";
 export const fetchAPI = async (url: string, t: (key: string) => string, options?: RequestInit) => {
   try {
     const response = await fetch(url, options);
+    console.log("fetchAPI: ", response)
     if (response.status === 401) {
-      console.log("fetchAPI: ", response)
       Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"), [
         {
           text: t("ok"),
@@ -13,12 +13,32 @@ export const fetchAPI = async (url: string, t: (key: string) => string, options?
         },
       ]);
     }
-    if (!response.ok) {
-      new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok || response.status === 400) {
+      Alert.alert(t("error"), t("somethingWentWrong"), [
+        {
+          text: t("ok"),
+          onPress: () => router.push(`/(auth)/sign-in`),
+        },
+      ]);
     }
-    return await response.json();
+    const response_json =  await response.json();
+    console.log("response_json: ", response_json)
+    if (response_json.hasOwnProperty("error")) {
+      Alert.alert(t("error"), response_json["error"], [
+        {
+          text: t("ok"),
+          onPress: () => {return null},
+        },
+      ]);
+    } else {
+      return response_json
+    }
   } catch (error) {
-    console.error("Fetch error:", error);
-    throw error;
+    Alert.alert(t("error"), t("somethingWentWrong"), [
+      {
+        text: t("ok"),
+        onPress: () => router.push(`/(auth)/sign-in`),
+      },
+    ]);
   }
 };

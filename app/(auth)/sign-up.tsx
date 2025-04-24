@@ -157,7 +157,9 @@ const SignUp = () => {
     const fetchStates = async () => {
       try {
         const response = await fetchAPI(`${constants.API_URL}/master/states`, t);
-        setStates(response);
+        if (response) {
+          setStates(response);
+        }
       } catch (error) {
         console.error("Error fetching states:", error);
       } finally {
@@ -174,7 +176,9 @@ const SignUp = () => {
           const response = await fetchAPI(
             `${constants.API_URL}/master/state/${form.state}/districts`, t
           );
-          setDistricts(response);
+          if (response) {
+            setDistricts(response);
+          }
         } catch (error) {
           console.error("Error fetching districts:", error);
         } finally {

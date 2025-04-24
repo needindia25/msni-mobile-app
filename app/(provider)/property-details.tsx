@@ -74,7 +74,6 @@ const PropertyDetails = () => {
                             {
                                 text: t("ok"),
                                 onPress: () => {
-                                    // Perform the action when "OK" is pressed
                                     router.replace("/(auth)/sign-in");
                                 },
                             },
@@ -90,6 +89,9 @@ const PropertyDetails = () => {
                             'Authorization': `Bearer ${token}`,
                         },
                     });
+                    if (serviceResponse === null || serviceResponse === undefined) {
+                        return;
+                    }
                     console.log("Service response:", serviceResponse);
                     console.log("Service response options:", serviceResponse["options"]);
 
@@ -163,7 +165,6 @@ const PropertyDetails = () => {
                                     {
                                         text: t("ok"),
                                         onPress: () => {
-                                            // Perform the action when "OK" is pressed
                                             router.replace("/(auth)/sign-in");
                                         },
                                     },
@@ -171,12 +172,15 @@ const PropertyDetails = () => {
                             );
                         }
                         if (token) {
-                            await fetchAPI(`${constants.API_URL}/user-services/${id}/`, t, {
+                            const response = await fetchAPI(`${constants.API_URL}/user-services/${id}/`, t, {
                                 method: "DELETE",
                                 headers: {
                                     'Authorization': `Bearer ${token}`,
                                 },
                             });
+                            if (response === null || response === undefined) {
+                                return;
+                            }
                             Alert.alert(
                                 t("success"),
                                 t("propertyDeleted"),
@@ -184,7 +188,6 @@ const PropertyDetails = () => {
                                     {
                                         text: t("ok"),
                                         onPress: () => {
-                                            // Perform the action when "OK" is pressed
                                             router.back()
                                         },
                                     },
@@ -229,7 +232,6 @@ const PropertyDetails = () => {
                                     {
                                         text: t("ok"),
                                         onPress: () => {
-                                            // Perform the action when "OK" is pressed
                                             router.replace("/(auth)/sign-in");
                                         },
                                     },
@@ -237,12 +239,15 @@ const PropertyDetails = () => {
                             );
                         }
                         if (token) {
-                            await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, t, {
+                            const response = await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, t, {
                                 method: "PATCH",
                                 headers: {
                                     'Authorization': `Bearer ${token}`,
                                 },
                             });
+                            if (response === null || response === undefined) {
+                                return;
+                            }
 
                             Alert.alert(
                                 t("success"),
@@ -251,7 +256,6 @@ const PropertyDetails = () => {
                                     {
                                         text: t("ok"),
                                         onPress: () => {
-                                            // Perform the action when "OK" is pressed
                                             setFormData((prevFormData: any) => ({
                                                 ...prevFormData,
                                                 status: !prevFormData.status,

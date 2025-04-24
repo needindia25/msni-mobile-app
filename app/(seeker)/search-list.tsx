@@ -26,18 +26,17 @@ const SearchList = () => {
             const token = await AsyncStorage.getItem('token');
             await AsyncStorage.setItem("passServiceId", "");
             if (!token) {
-                    Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-                      [
+                Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                    [
                         {
-                          text: t("ok"),
-                          onPress: () => {
-                            // Perform the action when "OK" is pressed
-                            router.replace("/(auth)/sign-in");
-                          },
+                            text: t("ok"),
+                            onPress: () => {
+                                router.replace("/(auth)/sign-in");
+                            },
                         },
-                      ]
-                    );
-                  }
+                    ]
+                );
+            }
             if (!!token) {
                 const response: any = await fetchAPI(`${constants.API_URL}/search/`, t, {
                     method: 'POST',
@@ -47,6 +46,9 @@ const SearchList = () => {
                     },
                     body: JSON.stringify(filtersData), // Send filters as JSON
                 });
+                if (response === null || response === undefined) {
+                    return;
+                }
                 // console.log("API Response:", response); // Log the API response
                 setListings(transformData(response));
             }

@@ -97,6 +97,9 @@ const PropertyDetails = () => {
                             'Authorization': `Bearer ${token}`,
                         },
                     });
+                    if (serviceResponse === null || serviceResponse === undefined) {
+                        return;
+                    }
                     console.log("Service response:", serviceResponse);
                     console.log("Service response options:", serviceResponse["options"]);
 
@@ -218,6 +221,9 @@ const PropertyDetails = () => {
                     'Authorization': `Bearer ${token}`,
                 },
             });
+            if (serviceResponse === null || serviceResponse === undefined) {
+                return;
+            }
             console.log(serviceResponse)
             setShowContactInfo(true);
         }
@@ -244,6 +250,9 @@ const PropertyDetails = () => {
                     'Authorization': `Bearer ${token}`,
                 },
             });
+            if (serviceResponse === null || serviceResponse === undefined) {
+                return;
+            }
             console.log(serviceResponse)
             setFavorites(!favorites);
         }
@@ -273,6 +282,9 @@ const PropertyDetails = () => {
                 },
                 body: JSON.stringify({ rating: newRating }),
             });
+            if (serviceResponse === null || serviceResponse === undefined) {
+                return;
+            }
             console.log(serviceResponse)
         }
     };

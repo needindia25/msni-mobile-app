@@ -37,7 +37,7 @@ const Layout = () => {
           {
             text: t("yes"), // Use translation key
             onPress: async () => {
-              const response = await fetchAPI(`${constants.API_URL}/auth/logout/`, t, {
+              await fetchAPI(`${constants.API_URL}/auth/logout/`, t, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -45,8 +45,6 @@ const Layout = () => {
                 },
                 body: JSON.stringify({ refresh: refresh }),
               });
-
-              console.log(response);
               await AsyncStorage.clear();
               Alert.alert(
                 t("success"),
@@ -97,6 +95,7 @@ const Layout = () => {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="search-list" options={{ headerShown: false }} />
         <Stack.Screen name="property-details" options={{ headerShown: false }} />
+                <Stack.Screen name="transactions" options={{ headerShown: false }} />
       </Stack>
     </>
   );

@@ -61,6 +61,9 @@ const Services = () => {
             'Authorization': `Bearer ${token}`,
           },
         });
+        if (response === null || response === undefined) {
+            return;
+        }
         console.log(response);
         setListings(transformData(response));
       }
