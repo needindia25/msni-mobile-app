@@ -65,17 +65,13 @@ const PropertyDetails = () => {
     const [favorites, setFavorites] = useState(false);
 
     useEffect(() => {
-        console.log("PropertyDetails component mounted");
         const fetchDetails = async () => {
-            console.log("Fetching property details...");
             try {
                 const passServiceId = await AsyncStorage.getItem("passServiceId");
                 if (passServiceId) {
                     setId(parseInt(passServiceId, 10));
                 }
-                console.log("Fetched service ID:", passServiceId);
                 const token = await AsyncStorage.getItem('token');
-                console.log("Fetched token ID:", token);
                 if (!token) {
                     Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
                         [
@@ -90,7 +86,6 @@ const PropertyDetails = () => {
                 }
                 if (passServiceId && token) {
                     setToken(token);
-                    console.log("Fetching service response...");
                     const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/info/`, t, {
                         headers: {
                             'Content-Type': 'application/json',
@@ -100,8 +95,6 @@ const PropertyDetails = () => {
                     if (serviceResponse === null || serviceResponse === undefined) {
                         return;
                     }
-                    console.log("Service response:", serviceResponse);
-                    console.log("Service response options:", serviceResponse["options"]);
 
                     setFormData((prevFormData: any) => ({
                         ...prevFormData,
@@ -134,7 +127,7 @@ const PropertyDetails = () => {
                                     ? [serviceResponse["options"].numberOfBathRooms + " Bath Room" + (serviceResponse["options"].numberOfBathRooms > 1 ? "s" : "")]
                                     : serviceResponse["options"].numberOfBathRooms)
                                 : [],
-                        },                        
+                        },
                         ...{
                             latitude: parseFloat(String(serviceResponse["options"].latitude || "0")),
                             longitude: parseFloat(String(serviceResponse["options"].longitude || "0"))
@@ -143,16 +136,19 @@ const PropertyDetails = () => {
 
                     if (serviceResponse["service_request_count"]) {
                         const serviceRequestCount = serviceResponse["service_request_count"];
-                        console.log("Service request count:", serviceRequestCount);
                         setShowContactInfo(serviceRequestCount["is_my_request"]);
                         setFavorites(serviceRequestCount["is_my_favorite"]);
                         setRating(serviceRequestCount["get_my_rating"]);
                     }
-                    console.log(serviceResponse);
-                    console.log(formData);
                 }
             } catch (error) {
-                console.error("Error fetching data:", error);
+                Alert.alert(t("error"), t("errorFetchingProperty"),
+                    [
+                        {
+                            text: t("ok"),
+                        },
+                    ]
+                );
             } finally {
                 setLoading(false);
             }
@@ -213,7 +209,6 @@ const PropertyDetails = () => {
             );
         }
         if (id && token) {
-            console.log("Add a request");
             const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${id}/requests/`, t, {
                 method: 'POST',
                 headers: {
@@ -224,7 +219,6 @@ const PropertyDetails = () => {
             if (serviceResponse === null || serviceResponse === undefined) {
                 return;
             }
-            console.log(serviceResponse)
             setShowContactInfo(true);
         }
     };
@@ -253,7 +247,6 @@ const PropertyDetails = () => {
             if (serviceResponse === null || serviceResponse === undefined) {
                 return;
             }
-            console.log(serviceResponse)
             setFavorites(!favorites);
         }
     };
@@ -272,7 +265,6 @@ const PropertyDetails = () => {
             );
         }
         setRating(newRating);
-        console.log(`User rated: ${newRating} stars`);
         if (id && token) {
             const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${id}/rating/`, t, {
                 method: 'POST',
@@ -285,7 +277,6 @@ const PropertyDetails = () => {
             if (serviceResponse === null || serviceResponse === undefined) {
                 return;
             }
-            console.log(serviceResponse)
         }
     };
 

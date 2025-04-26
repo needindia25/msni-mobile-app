@@ -14,7 +14,6 @@ const getSavedLanguage = async () => {
     const savedLanguage = await AsyncStorage.getItem('language');
     return savedLanguage || 'en'; // Default to English if no language is saved
   } catch (error) {
-    console.error('Error loading saved language:', error);
     return 'en';
   }
 };

@@ -10,12 +10,10 @@ const Page = () => {
   useEffect(() => {
     const checkAuth = async () => {
       const token = await AsyncStorage.getItem('token');
-      console.log(`token: ${token}`)
       setIsSignedIn(!!token);
       
       if (!!token) {
         const userInfo = await AsyncStorage.getItem('user_info');
-        console.log(`userInfo: ${userInfo}`)
         setUserInfo(userInfo ? JSON.parse(userInfo) : null)
       }
       setLoading(false);
@@ -28,7 +26,6 @@ const Page = () => {
 
   if (isSignedIn) {
     if (userInfo && userInfo.has_subscription) {
-      console.log(userInfo.user_type_id, typeof userInfo.user_type_id)
       if (userInfo.user_type_id === 1) {
         return <Redirect href="/(seeker)/(tabs)/home" />;
       } else {

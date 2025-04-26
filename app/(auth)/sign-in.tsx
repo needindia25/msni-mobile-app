@@ -121,7 +121,6 @@ const SignIn = () => {
         router.replace("/no-subscription");
       }
     } catch (err) {
-      console.error("Login error:", err);
       Alert.alert(t("error"), t("loginFailed"),
         [
           {

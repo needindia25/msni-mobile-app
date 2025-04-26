@@ -16,8 +16,6 @@ const SearchList = () => {
     const { searchData } = useLocalSearchParams(); // Use useLocalSearchParams instead of useSearchParams
     const filtersData = typeof searchData === 'string' ? JSON.parse(searchData) : {}; // Ensure searchData is a string before parsing
 
-    console.log("Received Search Data:", filtersData);
-
     const [loading, setLoading] = useState(true);
     const [listings, setListings] = useState<Listing[]>([]);
 
@@ -49,7 +47,6 @@ const SearchList = () => {
                 if (response === null || response === undefined) {
                     return;
                 }
-                // console.log("API Response:", response); // Log the API response
                 setListings(transformData(response));
             }
             setLoading(false);
@@ -79,7 +76,6 @@ const SearchList = () => {
     };
 
     const handleView = async (id: number) => {
-        // return;
         await AsyncStorage.setItem("passServiceId", id.toString());
         router.push(`/property-details`);
     };

@@ -40,7 +40,6 @@ const Services = () => {
     const checkAuth = async () => {
       const token = await AsyncStorage.getItem('token');
       await AsyncStorage.setItem("passServiceId", "");
-      console.log(`token: ${token}`);
       if (!token) {
         Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
           [
@@ -64,7 +63,6 @@ const Services = () => {
         if (response === null || response === undefined) {
             return;
         }
-        console.log(response);
         setListings(transformData(response));
       }
       setLoading(false);

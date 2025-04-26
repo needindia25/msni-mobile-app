@@ -105,6 +105,8 @@ export const icons = {
 // };
 
 export const constants = {
+  DEFAULT_LAT: 24.787674373711102,
+  DEFAULT_LONG: 84.99152133511204,
   REPACE_TEXT: "uatadmin.",
   BASE_URL: "https://uatadmin.multisolutionofneedindia.com",
   API_URL: "https://uatapi.multisolutionofneedindia.com",

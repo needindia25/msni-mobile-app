@@ -51,7 +51,6 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
 
     const handleResendCode = () => {
         // Logic to resend the OTP code
-        console.log('Resend code');
         setTimeRemaining(59);
        // const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
        const randomOtp = '123456';
@@ -64,10 +63,8 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
         // Logic to verify the OTP code
         const enteredOtp = otp.join('');
         if (enteredOtp === generatedOtp) {
-            console.log('OTP verified successfully');
             onPress();
         } else {
-            console.log('Invalid OTP');
             setOtp(Array(OTP_LENGTH).fill(""));
             setErrorMessage(t("invalidOtp")); // Use translation key
         }

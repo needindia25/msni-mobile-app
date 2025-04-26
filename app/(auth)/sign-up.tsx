@@ -161,7 +161,13 @@ const SignUp = () => {
           setStates(response);
         }
       } catch (error) {
-        console.error("Error fetching states:", error);
+        Alert.alert(t("error"), t("errorFetchingState"),
+          [
+            {
+              text: t("ok"),
+            },
+          ]
+        );
       } finally {
         setLoading(false);
       }
@@ -180,7 +186,13 @@ const SignUp = () => {
             setDistricts(response);
           }
         } catch (error) {
-          console.error("Error fetching districts:", error);
+          Alert.alert(t("error"), t("errorFetchingDistrict"),
+            [
+              {
+                text: t("ok"),
+              },
+            ]
+          );
         } finally {
           setLoading(false);
         }

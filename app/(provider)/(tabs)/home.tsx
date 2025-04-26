@@ -5,12 +5,11 @@ import ImageCarousel from "@/components/ImageCarousel";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Alert } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const Home = () => {
     const { t } = useTranslation(); // Initialize translation hook
-    const screenWidth = Dimensions.get('window').width;
     const router = useRouter();
 
     const [loading, setLoading] = useState(true);
@@ -32,7 +31,6 @@ const Home = () => {
                     ]
                 );
             }
-            console.log("Token:", token);
             if (!!token) {
                 const response: any = await fetchAPI(`${constants.API_URL}/user-services/my_property/`, t, {
                     headers: {
@@ -43,7 +41,6 @@ const Home = () => {
                 if (response === null || response === undefined) {
                     return;
                 }
-                console.log("Response:", response);
                 setListings(transformData(response));
             }
             setLoading(false);
@@ -130,7 +127,6 @@ const Home = () => {
             await AsyncStorage.setItem("passServiceId", id.toString());
             router.push(`/add-property`);
         } catch (error) {
-            console.error("Error saving service ID to AsyncStorage:", error);
             Alert.alert(t("error"), t("errorSavingServiceId"),
                 [
                     {
@@ -198,12 +194,63 @@ const Home = () => {
         );
     };
 
+    const handleAddPropert = async () => {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+            Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                [
+                    {
+                        text: t("ok"),
+                        onPress: () => {
+                            router.replace("/(auth)/sign-in");
+                        },
+                    },
+                ]
+            );
+        }
+        const response = await fetchAPI(
+            `${constants.API_URL}/user/plan/`,
+            t,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            }
+        );
+        if (response === null || response === undefined) {
+            return;
+        }
+        const plans = response.map((item: any) => ({
+            id: item.id,
+            subscription_id: item.subscription_id,
+            planName: item.title,
+            price: item.amount,
+            description: item.descriptions,
+            period: item.period,
+            credits: item.credits,
+            used: item.used,
+        })) || [];
+
+        if (plans.length === 0 || plans[0].credits <= plans[0].used) {
+            Alert.alert(t("error"), t("invalidPlanToCreateService"),
+                [
+                    {
+                        text: t("ok"),
+                    },
+                ]
+            );
+            return
+        }
+        router.push('/add-property')
+    }
+
     return (
         <>
             {listings.length > 0 && (
                 <TouchableOpacity
                     className="absolute top-5 right-5 bg-green-500 rounded-full p-5 shadow-lg"
-                    onPress={() => router.push('/add-property')}
+                    onPress={() => handleAddPropert()}
                     style={{ zIndex: 1000 }}
                 >
                     <Text className="text-white text-base font-bold">+ {t("addNextProperty")}</Text> {/* Wrap "+" in <Text> */}
@@ -288,7 +335,7 @@ const Home = () => {
                                 </Text>
                                 <TouchableOpacity
                                     className="bg-green-500 py-3 px-10 rounded-full mb-5"
-                                    onPress={() => router.push('/add-property')}
+                                    onPress={() => handleAddPropert()}
                                 >
                                     <Text className="text-white text-lg font-bold">{t("addNewProperty")}</Text>
                                 </TouchableOpacity>

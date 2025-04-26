@@ -59,7 +59,6 @@ const ChooseSubscription = () => {
                         },
                     ]
                 );
-                console.error('Error fetching subscriptions:', error);
             } finally {
                 setLoading(false);
             }

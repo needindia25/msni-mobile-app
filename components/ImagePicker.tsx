@@ -87,7 +87,6 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
         }
       }
     } catch (error) {
-      console.error('Image picker error:', error);
       Alert.alert('Error', t("imageUploadError")); // Use translation key
     }
   };
@@ -105,7 +104,6 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
           id: serviceId,
         }),
       });
-      console.log("imge upload response:", response);
       if (response.status === 401) {
         Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"), [
           {
@@ -118,12 +116,27 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
         const data = await response.json();
         return data.filePath;
       } else {
-        Alert.alert('Error', t("imageUploadError")); // Use translation key
+        Alert.alert(
+          t('error'),
+          t("imageUploadError"),
+          [
+            {
+              text: t("ok"),
+            },
+          ]
+        );
         return null;
       }
     } catch (error) {
-      console.error('Error uploading image:', error);
-      Alert.alert('Error', t("imageUploadError")); // Use translation key
+      Alert.alert(
+        t('error'),
+        t("imageUploadError"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      );
       return null;
     }
   };

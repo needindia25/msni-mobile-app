@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Image, Alert } from "react-native";
 import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
@@ -13,10 +13,10 @@ const LanguageSelector = () => {
     const checkLanguage = async () => {
       const savedLanguage = await AsyncStorage.getItem("language");
       if (savedLanguage) {
-        i18n.changeLanguage(savedLanguage); // Set the saved language
-        router.replace("/(auth)/welcome"); // Redirect to the welcome page
+        i18n.changeLanguage(savedLanguage);
+        router.replace("/(auth)/welcome");
       } else {
-        i18n.changeLanguage("A"); // Default to English if no language is saved
+        i18n.changeLanguage("A");
       }
     };
     checkLanguage();
@@ -29,7 +29,13 @@ const LanguageSelector = () => {
       i18n.changeLanguage(language); // Change the language
       router.replace("/(auth)/welcome"); // Navigate to the welcome screen
     } catch (error) {
-      console.error("Error saving language preference:", error);
+      Alert.alert(t("error"), t("errorSavingLanguagePreference"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      );
     }
   };
 
@@ -56,9 +62,8 @@ const LanguageSelector = () => {
           ].map((pref) => (
             <TouchableOpacity
               key={pref.code}
-              className={`rounded-lg p-3 flex-1 mr-2 ${
-                i18n.language === pref.code ? "bg-[#01BB23]" : "bg-[#FF7F19]"
-              }`}
+              className={`rounded-lg p-3 flex-1 mr-2 ${i18n.language === pref.code ? "bg-[#01BB23]" : "bg-[#FF7F19]"
+                }`}
               onPress={() => changeLanguage(pref.code)}
             >
               <View className="flex-row items-center justify-center">

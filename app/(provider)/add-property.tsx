@@ -1,4 +1,3 @@
-import ComingSoon from "@/components/ComingSoon";
 import CustomDropdown from "@/components/CustomDropdown";
 import CustomTextarea from "@/components/CustomTextarea";
 import { constants, icons } from "@/constants";
@@ -75,7 +74,6 @@ const MultiStepForm = () => {
   }));
 
   useEffect(() => {
-    console.log("Component re-rendered");
     const fetchData = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
@@ -108,7 +106,6 @@ const MultiStepForm = () => {
 
         if (passServiceId) {
           setServiceId(parseInt(passServiceId, 10));
-          console.log(`URL : ${constants.API_URL}`)
           const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/`, t, {
             headers: {
               'Content-Type': 'application/json',
@@ -149,7 +146,13 @@ const MultiStepForm = () => {
           }
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        Alert.alert(t("error"), t("errorFetchingProperty"),
+          [
+            {
+              text: t("ok"),
+            },
+          ]
+        );
       } finally {
         setLoading(false);
       }
@@ -171,7 +174,13 @@ const MultiStepForm = () => {
         value: district.id,
       }));
     } catch (error) {
-      console.error("Error fetching districts:", error);
+      Alert.alert(t("error"), t("errorFetchingDistrict"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      );
     }
   };
 
@@ -279,7 +288,6 @@ const MultiStepForm = () => {
   };
 
   const handleSubmit = async (formData: any, stepIndex: number = 0) => {
-    console.log("Form values:", formData);
     if (!validateForm()) {
       Alert.alert(
         t("error"),
@@ -311,8 +319,6 @@ const MultiStepForm = () => {
         method = "PATCH"
         url = `${constants.API_URL}/user-services/${serviceId}/update_option/`;
       }
-      console.log("URL", url)
-      console.log("METHOD", method)
       const response = await fetchAPI(url, t, {
         method: method,
         headers: {
@@ -332,13 +338,6 @@ const MultiStepForm = () => {
           plan_id: userInfo?.plan_id
         }),
       });
-      console.log("===========================================")
-      console.log("===========================================")
-      console.log("===========================================")
-      console.log("response: ", response)
-      console.log("===========================================")
-      console.log("===========================================")
-      console.log("===========================================")
       if (response === null || response === undefined) {
         return;
       }
@@ -368,7 +367,6 @@ const MultiStepForm = () => {
           },
         ]
       );
-      console.error("Error saving data:", error);
     }
   };
 
@@ -631,13 +629,12 @@ const MultiStepForm = () => {
                   <GoogleTextInput
                     icon={icons.target}
                     initialLocation={{
-                      latitude: parseFloat(String(formData?.latitude || "0")),
-                      longitude: parseFloat(String(formData?.longitude || "0")),
+                      latitude: parseFloat(String(formData?.latitude || constants.DEFAULT_LAT)),
+                      longitude: parseFloat(String(formData?.longitude || constants.DEFAULT_LONG)),
                       address: String(formData?.location),
                       draggable: true
                     }}
                     handlePress={async (location) => {
-                      console.log("location", location);
                       setFormData((prev) => ({
                         ...prev,
                         "latitude": location.latitude,
@@ -798,15 +795,11 @@ const MultiStepForm = () => {
                     images={formData.images}
                     serviceId={serviceId}
                     onImageDelete={(imagePath: string) => {
-                      console.log(formData.images, imagePath);
                       const updatedImages = formData.images.filter((img: string) => img !== imagePath);
                       handleInputChange("images", updatedImages);
-                      console.log(formData);
                     }}
                     onImageSelect={(imagePath: string) => {
-                      console.log(formData.images, imagePath);
                       handleInputChange("images", [...formData.images, imagePath]);
-                      console.log(formData);
                     }}
                   />
                 </View>

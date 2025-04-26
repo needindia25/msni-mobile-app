@@ -38,11 +38,17 @@ const TransactionsPage: React.FC = () => {
                 if (response === null || response === undefined) {
                     return;
                 }
-                console.log(response);
                 setTransactions(response || []);
             } catch (error) {
-                console.error("Error fetching transactions:", error);
-                Alert.alert(t("error"), t("failedToFetchTransactions"));
+                Alert.alert(
+                    t("error"),
+                    t("failedToFetchTransactions"),
+                    [
+                        {
+                            text: t("ok"),
+                        },
+                    ]
+                );
             } finally {
                 setLoading(false);
             }

@@ -44,7 +44,6 @@ const Requests = () => {
             if (requestResponse === null || requestResponse === undefined) {
                 return;
             }
-            // console.log("API Response:", requestResponse); // Log the API response
             setRequestListings(transformData(requestResponse));
 
             const favouriteResponse: any = await fetchAPI(`${constants.API_URL}/user-services/my_favorite_services/`, t, {
@@ -56,7 +55,6 @@ const Requests = () => {
             if (favouriteResponse === null || favouriteResponse === undefined) {
                 return;
             }
-            // console.log("API Response:", favouriteResponse); // Log the API response
             setFavouriteListings(transformData(favouriteResponse));
         }
         setLoading(false);
@@ -68,9 +66,7 @@ const Requests = () => {
     useFocusEffect(
         React.useCallback(() => {
             const fetchData = async () => {
-                console.log("Request screen is focused");
                 const selectedTab = await AsyncStorage.getItem('selectedTab');
-                console.log("Request screen is focused", selectedTab);
                 setShowRequests(selectedTab === "favorites" ? false : (selectedTab === "requests" ? true : defaultTab));
             };
             fetchData();

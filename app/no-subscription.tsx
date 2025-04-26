@@ -14,8 +14,6 @@ const NoSubscription = () => {
     useEffect(() => {
         const checkAuth = async () => {
             const token = await AsyncStorage.getItem('token');
-            console.log(`token: ${token}`);
-
             if (!token) {
                 Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
                     [
@@ -30,7 +28,6 @@ const NoSubscription = () => {
             }
             if (!!token) {
                 const userInfo = await AsyncStorage.getItem('user_info');
-                console.log(`userInfo: ${userInfo}`);
                 setUserInfo(userInfo ? JSON.parse(userInfo) : null);
             }
         };

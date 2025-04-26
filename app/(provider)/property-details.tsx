@@ -58,15 +58,12 @@ const PropertyDetails = () => {
     });
 
     useEffect(() => {
-        console.log("PropertyDetails component mounted");
         const fetchDetails = async () => {
-            console.log("Fetching property details...");
             try {
                 const passServiceId = await AsyncStorage.getItem("passServiceId");
                 if (passServiceId) {
                     setId(parseInt(passServiceId, 10));
                 }
-                console.log("Fetched service ID:", passServiceId);
                 const token = await AsyncStorage.getItem('token');
                 if (!token) {
                     Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
@@ -80,9 +77,7 @@ const PropertyDetails = () => {
                         ]
                     );
                 }
-                console.log("Fetched token ID:", token);
                 if (passServiceId && token) {
-                    console.log("Fetching service response...");
                     const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/`, t, {
                         headers: {
                             'Content-Type': 'application/json',
@@ -92,9 +87,6 @@ const PropertyDetails = () => {
                     if (serviceResponse === null || serviceResponse === undefined) {
                         return;
                     }
-                    console.log("Service response:", serviceResponse);
-                    console.log("Service response options:", serviceResponse["options"]);
-
                     setFormData((prevFormData: any) => ({
                         ...prevFormData,
                         ...serviceResponse["options"],
@@ -130,11 +122,15 @@ const PropertyDetails = () => {
                             longitude: parseFloat(String(serviceResponse["options"].longitude || "0"))
                         }
                     }));
-                    console.log("serviceResponse: ", serviceResponse);
-                    console.log("formData, ", formData);
                 }
             } catch (error) {
-                console.error("Error fetching data:", error);
+                Alert.alert(t("error"), t("errorFetchingProperty"),
+                    [
+                        {
+                            text: t("ok"),
+                        },
+                    ]
+                );
             } finally {
                 setLoading(false);
             }
@@ -205,7 +201,6 @@ const PropertyDetails = () => {
             await AsyncStorage.setItem("passServiceId", id.toString());
             router.push(`/add-property`);
         } catch (error) {
-            console.error("Error saving service ID to AsyncStorage:", error);
             Alert.alert(t("error"), t("errorSavingServiceId"),
                 [
                     {

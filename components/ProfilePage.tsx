@@ -51,12 +51,10 @@ const ProfilePage = () => {
                     style: "destructive",
                     onPress: async () => {
                         let userInfo = await AsyncStorage.getItem('user_info');
-                        console.log('user info:', userInfo);
                         const parsedUserInfo = userInfo ? JSON.parse(userInfo) : null;
                         if (parsedUserInfo) {
                             parsedUserInfo.user_type_id = role;
                             setUserInfo(parsedUserInfo);
-                            console.log('Updated user info:', parsedUserInfo);
                             await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
                             if (role === 1) {
                                 router.push('/(seeker)/(tabs)/home');
@@ -96,7 +94,6 @@ const ProfilePage = () => {
                         },
                     }
                 );
-                console.log("response: ", response)
                 if (response === null || response === undefined) {
                     return;
                 }
@@ -123,7 +120,6 @@ const ProfilePage = () => {
                         },
                     ]
                 );
-                console.error('Error fetching subscriptions:', error);
             } finally {
                 setLoading(false);
             }
@@ -146,7 +142,13 @@ const ProfilePage = () => {
             i18n.changeLanguage(language); // Change app language
             setSelectedLanguage(language); // Update state
         } catch (error) {
-            console.error('Error changing language:', error);
+            Alert.alert(t("error"), t("errorSavingLanguagePreference"),
+                [
+                    {
+                        text: t("ok"),
+                    },
+                ]
+            );
         }
     };
 

@@ -34,7 +34,6 @@ const ServiceRequests = () => {
         if (serviceAsString && token) {
           const service = JSON.parse(serviceAsString);
           setServiceData(service);
-          console.log("Service Data:", service);
           const passServiceId = service.id;
           const requestedResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/requested_user_details/`, t, {
             headers: {
@@ -49,7 +48,13 @@ const ServiceRequests = () => {
           setRequestedUsers(transformData(requestedResponse));
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        Alert.alert(t("error"), t("errorFetchingUserDetails"),
+          [
+            {
+              text: t("ok"),
+            },
+          ]
+        );
       } finally {
         setLoading(false);
       }

@@ -348,6 +348,16 @@ const en = {
         upgradeSubscription: "Upgrade Subscription",
         used: "Used",
         viewTransactions: "View Transactions",
+        errorSavingLanguagePreference: "Error saving language preference.",
+        errorFetchingState: "Error fetching state. Please contact support.",
+        errorFetchingDistrict: "Error fetching district. Please contact support.",
+        errorFetchingProperty: "Error fetching property. Please contact support.",
+        errorFetchingUserDetails: "Error fetching User requested details. Please contact support.",
+        errorFetchingAddressDetails: "Error fetching Address details. Please contact support.",
+        invalidPlanToCreateService: "You do not have a valid plan to create a service.",
+        invalidPlanToAccessInfo: "You do not have a valid plan to access this information.",
+        locationPermissionsDenied: "Location permissions denied.",
+        errorRequestingPermissions: "Error requesting permissions. Please contact support.",
     },
 };
 
