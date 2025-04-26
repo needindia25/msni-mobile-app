@@ -20,22 +20,23 @@ const ChooseSubscription = () => {
                 const userInfoString = await AsyncStorage.getItem('user_info');
                 const userInfo: UserInfo | null = userInfoString ? JSON.parse(userInfoString) : null;
                 const token = await AsyncStorage.getItem('token');
-                if (!token) {
+
+                let user_type_id = userInfo?.user_type_id;
+                if (userInfo?.is_both_access) {
+                    user_type_id = 3;
+                }
+                if (!token || user_type_id === null || user_type_id === undefined) {
                     Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
                         [
                             {
                                 text: t("ok"),
                                 onPress: () => {
-                                        router.replace("/(auth)/sign-in");
+                                    router.replace("/(auth)/sign-in");
                                 },
                             },
                         ]
                     );
-                }
-                
-                let user_type_id = userInfo?.user_type_id;
-                if (userInfo?.is_both_access) {
-                    user_type_id = 3;
+                    return;
                 }
                 const response = await fetchAPI(
                     `${constants.API_URL}/master/subscriotion/${user_type_id}/list`,

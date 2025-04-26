@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Redirect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserInfo } from '@/types/type';
+import { constants } from '@/constants';
+import { fetchAPI } from '@/lib/fetch';
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 const Page = () => {
+  const { t } = useTranslation(); // Initialize translation hook
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
@@ -13,8 +17,29 @@ const Page = () => {
       setIsSignedIn(!!token);
       
       if (!!token) {
-        const userInfo = await AsyncStorage.getItem('user_info');
-        setUserInfo(userInfo ? JSON.parse(userInfo) : null)
+        const response = await fetchAPI(
+            `${constants.API_URL}/auth/user_info/`,
+            t,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            }
+        );
+        console.log("INDEX")
+        if (response === null || response === undefined) {
+          AsyncStorage.clear()
+          setIsSignedIn(false);
+          return;
+        }
+        setUserInfo(response)
+        response.is_both_access = false;
+        if (response.user_type_id === 3) {
+          response.user_type_id = 2; // Change user type to provider
+          response.is_both_access = true; // Set is_both_user to true
+        }
+        await AsyncStorage.setItem('user_info', JSON.stringify(response));
       }
       setLoading(false);
     };

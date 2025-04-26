@@ -53,6 +53,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                         },
                     ]
                 );
+                return;
             }
             const userInfoString = await AsyncStorage.getItem('user_info');
             const userInfoJson = userInfoString ? JSON.parse(userInfoString) : null
@@ -99,7 +100,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
             // const mobile = userInfo?.email.split("@")[0];
             SabPaisaSDK.openSabpaisaSDK(
-                [price.toString(), userInfo?.full_name, "", userInfo?.username, transaction_code,],
+                [price.toString(), userInfo?.full_name, "", userInfo?.username, transaction_code, userInfo?.email, ],
                 async (error: any, message: string, clientTxnId: string) => {
                     if (clientTxnId) {
                         try {
@@ -118,7 +119,9 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                                 return;
                             }
                             if (paymentResponse.status === "0000") {
+                                console.log("User Info: ", userInfo)
                                 if (userInfo) {
+                                    console.log("INSIDE IF BLOCK: User Info: ", userInfo)
                                     userInfo.has_subscription = true;
                                     userInfo.plan_id = paymentResponse.plan_id;
                                     await AsyncStorage.setItem("userInfo", JSON.stringify(userInfo));
@@ -138,6 +141,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                                     },
                                 ]);
                                 setLoading(false)
+                                return;
                             }
                         } catch (error) {
                             Alert.alert(t("error"), t("somethingWentWrong"), [
@@ -146,6 +150,8 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                                     onPress: () => router.push(`/(auth)/sign-in`),
                                 },
                             ]);
+                            setLoading(false)
+                            return;
                         }
                     }
                 }
@@ -159,6 +165,8 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                     }
                 },
             ]);
+            setLoading(false)
+            return;
         }
     };
     return (

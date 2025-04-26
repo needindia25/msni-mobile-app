@@ -59,6 +59,7 @@ const GoogleTextInput = ({
             },
           ]
         );
+        return;
       }
     } catch (err) {
       Alert.alert(t("error"), t("errorRequestingPermissions"),
@@ -68,6 +69,7 @@ const GoogleTextInput = ({
           },
         ]
       );
+      return;
     }
   }
   useEffect(() => {
@@ -104,6 +106,7 @@ const GoogleTextInput = ({
           },
         ]
       );
+      return;
     }
   };
 

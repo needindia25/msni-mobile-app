@@ -358,6 +358,10 @@ const en = {
         invalidPlanToAccessInfo: "You do not have a valid plan to access this information.",
         locationPermissionsDenied: "Location permissions denied.",
         errorRequestingPermissions: "Error requesting permissions. Please contact support.",
+        noActiveSubscriptionToViewOwner: "No Active subscription, Subscribe now to view owner details.",
+        alreadyRequestedService: "You have already requested this service.",
+        requestAddedSuccessfully: "Request added successfully.",
+        warning: "Warning",
     },
 };
 

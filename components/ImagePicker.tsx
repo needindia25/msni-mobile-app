@@ -111,6 +111,7 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
             onPress: () => router.push(`/(auth)/sign-in`),
           },
         ]);
+        return null;
       }
       if (response.ok) {
         const data = await response.json();

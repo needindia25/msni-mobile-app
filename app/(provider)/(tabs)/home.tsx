@@ -30,6 +30,7 @@ const Home = () => {
                         },
                     ]
                 );
+                return;
             }
             if (!!token) {
                 const response: any = await fetchAPI(`${constants.API_URL}/user-services/my_property/`, t, {
@@ -59,7 +60,7 @@ const Home = () => {
             requests: 0,
             favorites: 0,
             images: property.options.images && property.options.images.length > 0
-                ? property.options.images.map((image: string) => image.replace("www.", constants.REPACE_TEXT))
+                ? property.options.images.map((image: string) => image.replace("admin.", constants.REPACE_TEXT).replace("www.", constants.REPACE_TEXT))
                 : [`${constants.BASE_URL}/media/no-image-found.png`],
             status: property.is_active,
         }));
@@ -92,6 +93,7 @@ const Home = () => {
                                     },
                                 ]
                             );
+                            return;
                         }
                         if (token) {
                             const response = await fetchAPI(`${constants.API_URL}/user-services/${id}/`, t, {
@@ -114,7 +116,7 @@ const Home = () => {
                                         },
                                     },
                                 ]
-                            ); // Use translation keys
+                            );
                         }
                     },
                 },
@@ -133,7 +135,8 @@ const Home = () => {
                         text: t("ok"),
                     },
                 ]
-            ); // Use translation key
+            );
+            return;
         }
     };
 
@@ -158,6 +161,7 @@ const Home = () => {
                                     },
                                 ]
                             );
+                            return;
                         }
                         if (token) {
                             const response = await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, t, {
@@ -186,7 +190,7 @@ const Home = () => {
                                         },
                                     },
                                 ]
-                            ); // Use translation keys
+                            );
                         }
                     },
                 },
@@ -207,6 +211,7 @@ const Home = () => {
                     },
                 ]
             );
+            return;
         }
         const response = await fetchAPI(
             `${constants.API_URL}/user/plan/`,

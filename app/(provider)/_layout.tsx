@@ -28,6 +28,7 @@ const Layout = () => {
             },
           ]
         );
+        return;
       }
 
       Alert.alert(
@@ -74,6 +75,7 @@ const Layout = () => {
           },
         ]
       ); // Use translation keys
+      return;
     }
   };
 

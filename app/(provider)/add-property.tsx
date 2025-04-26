@@ -89,6 +89,7 @@ const MultiStepForm = () => {
               },
             ]
           );
+          return;
         }
         if (token) {
           setToken(token);
@@ -121,7 +122,7 @@ const MultiStepForm = () => {
             ...serviceResponse["options"],
             ...{
               images: serviceResponse["options"].images && serviceResponse["options"].images.length > 0
-                ? serviceResponse["options"].images.map((image: string) => image.replace("www.", constants.REPACE_TEXT))
+                ? serviceResponse["options"].images.map((image: string) => image.replace("admin.", constants.REPACE_TEXT).replace("www.", constants.REPACE_TEXT))
                 : [],
               sourceOfWater: serviceResponse["options"].sourceOfWater
                 ? (typeof serviceResponse["options"].sourceOfWater === "string"
@@ -153,6 +154,8 @@ const MultiStepForm = () => {
             },
           ]
         );
+        setLoading(false);
+        return;
       } finally {
         setLoading(false);
       }
@@ -182,6 +185,7 @@ const MultiStepForm = () => {
         ]
       );
     }
+    return;
   };
 
   const [errors, setErrors] = useState({
@@ -311,6 +315,7 @@ const MultiStepForm = () => {
           },
         ]
       );
+      return;
     }
     try {
       let url = `${constants.API_URL}/user-services/`;
@@ -334,8 +339,7 @@ const MultiStepForm = () => {
         } : {
           title: formData.title,
           options: formData,
-          service_id: 1,
-          plan_id: userInfo?.plan_id
+          service_id: 1
         }),
       });
       if (response === null || response === undefined) {
@@ -357,6 +361,7 @@ const MultiStepForm = () => {
             },
           ]
         );
+        return;
       }
       setStep(step + stepIndex);
     } catch (error) {
@@ -367,6 +372,7 @@ const MultiStepForm = () => {
           },
         ]
       );
+      return;
     }
   };
 

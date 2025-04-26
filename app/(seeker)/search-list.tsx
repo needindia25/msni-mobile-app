@@ -34,6 +34,7 @@ const SearchList = () => {
                         },
                     ]
                 );
+                return;
             }
             if (!!token) {
                 const response: any = await fetchAPI(`${constants.API_URL}/search/`, t, {

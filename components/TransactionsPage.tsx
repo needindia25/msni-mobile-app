@@ -49,6 +49,8 @@ const TransactionsPage: React.FC = () => {
                         },
                     ]
                 );
+                setLoading(false)
+                return;
             } finally {
                 setLoading(false);
             }

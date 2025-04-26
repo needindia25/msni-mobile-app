@@ -76,6 +76,7 @@ const PropertyDetails = () => {
                             },
                         ]
                     );
+                    return;
                 }
                 if (passServiceId && token) {
                     const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/`, t, {
@@ -95,7 +96,7 @@ const PropertyDetails = () => {
                             date_created: serviceResponse["date_created"],
                             status: serviceResponse["is_active"],
                             images: serviceResponse["options"].images && serviceResponse["options"].images.length > 0
-                                ? serviceResponse["options"].images.map((image: string) => image.replace("www.", constants.REPACE_TEXT))
+                                ? serviceResponse["options"].images.map((image: string) => image.replace("admin.", constants.REPACE_TEXT).replace("www.", constants.REPACE_TEXT))
                                 : [`${constants.BASE_URL}/media/no-image-found.png`],
                             basicAmenities: serviceResponse["options"].basicAmenities && serviceResponse["options"].basicAmenities.length > 0 ?
                                 serviceResponse["options"].basicAmenities.filter((amenity: any) => amenity !== "None") : [],
@@ -131,6 +132,8 @@ const PropertyDetails = () => {
                         },
                     ]
                 );
+                setLoading(false);
+                return;
             } finally {
                 setLoading(false);
             }
@@ -166,6 +169,7 @@ const PropertyDetails = () => {
                                     },
                                 ]
                             );
+                            return;
                         }
                         if (token) {
                             const response = await fetchAPI(`${constants.API_URL}/user-services/${id}/`, t, {
@@ -188,7 +192,7 @@ const PropertyDetails = () => {
                                         },
                                     },
                                 ]
-                            ); // Use translation keys
+                            );
                         }
                     },
                 },
@@ -207,7 +211,8 @@ const PropertyDetails = () => {
                         text: t("ok"),
                     },
                 ]
-            ); // Use translation key
+            );
+            return;
         }
     };
 
@@ -232,6 +237,7 @@ const PropertyDetails = () => {
                                     },
                                 ]
                             );
+                            return;
                         }
                         if (token) {
                             const response = await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, t, {
@@ -258,7 +264,7 @@ const PropertyDetails = () => {
                                         },
                                     },
                                 ]
-                            ); // Use translation keys
+                            );
                         }
                     },
                 },

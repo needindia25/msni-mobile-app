@@ -359,6 +359,10 @@ const hi = {
         invalidPlanToAccessInfo: "इस जानकारी तक पहुंचने के लिए आपके पास एक मान्य योजना नहीं है।",
         locationPermissionsDenied: "स्थान अनुमतियां अस्वीकृत।",
         errorRequestingPermissions: "अनुमतियों का अनुरोध करने में त्रुटि। कृपया सहायता से संपर्क करें।",
+        noActiveSubscriptionToViewOwner: "कोई सक्रिय सदस्यता नहीं है, मालिक का विवरण देखने के लिए अभी सदस्यता लें।",
+        alreadyRequestedService: "आपने पहले ही इस सेवा का अनुरोध किया है।",
+        requestAddedSuccessfully: "अनुरोध सफलतापूर्वक जोड़ा गया।",
+        warning: "चेतावनी",
     },
 };
 

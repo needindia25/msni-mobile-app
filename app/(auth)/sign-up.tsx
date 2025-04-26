@@ -193,6 +193,8 @@ const SignUp = () => {
               },
             ]
           );
+          setLoading(false);
+          return;
         } finally {
           setLoading(false);
         }

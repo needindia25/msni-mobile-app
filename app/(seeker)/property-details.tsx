@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import en from '../locales/en';
 import ImageCarousel from '@/components/ImageCarousel';
 import GoogleTextInput from '@/components/GoogleTextInput';
+import { UserInfo } from '@/types/type';
 
 const PropertyDetails = () => {
     const { t } = useTranslation();
@@ -18,6 +19,7 @@ const PropertyDetails = () => {
     const [id, setId] = useState<number | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
     const [formData, setFormData] = useState({
         propertyFor: "Rent",
         title: "",
@@ -83,7 +85,12 @@ const PropertyDetails = () => {
                             },
                         ]
                     );
+                    return;
                 }
+                
+                const userInfoString = await AsyncStorage.getItem('user_info');
+                const userInfoJson = userInfoString ? JSON.parse(userInfoString) : null
+                setUserInfo(userInfoJson)
                 if (passServiceId && token) {
                     setToken(token);
                     const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/info/`, t, {
@@ -106,7 +113,7 @@ const PropertyDetails = () => {
                             owner_contact: serviceResponse["owner_contact"],
                             owner_name: serviceResponse["owner_name"],
                             images: serviceResponse["options"].images && serviceResponse["options"].images.length > 0
-                                ? serviceResponse["options"].images.map((image: string) => image.replace("www.", constants.REPACE_TEXT))
+                                ? serviceResponse["options"].images.map((image: string) => image.replace("admin.", constants.REPACE_TEXT).replace("www.", constants.REPACE_TEXT))
                                 : [`${constants.BASE_URL}/media/no-image-found.png`],
                             basicAmenities: serviceResponse["options"].basicAmenities && serviceResponse["options"].basicAmenities.length > 0 ?
                                 serviceResponse["options"].basicAmenities.filter((amenity: any) => amenity !== "None") : [],
@@ -134,6 +141,8 @@ const PropertyDetails = () => {
                         }
                     }));
 
+                    console.log(formData)
+
                     if (serviceResponse["service_request_count"]) {
                         const serviceRequestCount = serviceResponse["service_request_count"];
                         setShowContactInfo(serviceRequestCount["is_my_request"]);
@@ -149,6 +158,8 @@ const PropertyDetails = () => {
                         },
                     ]
                 );
+                setLoading(false);
+                return;
             } finally {
                 setLoading(false);
             }
@@ -207,6 +218,17 @@ const PropertyDetails = () => {
                     },
                 ]
             );
+            return;
+        }
+        if (userInfo?.has_subscription === false) {
+            Alert.alert(t("warning"), t("noActiveSubscriptionToViewOwner"),
+                [
+                    {
+                        text: t("ok"),
+                    },
+                ]
+            );
+            return;
         }
         if (id && token) {
             const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${id}/requests/`, t, {
@@ -235,6 +257,7 @@ const PropertyDetails = () => {
                     },
                 ]
             );
+            return;
         }
         if (id && token) {
             const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${id}/favorites/`, t, {
@@ -263,6 +286,7 @@ const PropertyDetails = () => {
                     },
                 ]
             );
+            return;
         }
         setRating(newRating);
         if (id && token) {

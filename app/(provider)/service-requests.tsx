@@ -55,6 +55,8 @@ const ServiceRequests = () => {
             },
           ]
         );
+        setLoading(false);
+        return;
       } finally {
         setLoading(false);
       }

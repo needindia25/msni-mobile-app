@@ -27,6 +27,7 @@ const Layout = () => {
             },
           ]
         );
+        return;
       }
 
       Alert.alert(
@@ -72,7 +73,8 @@ const Layout = () => {
             text: t("ok"),
           },
         ]
-      ); // Use translation keys
+      );
+      return;
     }
   };
 
