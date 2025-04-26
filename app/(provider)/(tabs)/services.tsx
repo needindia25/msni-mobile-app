@@ -30,6 +30,7 @@ const Services = () => {
           },
         ]
       );
+      return;
     } else {
       await AsyncStorage.setItem("passService", JSON.stringify(service));
       router.push('/(provider)/service-requests');
@@ -40,7 +41,6 @@ const Services = () => {
     const checkAuth = async () => {
       const token = await AsyncStorage.getItem('token');
       await AsyncStorage.setItem("passServiceId", "");
-      console.log(`token: ${token}`);
       if (!token) {
         Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
           [
@@ -53,6 +53,7 @@ const Services = () => {
             },
           ]
         );
+        return;
       }
       if (!!token) {
         const response: any = await fetchAPI(`${constants.API_URL}/user-services/my_property/`, t, {
@@ -61,7 +62,9 @@ const Services = () => {
             'Authorization': `Bearer ${token}`,
           },
         });
-        console.log(response);
+        if (response === null || response === undefined) {
+            return;
+        }
         setListings(transformData(response));
       }
       setLoading(false);
@@ -81,7 +84,7 @@ const Services = () => {
       favorites: property.service_request_count.favorites || 0,
       rating: property.service_request_count.avg_rating || 0,
       images: property.options.images && property.options.images.length > 0
-        ? property.options.images.map((image: string) => image.replace("www.", "admin.")) // Replace "www." with "admin."
+        ? property.options.images.map((image: string) => image.replace("admin.", constants.REPACE_TEXT).replace("www.", constants.REPACE_TEXT))
         : [`${constants.BASE_URL}/media/no-image-found.png`],
       status: property.is_active,
     }));

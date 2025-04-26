@@ -14,9 +14,11 @@ type Listing = {
 
 interface UserInfo {
   user_type_id: number;
+  plan_id: number;
   has_subscription: boolean;
   full_name: string;
   email: string;
+  username: string;
   code: string;
   options: object;
   user_id: number;
@@ -25,6 +27,19 @@ interface UserInfo {
 
 interface Subscription {
   id: number;
+  title: string;
+  amount: number;
+  period: number;
+  credits: number;
+  descriptions: string;
+  isPremium: boolean;
+  used?: number;
+  expired_on?: string;
+}
+
+interface Plan {
+  id: number;
+  subscription_id: number;
   title: string;
   amount: number;
   period: number;

@@ -157,9 +157,17 @@ const SignUp = () => {
     const fetchStates = async () => {
       try {
         const response = await fetchAPI(`${constants.API_URL}/master/states`, t);
-        setStates(response);
+        if (response) {
+          setStates(response);
+        }
       } catch (error) {
-        console.error("Error fetching states:", error);
+        Alert.alert(t("error"), t("errorFetchingState"),
+          [
+            {
+              text: t("ok"),
+            },
+          ]
+        );
       } finally {
         setLoading(false);
       }
@@ -174,9 +182,19 @@ const SignUp = () => {
           const response = await fetchAPI(
             `${constants.API_URL}/master/state/${form.state}/districts`, t
           );
-          setDistricts(response);
+          if (response) {
+            setDistricts(response);
+          }
         } catch (error) {
-          console.error("Error fetching districts:", error);
+          Alert.alert(t("error"), t("errorFetchingDistrict"),
+            [
+              {
+                text: t("ok"),
+              },
+            ]
+          );
+          setLoading(false);
+          return;
         } finally {
           setLoading(false);
         }

@@ -11,40 +11,32 @@ import { useTranslation } from 'react-i18next'; // Import useTranslation
 const ChooseSubscription = () => {
     const { t } = useTranslation(); // Initialize translation hook
     const router = useRouter();
-    const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
     const [loading, setLoading] = useState(true);
     const [subscriptions, setSubscription] = useState<Subscription[]>([]);
 
     useEffect(() => {
-        const getUserInfo = async () => {
-            const userInfo = await AsyncStorage.getItem('user_info');
-            console.log(`userInfo: ${userInfo}`);
-            setUserInfo(userInfo ? JSON.parse(userInfo) : null);
-        };
-        getUserInfo();
-    }, []);
-
-    useEffect(() => {
         const fetchSubscriptions = async () => {
             try {
-                if (userInfo === null) return;
+                const userInfoString = await AsyncStorage.getItem('user_info');
+                const userInfo: UserInfo | null = userInfoString ? JSON.parse(userInfoString) : null;
                 const token = await AsyncStorage.getItem('token');
-                if (!token) {
+
+                let user_type_id = userInfo?.user_type_id;
+                if (userInfo?.is_both_access) {
+                    user_type_id = 3;
+                }
+                if (!token || user_type_id === null || user_type_id === undefined) {
                     Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
                         [
                             {
                                 text: t("ok"),
                                 onPress: () => {
-                                    // Perform the action when "OK" is pressed
                                     router.replace("/(auth)/sign-in");
                                 },
                             },
                         ]
                     );
-                }
-                let user_type_id = userInfo.user_type_id;
-                if (userInfo.is_both_access) {
-                    user_type_id = 3;
+                    return;
                 }
                 const response = await fetchAPI(
                     `${constants.API_URL}/master/subscriotion/${user_type_id}/list`,
@@ -56,8 +48,9 @@ const ChooseSubscription = () => {
                         },
                     }
                 );
-                console.log(response);
-                setSubscription(response);
+                if (response) {
+                    setSubscription(response);
+                }
             } catch (error) {
                 setSubscription([]);
                 Alert.alert(t("error"), t("subscriptionError"),
@@ -66,22 +59,21 @@ const ChooseSubscription = () => {
                             text: t("ok"),
                         },
                     ]
-                ); // Use translation key
-                console.error('Error fetching subscriptions:', error);
+                );
             } finally {
                 setLoading(false);
             }
         };
         fetchSubscriptions();
-    }, [userInfo]);
+    }, []);
 
     const subscriptionPlans = subscriptions.map(subscription => ({
         id: subscription.id,
         planName: subscription.title,
         price: subscription.amount,
         descriptions: subscription.descriptions,
-        duration: `/ ${subscription.period} ${t("months")}`,
-        services: subscription.credits === -1 ? t("unlimitedSearch") : `${subscription.credits} ${t("services")}`,
+        period: subscription.period,
+        credits: subscription.credits,
         isPremium: subscription.title.indexOf("Basic") === -1,
     })) || [];
 
@@ -100,7 +92,7 @@ const ChooseSubscription = () => {
                     <View className="flex-1 bg-white p-5">
                         <View className="flex-row items-center mb-5">
                             <TouchableOpacity
-                                onPress={() => userInfo?.user_type_id === 1 ? router.push('/(seeker)/(tabs)/profile') : router.push('/(provider)/(tabs)/profile')}
+                                onPress={() => router.back()}
                                 className="p-5"
                             >
                                 <Image
@@ -121,9 +113,9 @@ const ChooseSubscription = () => {
                                     subscriptionId={item.id}
                                     planName={item.planName}
                                     price={item.price}
-                                    duration={item.duration}
+                                    period={item.period}
                                     descriptions={item.descriptions}
-                                    services={item.services}
+                                    credits={item.credits}
                                     isPremium={item.isPremium}
                                 />
                             )}

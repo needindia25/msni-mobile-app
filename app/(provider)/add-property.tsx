@@ -1,9 +1,8 @@
-import ComingSoon from "@/components/ComingSoon";
 import CustomDropdown from "@/components/CustomDropdown";
 import CustomTextarea from "@/components/CustomTextarea";
 import { constants, icons } from "@/constants";
 import { fetchAPI } from "@/lib/fetch";
-import { DropdownProps } from "@/types/type";
+import { DropdownProps, UserInfo } from "@/types/type";
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, SafeAreaView, ActivityIndicator, Alert, KeyboardAvoidingView, FlatList, Platform, Image, ScrollView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -21,8 +20,10 @@ const MultiStepForm = () => {
   const { t } = useTranslation();
 
   const [loading, setLoading] = useState(true);
+  const [btnLoading, setBtnLoading] = useState(false);
   const [step, setStep] = useState(1);
   const [token, setToken] = useState<string | null>(null);
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
   const [formData, setFormData] = useState({
     propertyFor: "Rent",
@@ -74,7 +75,6 @@ const MultiStepForm = () => {
   }));
 
   useEffect(() => {
-    console.log("Component re-rendered");
     const fetchData = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
@@ -90,30 +90,40 @@ const MultiStepForm = () => {
               },
             ]
           );
+          return;
         }
         if (token) {
           setToken(token);
         }
+        const userInfoString = await AsyncStorage.getItem('user_info');
+        const userInfoJson = userInfoString ? JSON.parse(userInfoString) : null
+        setUserInfo(userInfoJson)
 
         const response = await fetchAPI(`${constants.API_URL}/master/states`, t);
-        setStates(response);
+        if (response) {
+          setStates(response);
+        } else {
+          return;
+        }
 
         if (passServiceId) {
           setServiceId(parseInt(passServiceId, 10));
-          console.log(`URL : ${constants.API_URL}`)
           const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/`, t, {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${token}`,
             },
           });
+          if (response === null || response === undefined) {
+            return;
+          }
 
           setFormData((prevFormData: any) => ({
             ...prevFormData,
             ...serviceResponse["options"],
             ...{
               images: serviceResponse["options"].images && serviceResponse["options"].images.length > 0
-                ? serviceResponse["options"].images.map((image: string) => image.replace("www.", "admin.")) // Replace "www." with "admin."
+                ? serviceResponse["options"].images.map((image: string) => image.replace("admin.", constants.REPACE_TEXT).replace("www.", constants.REPACE_TEXT))
                 : [],
               sourceOfWater: serviceResponse["options"].sourceOfWater
                 ? (typeof serviceResponse["options"].sourceOfWater === "string"
@@ -138,7 +148,15 @@ const MultiStepForm = () => {
           }
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        Alert.alert(t("error"), t("errorFetchingProperty"),
+          [
+            {
+              text: t("ok"),
+            },
+          ]
+        );
+        setLoading(false);
+        return;
       } finally {
         setLoading(false);
       }
@@ -151,14 +169,24 @@ const MultiStepForm = () => {
     if (!stateId) return;
     try {
       const response = await fetchAPI(`${constants.API_URL}/master/state/${stateId}/districts`, t);
+      if (response === null || response === undefined) {
+        return;
+      }
       setDistricts(response)
       districtOptions = response.map((district: any) => ({
         label: district.name,
         value: district.id,
       }));
     } catch (error) {
-      console.error("Error fetching districts:", error);
+      Alert.alert(t("error"), t("errorFetchingDistrict"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      );
     }
+    return;
   };
 
   const [errors, setErrors] = useState({
@@ -263,9 +291,7 @@ const MultiStepForm = () => {
   const handleCancel = () => {
     router.push("/(provider)/(tabs)/home");
   };
-
   const handleSubmit = async (formData: any, stepIndex: number = 0) => {
-    console.log("Form values:", formData);
     if (!validateForm()) {
       Alert.alert(
         t("error"),
@@ -289,16 +315,16 @@ const MultiStepForm = () => {
           },
         ]
       );
+      return;
     }
     try {
+      setBtnLoading(true);
       let url = `${constants.API_URL}/user-services/`;
       let method = "POST";
       if (serviceId !== null && serviceId !== undefined) {
         method = "PATCH"
         url = `${constants.API_URL}/user-services/${serviceId}/update_option/`;
       }
-      console.log("URL", url)
-      console.log("METHOD", method)
       const response = await fetchAPI(url, t, {
         method: method,
         headers: {
@@ -309,13 +335,17 @@ const MultiStepForm = () => {
           title: formData.title,
           options: formData,
           service: 1,
-          is_active: true
+          is_active: true,
+          plan: userInfo?.plan_id
         } : {
           title: formData.title,
           options: formData,
-          service_id: 1,
+          service_id: 1
         }),
       });
+      if (response === null || response === undefined) {
+        return;
+      }
       if (method === "POST") {
         setServiceId(response.id)
       }
@@ -332,7 +362,9 @@ const MultiStepForm = () => {
             },
           ]
         );
+        return;
       }
+      setBtnLoading(false);
       setStep(step + stepIndex);
     } catch (error) {
       Alert.alert(t("error"), t("failedToSaveProperty"),
@@ -342,7 +374,8 @@ const MultiStepForm = () => {
           },
         ]
       );
-      console.error("Error saving data:", error);
+      setBtnLoading(false);
+      return;
     }
   };
 
@@ -605,13 +638,12 @@ const MultiStepForm = () => {
                   <GoogleTextInput
                     icon={icons.target}
                     initialLocation={{
-                      latitude: parseFloat(String(formData?.latitude || "0")),
-                      longitude: parseFloat(String(formData?.longitude || "0")),
+                      latitude: parseFloat(String(formData?.latitude || constants.DEFAULT_LAT)),
+                      longitude: parseFloat(String(formData?.longitude || constants.DEFAULT_LONG)),
                       address: String(formData?.location),
                       draggable: true
                     }}
                     handlePress={async (location) => {
-                      console.log("location", location);
                       setFormData((prev) => ({
                         ...prev,
                         "latitude": location.latitude,
@@ -772,37 +804,39 @@ const MultiStepForm = () => {
                     images={formData.images}
                     serviceId={serviceId}
                     onImageDelete={(imagePath: string) => {
-                      console.log(formData.images, imagePath);
                       const updatedImages = formData.images.filter((img: string) => img !== imagePath);
                       handleInputChange("images", updatedImages);
-                      console.log(formData);
                     }}
                     onImageSelect={(imagePath: string) => {
-                      console.log(formData.images, imagePath);
                       handleInputChange("images", [...formData.images, imagePath]);
-                      console.log(formData);
                     }}
                   />
                 </View>
               )}
-
-              <View className={`flex-row ${step > 1 ? "justify-between" : "justify-end"} mt-5 mb-10`}>
-                {step > 1 && <TouchableOpacity onPress={() => { handleSubmit(formData, -1); }} className="bg-gray-500 py-3 px-5 rounded-lg">
-                  <Text className="text-white text-base font-bold">{t("back")}</Text>
-                </TouchableOpacity>}
-                <TouchableOpacity onPress={() => handleCancel()} className="bg-gray-500 py-3 px-5 mx-3 rounded-lg">
-                  <Text className="text-white text-base font-bold">{t("cancel")}</Text>
-                </TouchableOpacity>
-                {step < 5 ? (
-                  <TouchableOpacity onPress={() => { handleSubmit(formData, 1); }} className="bg-blue-500 py-3 px-5 rounded-lg">
-                    <Text className="text-white text-base font-bold">{t("saveNext")}</Text>
+              {btnLoading ? (
+                <View className="flex-row justify-center mt-5 mb-10">
+                  <ActivityIndicator size="large" color="#00ff00" />
+                  <Text className="mt-2 text-base">{t("loading")}</Text>
+                </View>
+              ) : (
+                <View className={`flex-row ${step > 1 ? "justify-between" : "justify-end"} mt-5 mb-10`}>
+                  {step > 1 && <TouchableOpacity onPress={() => { handleSubmit(formData, -1); }} className="bg-gray-500 py-3 px-5 rounded-lg">
+                    <Text className="text-white text-base font-bold">{t("back")}</Text>
+                  </TouchableOpacity>}
+                  <TouchableOpacity onPress={() => handleCancel()} className="bg-gray-500 py-3 px-5 mx-3 rounded-lg">
+                    <Text className="text-white text-base font-bold">{t("cancel")}</Text>
                   </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity onPress={() => handleSubmit(formData)} className="bg-green-500 py-3 px-5 rounded-lg">
-                    <Text className="text-white text-base font-bold">{t("submit")}</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
+                  {step < 5 ? (
+                    <TouchableOpacity onPress={() => { handleSubmit(formData, 1); }} className="bg-blue-500 py-3 px-5 rounded-lg">
+                      <Text className="text-white text-base font-bold">{t("saveNext")}</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity onPress={() => handleSubmit(formData)} className="bg-green-500 py-3 px-5 rounded-lg">
+                      <Text className="text-white text-base font-bold">{t("submit")}</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )}
             </View>
           </ScrollView>
         </KeyboardAvoidingView>

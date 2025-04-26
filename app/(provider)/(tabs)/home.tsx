@@ -5,12 +5,11 @@ import ImageCarousel from "@/components/ImageCarousel";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Alert } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const Home = () => {
     const { t } = useTranslation(); // Initialize translation hook
-    const screenWidth = Dimensions.get('window').width;
     const router = useRouter();
 
     const [loading, setLoading] = useState(true);
@@ -26,14 +25,13 @@ const Home = () => {
                         {
                             text: t("ok"),
                             onPress: () => {
-                                // Perform the action when "OK" is pressed
                                 router.replace("/(auth)/sign-in");
                             },
                         },
                     ]
                 );
+                return;
             }
-            console.log("Token:", token); // Log the token for debugging
             if (!!token) {
                 const response: any = await fetchAPI(`${constants.API_URL}/user-services/my_property/`, t, {
                     headers: {
@@ -41,7 +39,9 @@ const Home = () => {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
-                console.log("Response:", response); // Log the response for debugging 
+                if (response === null || response === undefined) {
+                    return;
+                }
                 setListings(transformData(response));
             }
             setLoading(false);
@@ -60,9 +60,10 @@ const Home = () => {
             requests: 0,
             favorites: 0,
             images: property.options.images && property.options.images.length > 0
-                ? property.options.images.map((image: string) => image.replace("www.", "admin.")) // Replace "www." with "admin."
+                ? property.options.images.map((image: string) => image.replace("admin.", constants.REPACE_TEXT).replace("www.", constants.REPACE_TEXT))
                 : [`${constants.BASE_URL}/media/no-image-found.png`],
             status: property.is_active,
+            is_deletable: (property.service_request_count.requests === 0 && property.service_request_count.ratings === 0 && property.service_request_count.favorites === 0)
         }));
     };
 
@@ -71,7 +72,17 @@ const Home = () => {
         router.push(`/property-details`);
     };
 
-    const handleDelete = (id: number) => {
+    const handleDelete = (id: number, is_deletable: boolean = true) => {
+        if (is_deletable === false) {
+            Alert.alert(t("warning"), t("cannotDeleteDeactivateInstead"),
+                [
+                    {
+                        text: t("ok"),
+                    },
+                ]
+            );
+            return;
+        }
         Alert.alert(
             t("deleteProperty"), // Use translation key
             t("deleteConfirmation"), // Use translation key
@@ -88,20 +99,23 @@ const Home = () => {
                                     {
                                         text: t("ok"),
                                         onPress: () => {
-                                            // Perform the action when "OK" is pressed
                                             router.replace("/(auth)/sign-in");
                                         },
                                     },
                                 ]
                             );
+                            return;
                         }
                         if (token) {
-                            await fetchAPI(`${constants.API_URL}/user-services/${id}/`, t, {
+                            const response = await fetchAPI(`${constants.API_URL}/user-services/${id}/`, t, {
                                 method: "DELETE",
                                 headers: {
                                     'Authorization': `Bearer ${token}`,
                                 },
                             });
+                            if (response === null || response === undefined) {
+                                return;
+                            }
                             Alert.alert(
                                 t("success"),
                                 t("propertyDeleted"),
@@ -109,12 +123,11 @@ const Home = () => {
                                     {
                                         text: t("ok"),
                                         onPress: () => {
-                                            // Perform the action when "OK" is pressed
                                             setListings((prev) => prev.filter((listing) => listing.id !== id));
                                         },
                                     },
                                 ]
-                            ); // Use translation keys
+                            );
                         }
                     },
                 },
@@ -127,14 +140,14 @@ const Home = () => {
             await AsyncStorage.setItem("passServiceId", id.toString());
             router.push(`/add-property`);
         } catch (error) {
-            console.error("Error saving service ID to AsyncStorage:", error);
             Alert.alert(t("error"), t("errorSavingServiceId"),
                 [
                     {
                         text: t("ok"),
                     },
                 ]
-            ); // Use translation key
+            );
+            return;
         }
     };
 
@@ -154,20 +167,23 @@ const Home = () => {
                                     {
                                         text: t("ok"),
                                         onPress: () => {
-                                            // Perform the action when "OK" is pressed
                                             router.replace("/(auth)/sign-in");
                                         },
                                     },
                                 ]
                             );
+                            return;
                         }
                         if (token) {
-                            await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, t, {
+                            const response = await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, t, {
                                 method: "PATCH",
                                 headers: {
                                     'Authorization': `Bearer ${token}`,
                                 },
                             });
+                            if (response === null || response === undefined) {
+                                return;
+                            }
                             Alert.alert(
                                 t("success"),
                                 t("statusUpdated"),
@@ -175,7 +191,6 @@ const Home = () => {
                                     {
                                         text: t("ok"),
                                         onPress: () => {
-                                            // Perform the action when "OK" is pressed
                                             setListings((prevListings) =>
                                                 prevListings.map((listing) =>
                                                     listing.id === id
@@ -186,7 +201,7 @@ const Home = () => {
                                         },
                                     },
                                 ]
-                            ); // Use translation keys
+                            );
                         }
                     },
                 },
@@ -194,12 +209,64 @@ const Home = () => {
         );
     };
 
+    const handleAddPropert = async () => {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+            Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                [
+                    {
+                        text: t("ok"),
+                        onPress: () => {
+                            router.replace("/(auth)/sign-in");
+                        },
+                    },
+                ]
+            );
+            return;
+        }
+        const response = await fetchAPI(
+            `${constants.API_URL}/user/plan/`,
+            t,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            }
+        );
+        if (response === null || response === undefined) {
+            return;
+        }
+        const plans = response.map((item: any) => ({
+            id: item.id,
+            subscription_id: item.subscription_id,
+            planName: item.title,
+            price: item.amount,
+            description: item.descriptions,
+            period: item.period,
+            credits: item.credits,
+            used: item.used,
+        })) || [];
+
+        if (plans.length === 0 || plans[0].credits <= plans[0].used) {
+            Alert.alert(t("error"), t("invalidPlanToCreateService"),
+                [
+                    {
+                        text: t("ok"),
+                    },
+                ]
+            );
+            return
+        }
+        router.push('/add-property')
+    }
+
     return (
         <>
             {listings.length > 0 && (
                 <TouchableOpacity
                     className="absolute top-5 right-5 bg-green-500 rounded-full p-5 shadow-lg"
-                    onPress={() => router.push('/add-property')}
+                    onPress={() => handleAddPropert()}
                     style={{ zIndex: 1000 }}
                 >
                     <Text className="text-white text-base font-bold">+ {t("addNextProperty")}</Text> {/* Wrap "+" in <Text> */}
@@ -260,10 +327,13 @@ const Home = () => {
                                                 {listing.status ? t("deactivate") : t("activate")}
                                             </Text>
                                         </TouchableOpacity>
-
+                                        
                                         <TouchableOpacity
-                                            className="bg-red-500 py-2 px-4 rounded-lg"
-                                            onPress={() => handleDelete(listing.id)}
+                                            className={` py-2 px-4 rounded-lg ${listing.is_deletable
+                                                ? "bg-red-500"
+                                                : "bg-red-300"
+                                                }`}
+                                            onPress={() => handleDelete(listing.id, listing.is_deletable)}
                                         >
                                             <Text className="text-white font-bold">{t("delete")}</Text>
                                         </TouchableOpacity>
@@ -284,7 +354,7 @@ const Home = () => {
                                 </Text>
                                 <TouchableOpacity
                                     className="bg-green-500 py-3 px-10 rounded-full mb-5"
-                                    onPress={() => router.push('/add-property')}
+                                    onPress={() => handleAddPropert()}
                                 >
                                     <Text className="text-white text-lg font-bold">{t("addNewProperty")}</Text>
                                 </TouchableOpacity>

@@ -1,32 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, Alert, FlatList, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, ActivityIndicator, Alert, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { Subscription, UserInfo } from '@/types/type';
+import { UserInfo } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { constants } from '@/constants';
 import { fetchAPI } from '@/lib/fetch';
-import SubscriptionCard from '@/components/SubscriptionCard';
 import { format } from 'date-fns';
-import { useTranslation } from 'react-i18next'; // Import useTranslation
+import { useTranslation } from 'react-i18next';
 
 const ProfilePage = () => {
-    const { t, i18n } = useTranslation(); // Initialize translation hook
+    const { t, i18n } = useTranslation();
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-    const [subscriptions, setSubscription] = useState<Subscription[]>([]);
-    const [selectedLanguage, setSelectedLanguage] = useState<string>(i18n.language); // Track selected language
-    const [selectedRole, setSelectedRole] = useState(1); // Track selected language
-
-    useEffect(() => {
-        const checkAuth = async () => {
-            const userInfo = await AsyncStorage.getItem('user_info');
-            setUserInfo(userInfo ? JSON.parse(userInfo) : null);
-            setSelectedRole(userInfo ? JSON.parse(userInfo).user_type_id : 1);
-            setLoading(false);
-        };
-        checkAuth();
-    }, []);
+    const [plans, setPlan] = useState<any[]>([]);
+    const [selectedLanguage, setSelectedLanguage] = useState<string>(i18n.language);
+    const [selectedRole, setSelectedRole] = useState(1);
 
     useFocusEffect(
         React.useCallback(() => {
@@ -37,31 +26,89 @@ const ProfilePage = () => {
         }, [])
     );
 
-    const handleSelectedRole = async (role: number) => {
-        if (role === selectedRole) return; // No change in role
-        Alert.alert(
-            t("switchUser"), // Use translation key
-            (role == 1 ? t("seekerSwitchConfirmation") : t("providerSwitchConfirmation")), // Use translation key
-            [
-                { text: t("cancel"), style: "cancel" }, // Use translation key
+    const getUserPlan = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"), [
+                    {
+                        text: t("ok"),
+                        onPress: () => {
+                            router.replace("/(auth)/sign-in");
+                        },
+                    },
+                ]);
+                return null;
+            }
+
+            const response = await fetchAPI(
+                `${constants.API_URL}/user/plan/`,
+                t,
                 {
-                    text: t("ok"), // Use translation key
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (!response) {
+                console.error("Failed to fetch user plan: Response is null or undefined.");
+                return null;
+            }
+
+            console.log("User Plan Response: ", response);
+            return response;
+        } catch (error) {
+            console.error("Error fetching user plan:", error);
+            Alert.alert(t("error"), t("somethingWentWrong"), [
+                {
+                    text: t("ok"),
+                },
+            ]);
+            return null;
+        }
+    };
+    const handleSelectedRole = async (role: number) => {
+        if (role === selectedRole) return;
+        Alert.alert(
+            t("switchUser"),
+            (role == 1 ? t("seekerSwitchConfirmation") : t("providerSwitchConfirmation")),
+            [
+                { text: t("cancel"), style: "cancel" },
+                {
+                    text: t("ok"),
                     style: "destructive",
                     onPress: async () => {
                         let userInfo = await AsyncStorage.getItem('user_info');
-                        console.log('user info:', userInfo);
                         const parsedUserInfo = userInfo ? JSON.parse(userInfo) : null;
                         if (parsedUserInfo) {
                             parsedUserInfo.user_type_id = role;
-                            setUserInfo(parsedUserInfo);
-                            console.log('Updated user info:', parsedUserInfo);
+                            console.log("parsedUserInfo ", parsedUserInfo)
                             await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
                             if (role === 1) {
+                                if (parsedUserInfo.has_subscription_initial == true) {
+                                    parsedUserInfo.has_subscription = true;
+                                    await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
+                                }
                                 router.push('/(seeker)/(tabs)/home');
                             }
                             else if (role === 2) {
+                                if (parsedUserInfo.has_subscription == true || parsedUserInfo.has_subscription_initial == true) {
+                                    const response = await getUserPlan();
+                                    console.log("response ", response)
+                                    if (response === null) {
+                                        return;
+                                    }
+                                    if (!(response.credits > response.used)) {
+                                        parsedUserInfo.has_subscription = false;
+                                        parsedUserInfo.has_subscription_initial = true;
+                                        await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
+                                    }
+                                }
                                 router.push('/(provider)/(tabs)/home');
                             }
+                            setUserInfo(parsedUserInfo);
                         }
                     },
                 },
@@ -69,70 +116,60 @@ const ProfilePage = () => {
         );
     }
     useEffect(() => {
+        const checkAuth = async () => {
+            const userInfo = await AsyncStorage.getItem('user_info');
+            console.log("userInfo::::: ", userInfo)
+            setUserInfo(userInfo ? JSON.parse(userInfo) : null);
+            setSelectedRole(userInfo ? JSON.parse(userInfo).user_type_id : 1);
+        };
         const fetchSubscriptions = async () => {
             try {
-                if (userInfo === null) return;
-
-                const token = await AsyncStorage.getItem('token');
-                if (!token) {
-                    Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-                        [
-                            {
-                                text: t("ok"),
-                                onPress: () => {
-                                    // Perform the action when "OK" is pressed
-                                    router.replace("/(auth)/sign-in");
-                                },
-                            },
-                        ]
-                    );
+                const response = await getUserPlan();
+                
+                console.log("fetchSubscriptions response ", response)
+                if (response === null) {
+                    return;
                 }
-                const response = await fetchAPI(
-                    `${constants.API_URL}/user/plan`,
-                    t,
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`,
-                        },
-                    }
-                );
-                setSubscription(response);
+                const plans = response?.map((item: any) => ({
+                    id: item.id,
+                    subscription_id: item.subscription_id,
+                    planName: item.title,
+                    price: item.amount,
+                    description: item.descriptions,
+                    period: item.period,
+                    credits: item.credits,
+                    isPremium: false,
+                    has_subscription: item.has_subscription,
+                    used: item.used,
+                    expiryDate: item.expired_on ? format(new Date(item.expired_on), 'dd-MMM-yyyy hh:mm a') : 'N/A',
+                })) || [];
+                setPlan(plans);
+
             } catch (error) {
-                setSubscription([]);
+                setPlan([]);
                 Alert.alert(t("error"), t("subscriptionError"),
                     [
                         {
                             text: t("ok"),
                         },
                     ]
-                ); // Use translation key
-                console.error('Error fetching subscriptions:', error);
+                );
+                setLoading(false);
+                return;
             } finally {
                 setLoading(false);
             }
         };
+        checkAuth();
         fetchSubscriptions();
-    }, [userInfo]);
+    }, []);
 
     const getInitialURL = (name: string) => {
         let names = name.split(' ');
-        console.log("Names:", names);
         names = names.filter((n) => n.length > 0); // Filter out any empty strings
         if (names.length === 0) return "NI"; // Return empty string if no names found
         return names.length > 1 ? names[0][0] + names[1][0] : names[0][0];
     };
-
-    const subscriptionPlans = subscriptions.map(subscription => ({
-        id: subscription.id,
-        planName: subscription.title,
-        price: subscription.amount,
-        duration: `/ ${subscription.period / 28} months`,
-        services: `${subscription.credits} Services`,
-        isPremium: false,
-        used: 4,
-        expiryDate: subscription.expired_on ? format(new Date(subscription.expired_on), 'dd-MMM-yyyy') : 'N/A',
-    })) || [];
 
     const changeLanguage = async (language: string) => {
         try {
@@ -140,7 +177,14 @@ const ProfilePage = () => {
             i18n.changeLanguage(language); // Change app language
             setSelectedLanguage(language); // Update state
         } catch (error) {
-            console.error('Error changing language:', error);
+            Alert.alert(t("error"), t("errorSavingLanguagePreference"),
+                [
+                    {
+                        text: t("ok"),
+                    },
+                ]
+            );
+            return;
         }
     };
 
@@ -198,26 +242,60 @@ const ProfilePage = () => {
                             </View>
                         </>
                     )}
-                    {/* Subscription Section */}
-                    {subscriptionPlans.length > 0 ? (
-                        <FlatList
-                            data={subscriptionPlans}
-                            keyExtractor={(item) => item.id.toString()}
-                            renderItem={({ item }) => (
-                                <SubscriptionCard
-                                    subscriptionId={item.id}
-                                    planName={item.planName}
-                                    price={item.price}
-                                    duration={item.duration}
-                                    services={item.services}
-                                    isPremium={item.isPremium}
-                                    used={item.used}
-                                    expiryDate={item.expiryDate}
-                                />
+
+                    {/* <View className="flex-row justify-end mb-4">
+                        <TouchableOpacity
+                            className="bg-transparent"
+                            onPress={() => router.push("/transactions")}
+                        >
+                            <Text className="text-blue-500 text-sm font-bold underline">{t("viewTransactions")}</Text>
+                        </TouchableOpacity>
+                    </View> */}
+                    {plans.length === 1 && (
+                        <>
+                            <View className={`rounded-lg p-5 mb-5 border border-gray-300`}>
+                                <View className="flex-row justify-between mb-3">
+                                    <Text className={`text-2xl font-bold text-black`}>{plans[0].planName}</Text>
+                                    <Text className={`text-2xl text-blue-500 mb-1`}>
+                                        ₹ {plans[0].price}
+                                        <Text className={`ml-5 text-base text-gray-600`}> / {plans[0].period} {t("months")}</Text>
+                                    </Text>
+                                </View>
+                                <View className="flex-row justify-between mb-3">
+                                    <View className="flex rounded-full px-3 mb-1 py-1 bg-blue-100">
+                                        <Text className="text-sm text-blue-500">{plans[0].credits === -1 ? t("unlimitedSearch") : `${plans[0].credits} ${t("services")}`}</Text>
+                                    </View>
+                                    {(plans[0].credits !== -1) && (
+                                        <View className="flex rounded-full px-3 mb-1 py-1 bg-orange-500 items-center">
+                                            <Text className="text-sm text-white">{plans[0].used} {t("used")}</Text>
+                                        </View>
+                                    )}
+                                </View>
+                                <Text className={`mb-5 text-gray-600}`}>{plans[0].description}</Text>
+                                <View className="border border-blue-500 rounded-lg p-3 mt-5">
+                                    <Text className="text-center text-blue-500">Expired on : {plans[0].expiryDate}</Text>
+                                </View>
+                            </View>
+                            {(plans[0].has_subscription === false || (plans[0].credits !== -1 && plans[0].used >= plans[0].credits)) && (
+                                <View className="items-center bg-yellow-50 rounded-xl p-6 shadow-sm mt-1 mb-1 ">
+                                    <Text className="text-xl font-bold text-gray-800 mb-3">
+                                        {plans[0].has_subscription === false ? t("noActiveSubscription") : t("creditBalanceExhausted")}
+                                    </Text>
+                                    <TouchableOpacity
+                                        className="bg-green-500 px-8 py-3 rounded-full shadow-md"
+                                        onPress={() => router.push('/choose-subscription')}
+                                    >
+                                        <Text className="text-white text-lg font-bold">
+                                            {t("subscribeNow")}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
                             )}
-                        />
-                    ) : (
-                        <View className="items-center bg-yellow-50 rounded-xl p-6 shadow-sm mt-6 mb-6 ">
+                        </>
+                    )}
+
+                    {plans.length === 0 && (
+                        <View className="items-center bg-yellow-50 rounded-xl p-6 shadow-sm mt-1 mb-1 ">
                             <Text className="text-xl font-bold text-gray-800 mb-3">
                                 {t("noActiveSubscription")}
                             </Text>
@@ -233,7 +311,7 @@ const ProfilePage = () => {
                     )}
 
                     {/* Language Selector Title */}
-                    <Text className="text-xl font-bold text-center text-gray-800 mb-4">
+                    <Text className="text-xl font-bold text-center text-gray-800 mb-4 mt-4">
                         {t("selectLanguage")}
                     </Text>
 

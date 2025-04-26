@@ -16,8 +16,6 @@ const SearchList = () => {
     const { searchData } = useLocalSearchParams(); // Use useLocalSearchParams instead of useSearchParams
     const filtersData = typeof searchData === 'string' ? JSON.parse(searchData) : {}; // Ensure searchData is a string before parsing
 
-    console.log("Received Search Data:", filtersData);
-
     const [loading, setLoading] = useState(true);
     const [listings, setListings] = useState<Listing[]>([]);
 
@@ -26,18 +24,18 @@ const SearchList = () => {
             const token = await AsyncStorage.getItem('token');
             await AsyncStorage.setItem("passServiceId", "");
             if (!token) {
-                    Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-                      [
+                Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                    [
                         {
-                          text: t("ok"),
-                          onPress: () => {
-                            // Perform the action when "OK" is pressed
-                            router.replace("/(auth)/sign-in");
-                          },
+                            text: t("ok"),
+                            onPress: () => {
+                                router.replace("/(auth)/sign-in");
+                            },
                         },
-                      ]
-                    );
-                  }
+                    ]
+                );
+                return;
+            }
             if (!!token) {
                 const response: any = await fetchAPI(`${constants.API_URL}/search/`, t, {
                     method: 'POST',
@@ -47,7 +45,9 @@ const SearchList = () => {
                     },
                     body: JSON.stringify(filtersData), // Send filters as JSON
                 });
-                // console.log("API Response:", response); // Log the API response
+                if (response === null || response === undefined) {
+                    return;
+                }
                 setListings(transformData(response));
             }
             setLoading(false);
@@ -70,14 +70,13 @@ const SearchList = () => {
             districtName: property.options.districtName || "Unknown District",
             city: property.options.city,
             images: property.options.images && property.options.images.length > 0
-                ? property.options.images.map((image: string) => image.replace("www.", "admin.")) // Replace "www." with "admin."
+                ? property.options.images.map((image: string) => image.replace("www.",constants.REPACE_TEXT))
                 : [`${constants.BASE_URL}/media/no-image-found.png`],
             status: property.is_active,
         }));
     };
 
     const handleView = async (id: number) => {
-        // return;
         await AsyncStorage.setItem("passServiceId", id.toString());
         router.push(`/property-details`);
     };

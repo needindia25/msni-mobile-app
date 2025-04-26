@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { icons, images } from "@/constants";
+import { constants, icons, images } from "@/constants";
 import { UserInfo } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
+import { fetchAPI } from '@/lib/fetch';
 
 const NoSubscription = () => {
     const { t } = useTranslation(); // Initialize translation hook
@@ -14,11 +15,57 @@ const NoSubscription = () => {
     useEffect(() => {
         const checkAuth = async () => {
             const token = await AsyncStorage.getItem('token');
-            console.log(`token: ${token}`);
+            if (!token) {
+                Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                    [
+                        {
+                            text: t("ok"),
+                            onPress: () => {
+                                router.replace("/(auth)/sign-in");
+                            },
+                        },
+                    ]
+                );
+                return;
+            }
             if (!!token) {
-                const userInfo = await AsyncStorage.getItem('user_info');
-                console.log(`userInfo: ${userInfo}`);
-                setUserInfo(userInfo ? JSON.parse(userInfo) : null);
+                const response = await fetchAPI(
+                    `${constants.API_URL}/auth/user_info/`,
+                    t,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    }
+                );
+                if (response === null || response === undefined) {
+                    Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                        [
+                            {
+                                text: t("ok"),
+                                onPress: () => {
+                                    router.replace("/(auth)/sign-in");
+                                },
+                            },
+                        ]
+                    );
+                    return;
+                }
+                response.is_both_access = false;
+                if (response.user_type_id === 3) {
+                    response.user_type_id = 2; // Change user type to provider
+                    response.is_both_access = true; // Set is_both_user to true
+                }
+                await AsyncStorage.setItem('user_info', JSON.stringify(response));
+                setUserInfo(response)
+                if (response && response.has_subscription) {
+                    if (response.user_type_id === 1) {
+                        return router.replace("/(seeker)/(tabs)/home");
+                    } else {
+                        return router.replace("/(provider)/(tabs)/home");
+                    }
+                }
             }
         };
         checkAuth();

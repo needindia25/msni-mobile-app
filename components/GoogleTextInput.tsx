@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Image, Text, PermissionsAndroid } from "react-native";
+import { View, Image, Text, PermissionsAndroid, Alert } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import MapView, { Marker } from "react-native-maps";
 import { MaterialIcons } from "@expo/vector-icons"; // Import icons
@@ -52,14 +52,27 @@ const GoogleTextInput = ({
       ) {
         console.log("Location permissions granted");
       } else {
-        console.log("Location permissions denied");
+        Alert.alert(t("error"), t("locationPermissionsDenied"),
+          [
+            {
+              text: t("ok"),
+            },
+          ]
+        );
+        return;
       }
     } catch (err) {
-      console.warn("Error requesting permissions:", err);
+      Alert.alert(t("error"), t("errorRequestingPermissions"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      );
+      return;
     }
   }
   useEffect(() => {
-    console.log("initial Location data: ", initialLocation)
     requestPermissions();
   }, []);
 
@@ -86,7 +99,14 @@ const GoogleTextInput = ({
         }
       }
     } catch (error) {
-      console.error("Error fetching address:", error);
+      Alert.alert(t("error"), t("errorFetchingAddressDetails"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      );
+      return;
     }
   };
 
@@ -172,7 +192,6 @@ const GoogleTextInput = ({
         region={region}
         onRegionChangeComplete={(newRegion) => setRegion(newRegion)}
         onMarkerDragEnd={(e) => {
-          console.log("on Marker Drag End:", e.nativeEvent.coordinate);
           const { latitude, longitude } = e.nativeEvent.coordinate;
           getAddressFromCoordinates(latitude, longitude);
         }}

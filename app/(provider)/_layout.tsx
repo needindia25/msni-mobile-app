@@ -6,6 +6,7 @@ import { images, constants, icons } from "@/constants"; // Adjust the import pat
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchAPI } from '@/lib/fetch';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
+import TransactionsPage from '@/components/TransactionsPage';
 
 const Layout = () => {
   const router = useRouter();
@@ -27,6 +28,7 @@ const Layout = () => {
             },
           ]
         );
+        return;
       }
 
       Alert.alert(
@@ -45,8 +47,6 @@ const Layout = () => {
                 },
                 body: JSON.stringify({ refresh: refresh }),
               });
-
-              console.log(response);
               await AsyncStorage.clear();
               Alert.alert(
                 t("success"),
@@ -75,6 +75,7 @@ const Layout = () => {
           },
         ]
       ); // Use translation keys
+      return;
     }
   };
 
@@ -98,6 +99,7 @@ const Layout = () => {
         <Stack.Screen name="add-property" options={{ headerShown: false }} />
         <Stack.Screen name="property-details" options={{ headerShown: false }} />
         <Stack.Screen name="service-requests" options={{ headerShown: false }} />
+        <Stack.Screen name="transactions" options={{ headerShown: false }} />
       </Stack>
     </>
   );

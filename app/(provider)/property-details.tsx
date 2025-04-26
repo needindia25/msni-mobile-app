@@ -58,15 +58,12 @@ const PropertyDetails = () => {
     });
 
     useEffect(() => {
-        console.log("PropertyDetails component mounted");
         const fetchDetails = async () => {
-            console.log("Fetching property details...");
             try {
                 const passServiceId = await AsyncStorage.getItem("passServiceId");
                 if (passServiceId) {
                     setId(parseInt(passServiceId, 10));
                 }
-                console.log("Fetched service ID:", passServiceId);
                 const token = await AsyncStorage.getItem('token');
                 if (!token) {
                     Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
@@ -74,25 +71,23 @@ const PropertyDetails = () => {
                             {
                                 text: t("ok"),
                                 onPress: () => {
-                                    // Perform the action when "OK" is pressed
                                     router.replace("/(auth)/sign-in");
                                 },
                             },
                         ]
                     );
+                    return;
                 }
-                console.log("Fetched token ID:", token);
                 if (passServiceId && token) {
-                    console.log("Fetching service response...");
                     const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/`, t, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`,
                         },
                     });
-                    console.log("Service response:", serviceResponse);
-                    console.log("Service response options:", serviceResponse["options"]);
-
+                    if (serviceResponse === null || serviceResponse === undefined) {
+                        return;
+                    }
                     setFormData((prevFormData: any) => ({
                         ...prevFormData,
                         ...serviceResponse["options"],
@@ -101,7 +96,7 @@ const PropertyDetails = () => {
                             date_created: serviceResponse["date_created"],
                             status: serviceResponse["is_active"],
                             images: serviceResponse["options"].images && serviceResponse["options"].images.length > 0
-                                ? serviceResponse["options"].images.map((image: string) => image.replace("www.", "admin.")) // Replace "www." with "admin."
+                                ? serviceResponse["options"].images.map((image: string) => image.replace("admin.", constants.REPACE_TEXT).replace("www.", constants.REPACE_TEXT))
                                 : [`${constants.BASE_URL}/media/no-image-found.png`],
                             basicAmenities: serviceResponse["options"].basicAmenities && serviceResponse["options"].basicAmenities.length > 0 ?
                                 serviceResponse["options"].basicAmenities.filter((amenity: any) => amenity !== "None") : [],
@@ -128,11 +123,17 @@ const PropertyDetails = () => {
                             longitude: parseFloat(String(serviceResponse["options"].longitude || "0"))
                         }
                     }));
-                    console.log("serviceResponse: ", serviceResponse);
-                    console.log("formData, ", formData);
                 }
             } catch (error) {
-                console.error("Error fetching data:", error);
+                Alert.alert(t("error"), t("errorFetchingProperty"),
+                    [
+                        {
+                            text: t("ok"),
+                        },
+                    ]
+                );
+                setLoading(false);
+                return;
             } finally {
                 setLoading(false);
             }
@@ -163,20 +164,23 @@ const PropertyDetails = () => {
                                     {
                                         text: t("ok"),
                                         onPress: () => {
-                                            // Perform the action when "OK" is pressed
                                             router.replace("/(auth)/sign-in");
                                         },
                                     },
                                 ]
                             );
+                            return;
                         }
                         if (token) {
-                            await fetchAPI(`${constants.API_URL}/user-services/${id}/`, t, {
+                            const response = await fetchAPI(`${constants.API_URL}/user-services/${id}/`, t, {
                                 method: "DELETE",
                                 headers: {
                                     'Authorization': `Bearer ${token}`,
                                 },
                             });
+                            if (response === null || response === undefined) {
+                                return;
+                            }
                             Alert.alert(
                                 t("success"),
                                 t("propertyDeleted"),
@@ -184,12 +188,11 @@ const PropertyDetails = () => {
                                     {
                                         text: t("ok"),
                                         onPress: () => {
-                                            // Perform the action when "OK" is pressed
                                             router.back()
                                         },
                                     },
                                 ]
-                            ); // Use translation keys
+                            );
                         }
                     },
                 },
@@ -202,14 +205,14 @@ const PropertyDetails = () => {
             await AsyncStorage.setItem("passServiceId", id.toString());
             router.push(`/add-property`);
         } catch (error) {
-            console.error("Error saving service ID to AsyncStorage:", error);
             Alert.alert(t("error"), t("errorSavingServiceId"),
                 [
                     {
                         text: t("ok"),
                     },
                 ]
-            ); // Use translation key
+            );
+            return;
         }
     };
 
@@ -229,20 +232,23 @@ const PropertyDetails = () => {
                                     {
                                         text: t("ok"),
                                         onPress: () => {
-                                            // Perform the action when "OK" is pressed
                                             router.replace("/(auth)/sign-in");
                                         },
                                     },
                                 ]
                             );
+                            return;
                         }
                         if (token) {
-                            await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, t, {
+                            const response = await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, t, {
                                 method: "PATCH",
                                 headers: {
                                     'Authorization': `Bearer ${token}`,
                                 },
                             });
+                            if (response === null || response === undefined) {
+                                return;
+                            }
 
                             Alert.alert(
                                 t("success"),
@@ -251,7 +257,6 @@ const PropertyDetails = () => {
                                     {
                                         text: t("ok"),
                                         onPress: () => {
-                                            // Perform the action when "OK" is pressed
                                             setFormData((prevFormData: any) => ({
                                                 ...prevFormData,
                                                 status: !prevFormData.status,
@@ -259,7 +264,7 @@ const PropertyDetails = () => {
                                         },
                                     },
                                 ]
-                            ); // Use translation keys
+                            );
                         }
                     },
                 },
@@ -670,7 +675,7 @@ const PropertyDetails = () => {
                         >
                             <Text className="text-white font-bold">{t("back")}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity
+                        {/* <TouchableOpacity
                             className="bg-yellow-500 py-2 px-4 rounded-lg"
                             onPress={() => id !== null && handleEdit(id)}
                         >
@@ -691,7 +696,7 @@ const PropertyDetails = () => {
                             onPress={() => id !== null && handleDelete(id)}
                         >
                             <Text className="text-white font-bold">{t("delete")}  </Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                 </>
             )}

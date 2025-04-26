@@ -41,7 +41,9 @@ const Requests = () => {
                     'Authorization': `Bearer ${token}`,
                 },
             });
-            // console.log("API Response:", requestResponse); // Log the API response
+            if (requestResponse === null || requestResponse === undefined) {
+                return;
+            }
             setRequestListings(transformData(requestResponse));
 
             const favouriteResponse: any = await fetchAPI(`${constants.API_URL}/user-services/my_favorite_services/`, t, {
@@ -50,7 +52,9 @@ const Requests = () => {
                     'Authorization': `Bearer ${token}`,
                 },
             });
-            // console.log("API Response:", favouriteResponse); // Log the API response
+            if (favouriteResponse === null || favouriteResponse === undefined) {
+                return;
+            }
             setFavouriteListings(transformData(favouriteResponse));
         }
         setLoading(false);
@@ -62,9 +66,7 @@ const Requests = () => {
     useFocusEffect(
         React.useCallback(() => {
             const fetchData = async () => {
-                console.log("Request screen is focused");
                 const selectedTab = await AsyncStorage.getItem('selectedTab');
-                console.log("Request screen is focused", selectedTab);
                 setShowRequests(selectedTab === "favorites" ? false : (selectedTab === "requests" ? true : defaultTab));
             };
             fetchData();
@@ -91,7 +93,7 @@ const Requests = () => {
             districtName: property.options.districtName || "Unknown District",
             city: property.options.city,
             images: property.options.images && property.options.images.length > 0
-                ? property.options.images.map((image: string) => image.replace("www.", "admin.")) // Replace "www." with "admin."
+                ? property.options.images.map((image: string) => image.replace("admin.", constants.REPACE_TEXT).replace("www.", constants.REPACE_TEXT))
                 : [`${constants.BASE_URL}/media/no-image-found.png`],
             status: property.is_active,
         }));

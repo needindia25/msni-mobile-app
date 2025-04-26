@@ -34,7 +34,6 @@ const ServiceRequests = () => {
         if (serviceAsString && token) {
           const service = JSON.parse(serviceAsString);
           setServiceData(service);
-          console.log("Service Data:", service);
           const passServiceId = service.id;
           const requestedResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/requested_user_details/`, t, {
             headers: {
@@ -42,10 +41,22 @@ const ServiceRequests = () => {
               'Authorization': `Bearer ${token}`,
             },
           });
+
+          if (requestedResponse === null || requestedResponse === undefined) {
+            return;
+          }
           setRequestedUsers(transformData(requestedResponse));
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        Alert.alert(t("error"), t("errorFetchingUserDetails"),
+          [
+            {
+              text: t("ok"),
+            },
+          ]
+        );
+        setLoading(false);
+        return;
       } finally {
         setLoading(false);
       }
@@ -55,7 +66,6 @@ const ServiceRequests = () => {
 
   const getInitialURL = (name: string) => {
     let names = name.split(' ');
-    console.log("Names:", names);
     names = names.filter((n) => n.length > 0); // Filter out any empty strings
     if (names.length === 0) return "NI"; // Return empty string if no names found
     return names.length > 1 ? names[0][0] + names[1][0] : names[0][0];
@@ -88,44 +98,44 @@ const ServiceRequests = () => {
         <Text className="text-xl font-bold text-white text-center">{t("serviceRequests")}</Text>
       </View>
 
-    <ScrollView className="flex-1 p-5">
-      {/* Service Details */}
-      <View key={serviceData?.id} className="bg-white rounded-lg shadow-md mb-5 p-5">
-        <ImageCarousel images={serviceData ? serviceData?.images : []} />
-        <Text className="text-xl font-bold mb-1">{serviceData?.title}</Text>
-        <Text className="text-gray-500 mb-1">{serviceData?.location}</Text>
+      <ScrollView className="flex-1 p-5">
+        {/* Service Details */}
+        <View key={serviceData?.id} className="bg-white rounded-lg shadow-md mb-5 p-5">
+          <ImageCarousel images={serviceData ? serviceData?.images : []} />
+          <Text className="text-xl font-bold mb-1">{serviceData?.title}</Text>
+          <Text className="text-gray-500 mb-1">{serviceData?.location}</Text>
 
-        {/* Rating and Price Row */}
-        <View className="flex-row justify-between items-center mb-1">
-          <Text className="text-blue-500 text-lg font-bold">
-            {serviceData?.price} <Text className="text-sm text-gray-500">{t("pricePerMonth")}</Text>
-          </Text>
-          <View className="flex-row items-center">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <MaterialIcons
-                key={star}
-                name={star <= Math.floor(serviceData?.rating) ? "star" : star - serviceData?.rating <= 0.5 ? "star-half" : "star-border"}
-                size={20}
-                color="#FFD700"
-              />
-            ))}
-            <Text className="text-gray-500 ml-2">({serviceData?.rating.toFixed(1)})</Text>
+          {/* Rating and Price Row */}
+          <View className="flex-row justify-between items-center mb-1">
+            <Text className="text-blue-500 text-lg font-bold">
+              {serviceData?.price} <Text className="text-sm text-gray-500">{t("pricePerMonth")}</Text>
+            </Text>
+            <View className="flex-row items-center">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <MaterialIcons
+                  key={star}
+                  name={star <= Math.floor(serviceData?.rating) ? "star" : star - serviceData?.rating <= 0.5 ? "star-half" : "star-border"}
+                  size={20}
+                  color="#FFD700"
+                />
+              ))}
+              <Text className="text-gray-500 ml-2">({serviceData?.rating.toFixed(1)})</Text>
+            </View>
+          </View>
+
+          {/* Requests and Favorites Row */}
+          <View className="flex-row justify-between items-center mb-3">
+            <Text className="text-gray-500">{serviceData?.requests} {t("requests")}</Text>
+            <View className="flex-row items-center">
+              <Text className="text-red-500 mr-1">❤</Text>
+              <Text className="text-gray-500">{serviceData?.favorites} {t("favorites")}</Text>
+            </View>
           </View>
         </View>
 
-        {/* Requests and Favorites Row */}
-        <View className="flex-row justify-between items-center mb-3">
-          <Text className="text-gray-500">{serviceData?.requests} {t("requests")}</Text>
-          <View className="flex-row items-center">
-            <Text className="text-red-500 mr-1">❤</Text>
-            <Text className="text-gray-500">{serviceData?.favorites} {t("favorites")}</Text>
-          </View>
-        </View>
-      </View>
-      
 
-      {/* Content */}
-      {/* <ScrollView className="flex-1 p-5"> */}
+        {/* Content */}
+        {/* <ScrollView className="flex-1 p-5"> */}
         {loading ? (
           <View className="flex-1 justify-center items-center mt-10">
             <ActivityIndicator size="large" color="#4CAF50" />
@@ -136,7 +146,7 @@ const ServiceRequests = () => {
             {requestUserList.length > 0 ? (
               requestUserList.map((request: any, index: number) => (
                 <RequestCard key={index} request={request} />
-              ))              
+              ))
             ) : (
               <View className="flex-1 justify-center items-center mt-10">
                 <Text className="text-gray-500 text-lg">{t("noRequestFound")}</Text>

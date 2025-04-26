@@ -45,18 +45,8 @@ const Home = () => {
     additionalAmenities: [] as string[],
   });
 
-  // const saveSearchData = async (data: any) => {
-  //   try {
-  //     await AsyncStorage.setItem("searchData", JSON.stringify(data));
-  //   } catch (error) {
-  //     console.error("Error saving search data:", error);
-  //   }
-  // };
-
   const handleInputChange = (field: string, value: any) => {
-    console.log("Field:", field, "Value:", value);
     let updatedData = {};
-    console.log("=> Updated Data:", updatedData);
     if (field === "propertyFor") {
       updatedData = {
         propertyType: "Any",
@@ -87,7 +77,6 @@ const Home = () => {
         additionalAmenities: [] as string[],
       }
     }
-    console.log("Updated Data:", updatedData);
     setSearchData((prev) => ({
       ...prev,
       [field]: value,
@@ -177,7 +166,6 @@ const Home = () => {
   );
 
   const validateForm = () => {
-    // console.log("Form data:", searchData);
     if (searchData.state === 0) {
       Alert.alert(
         t("error"),
@@ -215,8 +203,6 @@ const Home = () => {
   };
 
   const onProprtySearchPress = async () => {
-    console.log("Form Data:", searchData);
-    // return;
     if (!validateForm()) {
       return;
     }
@@ -236,13 +222,15 @@ const Home = () => {
     const fetchStates = async () => {
       try {
         const response = await fetchAPI(`${constants.API_URL}/master/states`, t); // Replace with your API endpoint
+
+        if (response === null || response === undefined) {
+          return;
+        }
         setStates(response);
         if (searchData.state) {
           fetchDistricts(searchData.state);
         }
-        console.log("States fetched:", response);
       } catch (error) {
-        console.error('Error fetching states--:', error);
       } finally {
         setLoading(false);
       }
@@ -255,13 +243,24 @@ const Home = () => {
     if (!stateId) return;
     try {
       const response = await fetchAPI(`${constants.API_URL}/master/state/${stateId}/districts`, t);
+
+      if (response === null || response === undefined) {
+        return;
+      }
       setDistricts(response)
       districtOptions = response.map((district: any) => ({
         label: district.name,
         value: district.id,
       }));
     } catch (error) {
-      console.error("Error fetching districts:", error);
+      Alert.alert(t("error"), t("errorFetchingDistrict"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      );
+      return;
     }
   };
 

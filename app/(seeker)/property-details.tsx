@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import en from '../locales/en';
 import ImageCarousel from '@/components/ImageCarousel';
 import GoogleTextInput from '@/components/GoogleTextInput';
+import { UserInfo } from '@/types/type';
 
 const PropertyDetails = () => {
     const { t } = useTranslation();
@@ -18,6 +19,7 @@ const PropertyDetails = () => {
     const [id, setId] = useState<number | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
     const [formData, setFormData] = useState({
         propertyFor: "Rent",
         title: "",
@@ -65,17 +67,13 @@ const PropertyDetails = () => {
     const [favorites, setFavorites] = useState(false);
 
     useEffect(() => {
-        console.log("PropertyDetails component mounted");
         const fetchDetails = async () => {
-            console.log("Fetching property details...");
             try {
                 const passServiceId = await AsyncStorage.getItem("passServiceId");
                 if (passServiceId) {
                     setId(parseInt(passServiceId, 10));
                 }
-                console.log("Fetched service ID:", passServiceId);
                 const token = await AsyncStorage.getItem('token');
-                console.log("Fetched token ID:", token);
                 if (!token) {
                     Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
                         [
@@ -87,18 +85,23 @@ const PropertyDetails = () => {
                             },
                         ]
                     );
+                    return;
                 }
+                
+                const userInfoString = await AsyncStorage.getItem('user_info');
+                const userInfoJson = userInfoString ? JSON.parse(userInfoString) : null
+                setUserInfo(userInfoJson)
                 if (passServiceId && token) {
                     setToken(token);
-                    console.log("Fetching service response...");
                     const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/info/`, t, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`,
                         },
                     });
-                    console.log("Service response:", serviceResponse);
-                    console.log("Service response options:", serviceResponse["options"]);
+                    if (serviceResponse === null || serviceResponse === undefined) {
+                        return;
+                    }
 
                     setFormData((prevFormData: any) => ({
                         ...prevFormData,
@@ -110,7 +113,7 @@ const PropertyDetails = () => {
                             owner_contact: serviceResponse["owner_contact"],
                             owner_name: serviceResponse["owner_name"],
                             images: serviceResponse["options"].images && serviceResponse["options"].images.length > 0
-                                ? serviceResponse["options"].images.map((image: string) => image.replace("www.", "admin."))
+                                ? serviceResponse["options"].images.map((image: string) => image.replace("admin.", constants.REPACE_TEXT).replace("www.", constants.REPACE_TEXT))
                                 : [`${constants.BASE_URL}/media/no-image-found.png`],
                             basicAmenities: serviceResponse["options"].basicAmenities && serviceResponse["options"].basicAmenities.length > 0 ?
                                 serviceResponse["options"].basicAmenities.filter((amenity: any) => amenity !== "None") : [],
@@ -131,7 +134,7 @@ const PropertyDetails = () => {
                                     ? [serviceResponse["options"].numberOfBathRooms + " Bath Room" + (serviceResponse["options"].numberOfBathRooms > 1 ? "s" : "")]
                                     : serviceResponse["options"].numberOfBathRooms)
                                 : [],
-                        },                        
+                        },
                         ...{
                             latitude: parseFloat(String(serviceResponse["options"].latitude || "0")),
                             longitude: parseFloat(String(serviceResponse["options"].longitude || "0"))
@@ -140,16 +143,21 @@ const PropertyDetails = () => {
 
                     if (serviceResponse["service_request_count"]) {
                         const serviceRequestCount = serviceResponse["service_request_count"];
-                        console.log("Service request count:", serviceRequestCount);
                         setShowContactInfo(serviceRequestCount["is_my_request"]);
                         setFavorites(serviceRequestCount["is_my_favorite"]);
                         setRating(serviceRequestCount["get_my_rating"]);
                     }
-                    console.log(serviceResponse);
-                    console.log(formData);
                 }
             } catch (error) {
-                console.error("Error fetching data:", error);
+                Alert.alert(t("error"), t("errorFetchingProperty"),
+                    [
+                        {
+                            text: t("ok"),
+                        },
+                    ]
+                );
+                setLoading(false);
+                return;
             } finally {
                 setLoading(false);
             }
@@ -208,9 +216,19 @@ const PropertyDetails = () => {
                     },
                 ]
             );
+            return;
+        }
+        if (userInfo?.has_subscription === false) {
+            Alert.alert(t("warning"), t("noActiveSubscriptionToViewOwner"),
+                [
+                    {
+                        text: t("ok"),
+                    },
+                ]
+            );
+            return;
         }
         if (id && token) {
-            console.log("Add a request");
             const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${id}/requests/`, t, {
                 method: 'POST',
                 headers: {
@@ -218,7 +236,9 @@ const PropertyDetails = () => {
                     'Authorization': `Bearer ${token}`,
                 },
             });
-            console.log(serviceResponse)
+            if (serviceResponse === null || serviceResponse === undefined) {
+                return;
+            }
             setShowContactInfo(true);
         }
     };
@@ -235,6 +255,7 @@ const PropertyDetails = () => {
                     },
                 ]
             );
+            return;
         }
         if (id && token) {
             const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${id}/favorites/`, t, {
@@ -244,7 +265,9 @@ const PropertyDetails = () => {
                     'Authorization': `Bearer ${token}`,
                 },
             });
-            console.log(serviceResponse)
+            if (serviceResponse === null || serviceResponse === undefined) {
+                return;
+            }
             setFavorites(!favorites);
         }
     };
@@ -261,9 +284,9 @@ const PropertyDetails = () => {
                     },
                 ]
             );
+            return;
         }
         setRating(newRating);
-        console.log(`User rated: ${newRating} stars`);
         if (id && token) {
             const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${id}/rating/`, t, {
                 method: 'POST',
@@ -273,7 +296,9 @@ const PropertyDetails = () => {
                 },
                 body: JSON.stringify({ rating: newRating }),
             });
-            console.log(serviceResponse)
+            if (serviceResponse === null || serviceResponse === undefined) {
+                return;
+            }
         }
     };
 
