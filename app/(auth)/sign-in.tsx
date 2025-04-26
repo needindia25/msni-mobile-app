@@ -105,6 +105,7 @@ const SignIn = () => {
       if (user_info.user_type_id === 3) {
         user_info.user_type_id = 2; // Change user type to provider
         user_info.is_both_access = true; // Set is_both_user to true
+        user_info.has_subscription_initial = user_info.has_subscription;
       }
 
       // Store tokens and user info

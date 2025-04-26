@@ -141,8 +141,6 @@ const PropertyDetails = () => {
                         }
                     }));
 
-                    console.log(formData)
-
                     if (serviceResponse["service_request_count"]) {
                         const serviceRequestCount = serviceResponse["service_request_count"];
                         setShowContactInfo(serviceRequestCount["is_my_request"]);

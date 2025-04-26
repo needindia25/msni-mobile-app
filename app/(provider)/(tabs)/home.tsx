@@ -63,6 +63,7 @@ const Home = () => {
                 ? property.options.images.map((image: string) => image.replace("admin.", constants.REPACE_TEXT).replace("www.", constants.REPACE_TEXT))
                 : [`${constants.BASE_URL}/media/no-image-found.png`],
             status: property.is_active,
+            is_deletable: (property.service_request_count.requests === 0 && property.service_request_count.ratings === 0 && property.service_request_count.favorites === 0)
         }));
     };
 
@@ -71,7 +72,17 @@ const Home = () => {
         router.push(`/property-details`);
     };
 
-    const handleDelete = (id: number) => {
+    const handleDelete = (id: number, is_deletable: boolean = true) => {
+        if (is_deletable === false) {
+            Alert.alert(t("warning"), t("cannotDeleteDeactivateInstead"),
+                [
+                    {
+                        text: t("ok"),
+                    },
+                ]
+            );
+            return;
+        }
         Alert.alert(
             t("deleteProperty"), // Use translation key
             t("deleteConfirmation"), // Use translation key
@@ -316,10 +327,13 @@ const Home = () => {
                                                 {listing.status ? t("deactivate") : t("activate")}
                                             </Text>
                                         </TouchableOpacity>
-
+                                        
                                         <TouchableOpacity
-                                            className="bg-red-500 py-2 px-4 rounded-lg"
-                                            onPress={() => handleDelete(listing.id)}
+                                            className={` py-2 px-4 rounded-lg ${listing.is_deletable
+                                                ? "bg-red-500"
+                                                : "bg-red-300"
+                                                }`}
+                                            onPress={() => handleDelete(listing.id, listing.is_deletable)}
                                         >
                                             <Text className="text-white font-bold">{t("delete")}</Text>
                                         </TouchableOpacity>

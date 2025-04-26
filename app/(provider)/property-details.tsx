@@ -675,7 +675,7 @@ const PropertyDetails = () => {
                         >
                             <Text className="text-white font-bold">{t("back")}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity
+                        {/* <TouchableOpacity
                             className="bg-yellow-500 py-2 px-4 rounded-lg"
                             onPress={() => id !== null && handleEdit(id)}
                         >
@@ -696,7 +696,7 @@ const PropertyDetails = () => {
                             onPress={() => id !== null && handleDelete(id)}
                         >
                             <Text className="text-white font-bold">{t("delete")}  </Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                 </>
             )}

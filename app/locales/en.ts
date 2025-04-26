@@ -362,6 +362,8 @@ const en = {
         alreadyRequestedService: "You have already requested this service.",
         requestAddedSuccessfully: "Request added successfully.",
         warning: "Warning",
+        cannotDeleteDeactivateInstead: "Some user activity detected, hence can not delete it. Instead, you can deactivate it.",
+        creditBalanceExhausted: "Your credit balance has been exhausted.",
     },
 };
 

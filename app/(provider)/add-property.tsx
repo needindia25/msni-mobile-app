@@ -20,6 +20,7 @@ const MultiStepForm = () => {
   const { t } = useTranslation();
 
   const [loading, setLoading] = useState(true);
+  const [btnLoading, setBtnLoading] = useState(false);
   const [step, setStep] = useState(1);
   const [token, setToken] = useState<string | null>(null);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
@@ -290,7 +291,6 @@ const MultiStepForm = () => {
   const handleCancel = () => {
     router.push("/(provider)/(tabs)/home");
   };
-
   const handleSubmit = async (formData: any, stepIndex: number = 0) => {
     if (!validateForm()) {
       Alert.alert(
@@ -318,6 +318,7 @@ const MultiStepForm = () => {
       return;
     }
     try {
+      setBtnLoading(true);
       let url = `${constants.API_URL}/user-services/`;
       let method = "POST";
       if (serviceId !== null && serviceId !== undefined) {
@@ -335,7 +336,7 @@ const MultiStepForm = () => {
           options: formData,
           service: 1,
           is_active: true,
-          plan_id: userInfo?.plan_id
+          plan: userInfo?.plan_id
         } : {
           title: formData.title,
           options: formData,
@@ -363,6 +364,7 @@ const MultiStepForm = () => {
         );
         return;
       }
+      setBtnLoading(false);
       setStep(step + stepIndex);
     } catch (error) {
       Alert.alert(t("error"), t("failedToSaveProperty"),
@@ -372,6 +374,7 @@ const MultiStepForm = () => {
           },
         ]
       );
+      setBtnLoading(false);
       return;
     }
   };
@@ -810,24 +813,30 @@ const MultiStepForm = () => {
                   />
                 </View>
               )}
-
-              <View className={`flex-row ${step > 1 ? "justify-between" : "justify-end"} mt-5 mb-10`}>
-                {step > 1 && <TouchableOpacity onPress={() => { handleSubmit(formData, -1); }} className="bg-gray-500 py-3 px-5 rounded-lg">
-                  <Text className="text-white text-base font-bold">{t("back")}</Text>
-                </TouchableOpacity>}
-                <TouchableOpacity onPress={() => handleCancel()} className="bg-gray-500 py-3 px-5 mx-3 rounded-lg">
-                  <Text className="text-white text-base font-bold">{t("cancel")}</Text>
-                </TouchableOpacity>
-                {step < 5 ? (
-                  <TouchableOpacity onPress={() => { handleSubmit(formData, 1); }} className="bg-blue-500 py-3 px-5 rounded-lg">
-                    <Text className="text-white text-base font-bold">{t("saveNext")}</Text>
+              {btnLoading ? (
+                <View className="flex-row justify-center mt-5 mb-10">
+                  <ActivityIndicator size="large" color="#00ff00" />
+                  <Text className="mt-2 text-base">{t("loading")}</Text>
+                </View>
+              ) : (
+                <View className={`flex-row ${step > 1 ? "justify-between" : "justify-end"} mt-5 mb-10`}>
+                  {step > 1 && <TouchableOpacity onPress={() => { handleSubmit(formData, -1); }} className="bg-gray-500 py-3 px-5 rounded-lg">
+                    <Text className="text-white text-base font-bold">{t("back")}</Text>
+                  </TouchableOpacity>}
+                  <TouchableOpacity onPress={() => handleCancel()} className="bg-gray-500 py-3 px-5 mx-3 rounded-lg">
+                    <Text className="text-white text-base font-bold">{t("cancel")}</Text>
                   </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity onPress={() => handleSubmit(formData)} className="bg-green-500 py-3 px-5 rounded-lg">
-                    <Text className="text-white text-base font-bold">{t("submit")}</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
+                  {step < 5 ? (
+                    <TouchableOpacity onPress={() => { handleSubmit(formData, 1); }} className="bg-blue-500 py-3 px-5 rounded-lg">
+                      <Text className="text-white text-base font-bold">{t("saveNext")}</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity onPress={() => handleSubmit(formData)} className="bg-green-500 py-3 px-5 rounded-lg">
+                      <Text className="text-white text-base font-bold">{t("submit")}</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )}
             </View>
           </ScrollView>
         </KeyboardAvoidingView>

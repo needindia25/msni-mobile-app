@@ -58,7 +58,6 @@ const NoSubscription = () => {
                     response.is_both_access = true; // Set is_both_user to true
                 }
                 await AsyncStorage.setItem('user_info', JSON.stringify(response));
-                console.log("NO SUBSCRIPTION", response)
                 setUserInfo(response)
                 if (response && response.has_subscription) {
                     if (response.user_type_id === 1) {

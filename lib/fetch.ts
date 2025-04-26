@@ -24,7 +24,6 @@ export const fetchAPI = async (url: string, t: (key: string) => string, options?
       return;
     }
     const response_json =  await response.json();
-    console.log(response_json)
     if (response_json.hasOwnProperty("error")) {
       Alert.alert(t("error"), response_json["error"], [
         {

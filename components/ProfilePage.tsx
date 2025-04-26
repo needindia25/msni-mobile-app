@@ -1,34 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigation } from "@react-navigation/native";
-import { View, Text, ActivityIndicator, Alert, FlatList, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, ActivityIndicator, Alert, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { Plan, UserInfo } from '@/types/type';
+import { UserInfo } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { constants } from '@/constants';
 import { fetchAPI } from '@/lib/fetch';
-import SubscriptionCard from '@/components/SubscriptionCard';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 
 const ProfilePage = () => {
     const { t, i18n } = useTranslation();
     const router = useRouter();
-    const navigation = useNavigation();
     const [loading, setLoading] = useState(true);
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
     const [plans, setPlan] = useState<any[]>([]);
     const [selectedLanguage, setSelectedLanguage] = useState<string>(i18n.language);
     const [selectedRole, setSelectedRole] = useState(1);
-
-    useEffect(() => {
-        const checkAuth = async () => {
-            const userInfo = await AsyncStorage.getItem('user_info');
-            setUserInfo(userInfo ? JSON.parse(userInfo) : null);
-            setSelectedRole(userInfo ? JSON.parse(userInfo).user_type_id : 1);
-            setLoading(false);
-        };
-        checkAuth();
-    }, []);
 
     useFocusEffect(
         React.useCallback(() => {
@@ -39,8 +26,51 @@ const ProfilePage = () => {
         }, [])
     );
 
+    const getUserPlan = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"), [
+                    {
+                        text: t("ok"),
+                        onPress: () => {
+                            router.replace("/(auth)/sign-in");
+                        },
+                    },
+                ]);
+                return null;
+            }
+
+            const response = await fetchAPI(
+                `${constants.API_URL}/user/plan/`,
+                t,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (!response) {
+                console.error("Failed to fetch user plan: Response is null or undefined.");
+                return null;
+            }
+
+            console.log("User Plan Response: ", response);
+            return response;
+        } catch (error) {
+            console.error("Error fetching user plan:", error);
+            Alert.alert(t("error"), t("somethingWentWrong"), [
+                {
+                    text: t("ok"),
+                },
+            ]);
+            return null;
+        }
+    };
     const handleSelectedRole = async (role: number) => {
-        if (role === selectedRole) return; // No change in role
+        if (role === selectedRole) return;
         Alert.alert(
             t("switchUser"),
             (role == 1 ? t("seekerSwitchConfirmation") : t("providerSwitchConfirmation")),
@@ -54,14 +84,31 @@ const ProfilePage = () => {
                         const parsedUserInfo = userInfo ? JSON.parse(userInfo) : null;
                         if (parsedUserInfo) {
                             parsedUserInfo.user_type_id = role;
-                            setUserInfo(parsedUserInfo);
+                            console.log("parsedUserInfo ", parsedUserInfo)
                             await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
                             if (role === 1) {
+                                if (parsedUserInfo.has_subscription_initial == true) {
+                                    parsedUserInfo.has_subscription = true;
+                                    await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
+                                }
                                 router.push('/(seeker)/(tabs)/home');
                             }
                             else if (role === 2) {
+                                if (parsedUserInfo.has_subscription == true || parsedUserInfo.has_subscription_initial == true) {
+                                    const response = await getUserPlan();
+                                    console.log("response ", response)
+                                    if (response === null) {
+                                        return;
+                                    }
+                                    if (!(response.credits > response.used)) {
+                                        parsedUserInfo.has_subscription = false;
+                                        parsedUserInfo.has_subscription_initial = true;
+                                        await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
+                                    }
+                                }
                                 router.push('/(provider)/(tabs)/home');
                             }
+                            setUserInfo(parsedUserInfo);
                         }
                     },
                 },
@@ -69,36 +116,21 @@ const ProfilePage = () => {
         );
     }
     useEffect(() => {
+        const checkAuth = async () => {
+            const userInfo = await AsyncStorage.getItem('user_info');
+            console.log("userInfo::::: ", userInfo)
+            setUserInfo(userInfo ? JSON.parse(userInfo) : null);
+            setSelectedRole(userInfo ? JSON.parse(userInfo).user_type_id : 1);
+        };
         const fetchSubscriptions = async () => {
             try {
-                const token = await AsyncStorage.getItem('token');
-                if (!token) {
-                    Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-                        [
-                            {
-                                text: t("ok"),
-                                onPress: () => {
-                                    router.replace("/(auth)/sign-in");
-                                },
-                            },
-                        ]
-                    );
+                const response = await getUserPlan();
+                
+                console.log("fetchSubscriptions response ", response)
+                if (response === null) {
                     return;
                 }
-                const response = await fetchAPI(
-                    `${constants.API_URL}/user/plan/`,
-                    t,
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`,
-                        },
-                    }
-                );
-                if (response === null || response === undefined) {
-                    return;
-                }
-                const plans = response.map((item: any) => ({
+                const plans = response?.map((item: any) => ({
                     id: item.id,
                     subscription_id: item.subscription_id,
                     planName: item.title,
@@ -128,8 +160,9 @@ const ProfilePage = () => {
                 setLoading(false);
             }
         };
+        checkAuth();
         fetchSubscriptions();
-    }, [userInfo]);
+    }, []);
 
     const getInitialURL = (name: string) => {
         let names = name.split(' ');
@@ -137,8 +170,6 @@ const ProfilePage = () => {
         if (names.length === 0) return "NI"; // Return empty string if no names found
         return names.length > 1 ? names[0][0] + names[1][0] : names[0][0];
     };
-
-
 
     const changeLanguage = async (language: string) => {
         try {
@@ -245,10 +276,10 @@ const ProfilePage = () => {
                                     <Text className="text-center text-blue-500">Expired on : {plans[0].expiryDate}</Text>
                                 </View>
                             </View>
-                            {plans[0].has_subscription ===  false && (
+                            {(plans[0].has_subscription === false || (plans[0].credits !== -1 && plans[0].used >= plans[0].credits)) && (
                                 <View className="items-center bg-yellow-50 rounded-xl p-6 shadow-sm mt-1 mb-1 ">
                                     <Text className="text-xl font-bold text-gray-800 mb-3">
-                                        {t("noActiveSubscription")}
+                                        {plans[0].has_subscription === false ? t("noActiveSubscription") : t("creditBalanceExhausted")}
                                     </Text>
                                     <TouchableOpacity
                                         className="bg-green-500 px-8 py-3 rounded-full shadow-md"
@@ -280,7 +311,7 @@ const ProfilePage = () => {
                     )}
 
                     {/* Language Selector Title */}
-                    <Text className="text-xl font-bold text-center text-gray-800 mb-4">
+                    <Text className="text-xl font-bold text-center text-gray-800 mb-4 mt-4">
                         {t("selectLanguage")}
                     </Text>
 

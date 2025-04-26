@@ -27,7 +27,6 @@ const Page = () => {
                 },
             }
         );
-        console.log("INDEX")
         if (response === null || response === undefined) {
           AsyncStorage.clear()
           setIsSignedIn(false);

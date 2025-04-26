@@ -124,7 +124,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                                     console.log("INSIDE IF BLOCK: User Info: ", userInfo)
                                     userInfo.has_subscription = true;
                                     userInfo.plan_id = paymentResponse.plan_id;
-                                    await AsyncStorage.setItem("userInfo", JSON.stringify(userInfo));
+                                    await AsyncStorage.setItem("user_info", JSON.stringify(userInfo));
                                 }
                                 Alert.alert(t("success"), t("transactionSuccessful"), [
                                     {

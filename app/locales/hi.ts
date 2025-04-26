@@ -363,6 +363,8 @@ const hi = {
         alreadyRequestedService: "आपने पहले ही इस सेवा का अनुरोध किया है।",
         requestAddedSuccessfully: "अनुरोध सफलतापूर्वक जोड़ा गया।",
         warning: "चेतावनी",
+        cannotDeleteDeactivateInstead: "कुछ उपयोगकर्ता गतिविधि का पता चला है, इसलिए इसे हटाया नहीं जा सकता। इसके बजाय, आप इसे निष्क्रिय कर सकते हैं।",
+        creditBalanceExhausted: "आपकी जमा शेष समाप्त हो गई है।",
     },
 };
 
