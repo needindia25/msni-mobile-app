@@ -97,7 +97,7 @@ const Requests = () => {
             districtName: property.options.districtName || "Unknown District",
             city: property.options.city,
             images: property.options.images && property.options.images.length > 0
-                ? property.options.images.map((image: string) => image.replace("www.", "admin.")) // Replace "www." with "admin."
+                ? property.options.images.map((image: string) => image.replace("www.", constants.REPACE_TEXT))
                 : [`${constants.BASE_URL}/media/no-image-found.png`],
             status: property.is_active,
         }));

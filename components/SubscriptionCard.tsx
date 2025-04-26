@@ -99,7 +99,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
             // const mobile = userInfo?.email.split("@")[0];
             SabPaisaSDK.openSabpaisaSDK(
-                [price.toString(), userInfo?.full_name, "", userInfo?.username, userInfo?.email, {"udf20" : transaction_code}],
+                [price.toString(), userInfo?.full_name, "", userInfo?.username, transaction_code,],
                 async (error: any, message: string, clientTxnId: string) => {
                     if (clientTxnId) {
                         try {
@@ -135,11 +135,9 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                                 Alert.alert(t("error"), paymentResponse.message, [
                                     {
                                         text: t("ok"),
-                                        onPress: () => {
-                                            router.push(userInfo?.user_type_id == 1 ? "/(seeker)/(tabs)/profile" : "/(provider)/(tabs)/profile")
-                                        },
                                     },
                                 ]);
+                                setLoading(false)
                             }
                         } catch (error) {
                             Alert.alert(t("error"), t("somethingWentWrong"), [
@@ -183,7 +181,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                         <View className="flex rounded-full px-3 mb-1 py-1 bg-blue-100">
                             <Text className="text-sm text-blue-500">{credits === -1 ? t("unlimitedSearch") : `${credits} ${t("services")}`}</Text>
                         </View>
-                        {expiryDate !== "N/A" && (
+                        {(expiryDate !== "N/A" && credits !== -1) && (
                             <View className="flex rounded-full px-3 mb-1 py-1 bg-orange-500 items-center">
                                 <Text className="text-sm text-white">{used} {t("used")}</Text>
                             </View>
@@ -192,7 +190,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                     <Text className={`mb-5 ${isPremium ? 'text-white' : 'text-gray-600'}`}>{descriptions}</Text>
                     {(expiryDate === "N/A" || (credits !== -1 && credits <= used)) && (
                         <CustomButton
-                            title={credits > used ? t("selectSubscription") : t("upgradeSubscription")}
+                            title={(credits === -1 || credits > used) ? t("selectSubscription") : t("upgradeSubscription")}
                             className="my-2"
                             onPress={() => handleOnPress()}
                         />

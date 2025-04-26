@@ -105,8 +105,9 @@ export const icons = {
 // };
 
 export const constants = {
-  BASE_URL: "https://admin.multisolutionofneedindia.com",
-  API_URL: "https://api.multisolutionofneedindia.com",
+  REPACE_TEXT: "uatadmin.",
+  BASE_URL: "https://uatadmin.multisolutionofneedindia.com",
+  API_URL: "https://uatapi.multisolutionofneedindia.com",
   DEFAULT_PASSWORD: "MSNI@2025",
   // EXPO_PUBLIC_PLACES_API_KEY: "AIzaSyBJnJ0WfMVeL1erTljsNOROO14OuUC2D1E",
   EXPO_PUBLIC_PLACES_API_KEY: "AIzaSyBhSmc340OCHOV1eHAWfH7KqVsMBvFO4mE",
