@@ -78,6 +78,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                 }),
             });
             if (response === null || response === undefined) {
+                setLoading(false);
                 return;
             }
 
@@ -116,6 +117,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                                 }),
                             });
                             if (paymentResponse === null || response === undefined) {
+                                setLoading(false);
                                 return;
                             }
                             if (paymentResponse.status === "0000") {

@@ -60,7 +60,7 @@ const Home = () => {
             requests: 0,
             favorites: 0,
             images: property.options.images && property.options.images.length > 0
-                ? property.options.images.map((image: string) => image.replace("admin.", constants.REPACE_TEXT).replace("www.", constants.REPACE_TEXT))
+                ? property.options.images.map((image: string) => image.replace("admin.", constants.REPLACE_TEXT).replace("www.", constants.REPLACE_TEXT))
                 : [`${constants.BASE_URL}/media/no-image-found.png`],
             status: property.is_active,
             is_deletable: (property.service_request_count.requests === 0 && property.service_request_count.ratings === 0 && property.service_request_count.favorites === 0)

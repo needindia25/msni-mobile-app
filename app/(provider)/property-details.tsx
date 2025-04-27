@@ -96,7 +96,7 @@ const PropertyDetails = () => {
                             date_created: serviceResponse["date_created"],
                             status: serviceResponse["is_active"],
                             images: serviceResponse["options"].images && serviceResponse["options"].images.length > 0
-                                ? serviceResponse["options"].images.map((image: string) => image.replace("admin.", constants.REPACE_TEXT).replace("www.", constants.REPACE_TEXT))
+                                ? serviceResponse["options"].images.map((image: string) => image.replace("admin.", constants.REPLACE_TEXT).replace("www.", constants.REPLACE_TEXT))
                                 : [`${constants.BASE_URL}/media/no-image-found.png`],
                             basicAmenities: serviceResponse["options"].basicAmenities && serviceResponse["options"].basicAmenities.length > 0 ?
                                 serviceResponse["options"].basicAmenities.filter((amenity: any) => amenity !== "None") : [],
