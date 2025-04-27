@@ -84,8 +84,8 @@ const Services = () => {
       favorites: property.service_request_count.favorites || 0,
       rating: property.service_request_count.avg_rating || 0,
       images: property.options.images && property.options.images.length > 0
-        ? property.options.images.map((image: string) => image.replace("admin.", constants.REPLACE_TEXT).replace("www.", constants.REPLACE_TEXT))
-        : [`${constants.BASE_URL}/media/no-image-found.png`],
+        ? property.options.images
+        : [`/media/no-image-found.png`],
       status: property.is_active,
     }));
   };

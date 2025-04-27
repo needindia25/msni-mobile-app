@@ -9,6 +9,7 @@ import {
   Pressable,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
+import { constants } from "@/constants";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -69,7 +70,7 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
         {images.map((image, index) => (
           <TouchableOpacity key={index} onPress={() => openImageModal(index)}>
             <Image
-              source={{ uri: image }}
+              source={{ uri: constants.BASE_URL + image }}
               style={{ width: screenWidth - 40 }}
               className="h-48 rounded-lg mr-2"
             />
@@ -101,7 +102,7 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
         <View className="flex-1 bg-black justify-center items-center">
           {modalIndex !== null && (
             <Image
-              source={{ uri: images[modalIndex] }}
+              source={{ uri: constants.BASE_URL + images[modalIndex] }}
               className="w-full h-full"
               resizeMode="contain"
             />

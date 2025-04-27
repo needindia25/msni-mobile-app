@@ -273,7 +273,7 @@ const ProfilePage = () => {
                                 </View>
                                 <Text className={`mb-5 text-gray-600}`}>{plans[0].description}</Text>
                                 <View className="border border-blue-500 rounded-lg p-3 mt-5">
-                                    <Text className="text-center text-blue-500">Expired on : {plans[0].expiryDate}</Text>
+                                    <Text className="text-center text-blue-500">Expire on : {plans[0].expiryDate}</Text>
                                 </View>
                             </View>
                             {(plans[0].has_subscription === false || (plans[0].credits !== -1 && plans[0].used >= plans[0].credits)) && (

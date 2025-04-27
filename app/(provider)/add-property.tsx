@@ -123,7 +123,7 @@ const MultiStepForm = () => {
             ...serviceResponse["options"],
             ...{
               images: serviceResponse["options"].images && serviceResponse["options"].images.length > 0
-                ? serviceResponse["options"].images.map((image: string) => image.replace("admin.", constants.REPLACE_TEXT).replace("www.", constants.REPLACE_TEXT))
+                ? serviceResponse["options"].images
                 : [],
               sourceOfWater: serviceResponse["options"].sourceOfWater
                 ? (typeof serviceResponse["options"].sourceOfWater === "string"

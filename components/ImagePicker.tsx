@@ -78,9 +78,8 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
           const fullBase64 = `data:${mimeType};base64,${base64Data}`;
           const savedPath: any = await uploadImageToDjangoAPI(fullBase64, token);
           if (savedPath) {
-            const fullPath = constants.BASE_URL + savedPath;
-            setSelectedImages((prev) => [...prev, fullPath]);
-            onImageSelect(fullPath);
+            setSelectedImages((prev) => [...prev, savedPath]);
+            onImageSelect(savedPath);
           }
         } else {
           Alert.alert('Error', t("imageProcessError")); // Use translation key
@@ -167,7 +166,7 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
           {selectedImages.map((image, index) => (
             <View key={index} className="relative">
               <Image
-                source={{ uri: image }}
+                source={{ uri: constants.BASE_URL + image }}
                 className="w-40 h-40 rounded-lg mb-4"
               />
               <TouchableOpacity
