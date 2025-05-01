@@ -100,8 +100,8 @@ export const icons = {
 export const constants = {
   DEFAULT_LAT: 24.787674373711102,
   DEFAULT_LONG: 84.99152133511204,
-  BASE_URL: "https://uatadmin.multisolutionofneedindia.com",
-  API_URL: "https://uatapi.multisolutionofneedindia.com",
+  BASE_URL: "https://msniassets.rarsolutions.com",
+  API_URL: "https://msniapi.rarsolutions.com",
   DEFAULT_PASSWORD: "MSNI@2025",
   // EXPO_PUBLIC_PLACES_API_KEY: "AIzaSyBJnJ0WfMVeL1erTljsNOROO14OuUC2D1E",
   EXPO_PUBLIC_PLACES_API_KEY: "AIzaSyBhSmc340OCHOV1eHAWfH7KqVsMBvFO4mE",
