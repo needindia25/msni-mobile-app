@@ -54,17 +54,18 @@ const SignIn = () => {
     setVerificationModal(true);
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (enterdOTP: string) => {
     setLoading(true);
     setVerificationModal(false);
     try {
-      const response = await fetch(`${constants.API_URL}/auth/login/`, {
+      const response = await fetch(`${constants.API_URL}/otp/verify/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password: constants.DEFAULT_PASSWORD }),
+        body: JSON.stringify({ username: username, otp_for: "signin", otp: enterdOTP }),
       });
+      console.log("Response:", response); // Log the response object
       if (response.status === 401) {
         Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"), [
           {
@@ -74,7 +75,6 @@ const SignIn = () => {
         ]);
         return;
       }
-
       if (!response.ok) {
         const errorData = await response.json().catch(() => null); // Handle JSON parsing errors
         const errorMessage = errorData?.detail || t("invalidCredentials");
@@ -87,9 +87,26 @@ const SignIn = () => {
         );
         return;
       }
-
-      const data = await response.json(); // Parse response once confirmed it's valid
-      const { refresh, access, user_info } = data;
+      const response_json = await response.json();
+      if (response_json.hasOwnProperty("error")) {
+        Alert.alert(t("error"), response_json["error"], [
+          {
+            text: t("ok"),
+            onPress: () => { return null },
+          },
+        ]);
+        return;
+      } else if (response_json.hasOwnProperty("warning")) {
+        Alert.alert(t("warning"), response_json["warning"], [
+          {
+            text: t("ok"),
+            onPress: () => { return null },
+          },
+        ]);
+        return;
+      }
+      console.log("Data:", response_json); // Log the parsed data
+      const { refresh, access, user_info } = response_json;
 
       if (!refresh || !access || !user_info) {
         Alert.alert(t("error"), t("unexpectedResponse"),
@@ -149,8 +166,9 @@ const SignIn = () => {
           <>
             {showVerificationModal ? (
               <VerificationUsingOTP
-                onPress={handleLogin}
+                onPress={(enteredOtp) => handleLogin(enteredOtp)}
                 onBack={() => setVerificationModal(false)}
+                optFor="signin"
                 number={username}
               />
             ) : (

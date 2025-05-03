@@ -365,6 +365,7 @@ const hi = {
         warning: "चेतावनी",
         cannotDeleteDeactivateInstead: "कुछ उपयोगकर्ता गतिविधि का पता चला है, इसलिए इसे हटाया नहीं जा सकता। इसके बजाय, आप इसे निष्क्रिय कर सकते हैं।",
         creditBalanceExhausted: "आपकी जमा शेष समाप्त हो गई है।",
+        invalidOrRegisteredMobile: "अमान्य मोबाइल नंबर या मोबाइल पहले से हमारे साथ पंजीकृत है।",
     },
 };
 

@@ -98,11 +98,11 @@ const SignUp = () => {
     setVerificationModal(true);
   };
 
-  const onSignUpPress = async () => {
+  const onSignUpPress = async (enterdOTP: any) => {
     setLoading(true);
     setVerificationModal(false);
     try {
-      const response = await fetch(`${constants.API_URL}/auth/register/`, {
+      const response = await fetch(`${constants.API_URL}/otp/verify/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -114,28 +114,47 @@ const SignUp = () => {
           user_type: form.userType,
           state: form.state,
           district: form.district,
+          otp: enterdOTP,
+          otp_for: "signup",
         }),
       });
       if (response.status === 401) {
-        Alert.alert("Session expired", "Please login again.", [
+        Alert.alert(t("error"), t("somethingWentWrong"), [
           {
             text: "OK",
-            onPress: () => router.push(`/(auth)/sign-in`),
           },
         ]);
         return;
       }
+      console.log("Response:", response); // Log the response object
       if (response.ok) {
-        setShowSuccessModal(true);
-      } else {
-        const errorData = await response.json();
-        Alert.alert(t("error"), errorData.error || t("mobileAlreadyRegistered"),
-          [
+        const response_json = await response.json();
+        if (response_json.hasOwnProperty("error")) {
+          Alert.alert(t("error"), response_json["error"], [
             {
               text: t("ok"),
+              onPress: () => { return null },
             },
-          ]
-        ); // Use translation key
+          ]);
+          return;
+        } else if (response_json.hasOwnProperty("warning")) {
+          Alert.alert(t("warning"), response_json["warning"], [
+            {
+              text: t("ok"),
+              onPress: () => { return null },
+            },
+          ]);
+          return;
+        } else {
+          setShowSuccessModal(true);
+        }
+      } else {
+        Alert.alert(t("error"), t("somethingWentWrong"), [
+          {
+            text: "OK",
+          },
+        ]);
+        return;
       }
     } catch (err) {
       Alert.alert(t("error"), t("errorOccurred"),
@@ -213,6 +232,43 @@ const SignUp = () => {
     value: district.id,
   })) || [];
 
+  const handleMobile = async (value: any) => {
+    value = value.trim();
+    setForm((prev) => ({
+      ...prev,
+      "phone": value,
+    }));
+    if (value.length === 10) {
+      try {
+        const response = await fetchAPI(
+          `${constants.API_URL}/check_user/`, t,
+          {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(
+              {
+                "username": value
+              }
+            )
+          }
+        );
+        if (response === null || response === undefined) {
+          return;
+        }
+      } catch (error) {
+        Alert.alert(t("error"), t("invalidOrRegisteredMobile"),
+          [
+            {
+              text: t("ok"),
+            },
+          ]
+        );
+      }
+    }
+  }
+
   return (
     <ScrollView className="flex-1 bg-white">
       <View className="flex-1 bg-white">
@@ -228,8 +284,9 @@ const SignUp = () => {
           <>
             {showVerificationModal ? (
               <VerificationUsingOTP
-                onPress={onSignUpPress}
+                onPress={(enterdOTP) => { onSignUpPress(enterdOTP); }}
                 onBack={() => setVerificationModal(false)}
+                optFor="sign-up"
                 number={form.phone}
               />
             ) : (
@@ -258,7 +315,7 @@ const SignUp = () => {
                     keyboardType="phone-pad"
                     textContentType="none"
                     value={form.phone}
-                    onChangeText={(value) => setForm({ ...form, phone: value })}
+                    onChangeText={(value) => handleMobile(value)}
                     inputRef={phoneInputRef}
                   />
                   <View>

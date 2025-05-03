@@ -1,17 +1,20 @@
-import { icons } from '@/constants';
+import { constants, icons } from '@/constants';
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, Image, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
+import { fetchAPI } from '@/lib/fetch';
 
 interface VerificationUsingOTPProps {
-    onPress: () => void;
+    onPress: (enterdOTP: string) => void;
     onBack: () => void;
+    optFor: string;
     number: string;
 }
 
 const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
     onPress,
     onBack,
+    optFor,
     number,
 }) => {
     const { t } = useTranslation(); // Initialize translation hook
@@ -21,6 +24,7 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
     const [generatedOtp, setGeneratedOtp] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const inputRefs = useRef<(TextInput | null)[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -31,10 +35,29 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
 
     useEffect(() => {
         const fetchOtp = async () => {
-           // const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
-            const randomOtp = '123456';
-            setGeneratedOtp(randomOtp);
-           // Alert.alert(t("generatedOtp"), randomOtp); // Use translation key
+            //    // const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
+            //     const randomOtp = '123456';
+            //     setGeneratedOtp(randomOtp);
+            //    // Alert.alert(t("generatedOtp"), randomOtp); // Use translation key
+            const response = await fetchAPI(
+                `${constants.API_URL}/otp/generate/`, t,
+                {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(
+                        {
+                            "username": number,
+                            "otp_for": optFor
+                        }
+                    )
+                }
+            );
+            if (response === null || response === undefined) {
+                return;
+            }
+            setLoading(false);
         };
         fetchOtp();
     }, []);
@@ -49,25 +72,45 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
         }
     };
 
-    const handleResendCode = () => {
+    const handleResendCode = async () => {
         // Logic to resend the OTP code
+        // // const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        // const randomOtp = '123456';
+        // setGeneratedOtp(randomOtp);
+        // Alert.alert(t("generatedOtp")); // Use translation key
+
+        setLoading(true);
+        const response = await fetchAPI(
+            `${constants.API_URL}/otp/resend/`, t,
+            {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(
+                    {
+                        "username": number,
+                        "otp_for": optFor
+                    }
+                )
+            }
+        );
+        if (response === null || response === undefined) {
+            return;
+        }
         setTimeRemaining(59);
-       // const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
-       const randomOtp = '123456';
-       setGeneratedOtp(randomOtp);
-        Alert.alert(t("generatedOtp")); // Use translation key
         setErrorMessage('');
+        setLoading(false);
     };
 
     const handleVerify = () => {
         // Logic to verify the OTP code
         const enteredOtp = otp.join('');
-        if (enteredOtp === generatedOtp) {
-            onPress();
-        } else {
-            setOtp(Array(OTP_LENGTH).fill(""));
+        if (enteredOtp.length < OTP_LENGTH) {
             setErrorMessage(t("invalidOtp")); // Use translation key
+            return;
         }
+        onPress(enteredOtp);
     };
 
     const handleKeyPress = (index: number, event: any) => {
@@ -78,48 +121,57 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
 
     return (
         <View className="flex-1 justify-center items-center bg-white p-5">
-            <View className="flex-row w-full items-center justify-center mb-5">
-                <TouchableOpacity
-                    onPress={onBack}
-                    className="absolute left-0 top-0 p-5 mt-[-12px]"
-                >
-                    <Image
-                        source={icons.backArrow}
-                        resizeMode="contain"
-                        className={`w-6 h-6`}
-                    />
-                </TouchableOpacity>
-                <Text className="text-2xl font-bold mb-2">{t("verifyNumber")}</Text> {/* Use translation key */}
-            </View>
-            <Text className="text-gray-500 mb-5">{t("enterVerificationCode")}</Text> {/* Use translation key */}
-            <Text className="text-black font-bold mb-5">+91 {number}</Text>
-            <View className="flex-row justify-center mb-5">
-                {otp.map((digit, index) => (
-                    <TextInput
-                        key={index}
-                        ref={(ref) => (inputRefs.current[index] = ref)}
-                        value={digit}
-                        onChangeText={(value) => handleOtpChange(index, value)}
-                        onKeyPress={(event) => handleKeyPress(index, event)}
-                        maxLength={1}
-                        keyboardType="numeric"
-                        className="w-12 h-12 border border-gray-300 rounded-lg text-center text-2xl mx-1"
-                    />
-                ))}
-            </View>
-            {errorMessage ? (
-                <Text className="text-red-500 mb-2">{errorMessage}</Text>
-            ) : null}
-            <Text className="text-gray-500 mb-2">
-                {t("timeRemaining")}: 00:{timeRemaining < 10 ? `0${timeRemaining}` : timeRemaining} {/* Use translation key */}
-            </Text>
-            <TouchableOpacity onPress={handleResendCode}>
-                <Text className="text-blue-500 font-bold">{t("resendCode")}</Text> {/* Use translation key */}
-            </TouchableOpacity>
-            {otp.every((digit) => digit) && (
-                <TouchableOpacity onPress={handleVerify} className="bg-green-500 rounded-lg p-3 mt-5 w-full">
-                    <Text className="text-white text-center font-bold">{t("verify")}</Text> {/* Use translation key */}
-                </TouchableOpacity>
+            {loading ? (
+                <View className="flex-1 justify-center mt-[60%] items-center">
+                    <ActivityIndicator size="large" color="#00ff00" />
+                    <Text className="mt-2 text-xl">{t("loading")}</Text> {/* Use translation key */}
+                </View>
+            ) : (
+                <>
+                    <View className="flex-row w-full items-center justify-center mb-5">
+                        <TouchableOpacity
+                            onPress={onBack}
+                            className="absolute left-0 top-0 p-5 mt-[-12px]"
+                        >
+                            <Image
+                                source={icons.backArrow}
+                                resizeMode="contain"
+                                className={`w-6 h-6`}
+                            />
+                        </TouchableOpacity>
+                        <Text className="text-2xl font-bold mb-2">{t("verifyNumber")}</Text> {/* Use translation key */}
+                    </View>
+                    <Text className="text-gray-500 mb-5">{t("enterVerificationCode")}</Text> {/* Use translation key */}
+                    <Text className="text-black font-bold mb-5">+91 {number}</Text>
+                    <View className="flex-row justify-center mb-5">
+                        {otp.map((digit, index) => (
+                            <TextInput
+                                key={index}
+                                ref={(ref) => (inputRefs.current[index] = ref)}
+                                value={digit}
+                                onChangeText={(value) => handleOtpChange(index, value)}
+                                onKeyPress={(event) => handleKeyPress(index, event)}
+                                maxLength={1}
+                                keyboardType="numeric"
+                                className="w-12 h-12 border border-gray-300 rounded-lg text-center text-2xl mx-1"
+                            />
+                        ))}
+                    </View>
+                    {errorMessage ? (
+                        <Text className="text-red-500 mb-2">{errorMessage}</Text>
+                    ) : null}
+                    <Text className="text-gray-500 mb-2">
+                        {t("timeRemaining")}: 00:{timeRemaining < 10 ? `0${timeRemaining}` : timeRemaining} {/* Use translation key */}
+                    </Text>
+                    <TouchableOpacity onPress={handleResendCode}>
+                        <Text className="text-blue-500 font-bold">{t("resendCode")}</Text> {/* Use translation key */}
+                    </TouchableOpacity>
+                    {otp.every((digit) => digit) && (
+                        <TouchableOpacity onPress={handleVerify} className="bg-green-500 rounded-lg p-3 mt-5 w-full">
+                            <Text className="text-white text-center font-bold">{t("verify")}</Text> {/* Use translation key */}
+                        </TouchableOpacity>
+                    )}
+                </>
             )}
         </View>
     );

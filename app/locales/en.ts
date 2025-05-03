@@ -364,6 +364,7 @@ const en = {
         warning: "Warning",
         cannotDeleteDeactivateInstead: "Some user activity detected, hence can not delete it. Instead, you can deactivate it.",
         creditBalanceExhausted: "Your credit balance has been exhausted.",
+        invalidOrRegisteredMobile: "Invalid Mobile number or mobile already registered with us.",
     },
 };
 
