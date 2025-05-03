@@ -101,7 +101,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
             // const mobile = userInfo?.email.split("@")[0];
             SabPaisaSDK.openSabpaisaSDK(
-                [price.toString(), userInfo?.full_name, "", userInfo?.username, transaction_code, userInfo?.email, ],
+                [price.toString(), userInfo?.full_name, "", userInfo?.username, transaction_code, "payment@msni.in", ],
                 async (error: any, message: string, clientTxnId: string) => {
                     if (clientTxnId) {
                         try {

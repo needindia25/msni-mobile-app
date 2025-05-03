@@ -54,10 +54,11 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
                     )
                 }
             );
+            setLoading(false);
             if (response === null || response === undefined) {
+                onBack();
                 return;
             }
-            setLoading(false);
         };
         fetchOtp();
     }, []);

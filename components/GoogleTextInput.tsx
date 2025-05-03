@@ -39,42 +39,42 @@ const GoogleTextInput = ({
     longitudeDelta: 0.00275,
   });
 
-  async function requestPermissions() {
-    try {
-      const granted = await PermissionsAndroid.requestMultiple([
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
-      ]);
+  // async function requestPermissions() {
+  //   try {
+  //     const granted = await PermissionsAndroid.requestMultiple([
+  //       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+  //       PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+  //     ]);
 
-      if (
-        granted[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION] === PermissionsAndroid.RESULTS.GRANTED &&
-        granted[PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION] === PermissionsAndroid.RESULTS.GRANTED
-      ) {
-        console.log("Location permissions granted");
-      } else {
-        Alert.alert(t("error"), t("locationPermissionsDenied"),
-          [
-            {
-              text: t("ok"),
-            },
-          ]
-        );
-        return;
-      }
-    } catch (err) {
-      Alert.alert(t("error"), t("errorRequestingPermissions"),
-        [
-          {
-            text: t("ok"),
-          },
-        ]
-      );
-      return;
-    }
-  }
-  useEffect(() => {
-    requestPermissions();
-  }, []);
+  //     if (
+  //       granted[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION] === PermissionsAndroid.RESULTS.GRANTED &&
+  //       granted[PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION] === PermissionsAndroid.RESULTS.GRANTED
+  //     ) {
+  //       console.log("Location permissions granted");
+  //     } else {
+  //       Alert.alert(t("error"), t("locationPermissionsDenied"),
+  //         [
+  //           {
+  //             text: t("ok"),
+  //           },
+  //         ]
+  //       );
+  //       return;
+  //     }
+  //   } catch (err) {
+  //     Alert.alert(t("error"), t("errorRequestingPermissions"),
+  //       [
+  //         {
+  //           text: t("ok"),
+  //         },
+  //       ]
+  //     );
+  //     return;
+  //   }
+  // }
+  // useEffect(() => {
+  //   requestPermissions();
+  // }, []);
 
   const getAddressFromCoordinates = async (latitude: number, longitude: number) => {
     try {
