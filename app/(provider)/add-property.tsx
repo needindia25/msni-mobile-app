@@ -1,18 +1,20 @@
-import CustomDropdown from "@/components/CustomDropdown";
-import CustomTextarea from "@/components/CustomTextarea";
-import { constants, icons } from "@/constants";
-import { fetchAPI } from "@/lib/fetch";
-import { DropdownProps, UserInfo } from "@/types/type";
+
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, SafeAreaView, ActivityIndicator, Alert, KeyboardAvoidingView, FlatList, Platform, Image, ScrollView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
+
+import { constants, icons } from "@/constants";
+import { fetchAPI } from "@/lib/fetch";
+import { DropdownProps, UserInfo } from "@/types/type";
+
+import CustomDropdown from "@/components/CustomDropdown";
+import CustomTextarea from "@/components/CustomTextarea";
 import CustomMultiDropdown from "@/components/CustomMultiDropdown";
 import ImagePickerComponent from "@/components/ImagePicker";
 import GoogleTextInput from "@/components/GoogleTextInput";
-
 import { getStaticData } from "@/constants/staticData";
-import { useTranslation } from "react-i18next";
 
 
 const MultiStepForm = () => {
@@ -343,6 +345,8 @@ const MultiStepForm = () => {
           service_id: 1
         }),
       });
+      console.log("response", response)
+      setBtnLoading(false);
       if (response === null || response === undefined) {
         return;
       }

@@ -92,7 +92,10 @@ const SignIn = () => {
         Alert.alert(t("error"), response_json["error"], [
           {
             text: t("ok"),
-            onPress: () => { return null },
+            onPress: () => {
+              setVerificationModal(true);
+              setLoading(false);
+            },
           },
         ]);
         return;
@@ -100,7 +103,10 @@ const SignIn = () => {
         Alert.alert(t("warning"), response_json["warning"], [
           {
             text: t("ok"),
-            onPress: () => { return null },
+            onPress: () => {
+              setVerificationModal(true);
+              setLoading(false);
+            },
           },
         ]);
         return;
@@ -146,7 +152,6 @@ const SignIn = () => {
           },
         ]
       );
-    } finally {
       setLoading(false);
     }
   };

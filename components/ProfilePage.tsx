@@ -125,7 +125,7 @@ const ProfilePage = () => {
         const fetchSubscriptions = async () => {
             try {
                 const response = await getUserPlan();
-                
+
                 console.log("fetchSubscriptions response ", response)
                 if (response === null) {
                     return;
@@ -334,9 +334,82 @@ const ProfilePage = () => {
                         ))}
                     </View>
 
+                    <View className="items-center bg-red-100 rounded-2xl p-5 my-6 shadow-sm">
+                        <View className="flex-row justify-center my-6">
+                            <TouchableOpacity
+                                className="bg-red-500 px-8 py-3 rounded-full shadow-md"
+                                onPress={() => {
+                                    Alert.alert(
+                                        t("warning"),
+                                        t("deleteAccountConfirmation") + " " + t("accountDeletionNote"),
+                                        [
+                                            {
+                                                text: t("cancel"),
+                                                style: "cancel",
+                                            },
+                                            {
+                                                text: t("ok"),
+                                                style: "destructive",
+                                                onPress: async () => {
+                                                    try {
+                                                        const token = await AsyncStorage.getItem("token");
+                                                        if (!token) {
+                                                            Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"), [
+                                                                {
+                                                                    text: t("ok"),
+                                                                    onPress: () => router.replace("/(auth)/sign-in"),
+                                                                },
+                                                            ]);
+                                                            return;
+                                                        }
+
+                                                        const response = await fetchAPI(
+                                                            `${constants.API_URL}/user/account_delete_request/`,
+                                                            t,
+                                                            {
+                                                                method: "get",
+                                                                headers: {
+                                                                    "Content-Type": "application/json",
+                                                                    Authorization: `Bearer ${token}`,
+                                                                },
+                                                            }
+                                                        );
+                                                        if (response === null || response === undefined) {
+                                                            return;
+                                                        }
+
+                                                        Alert.alert(
+                                                            t("success"),
+                                                            t("accountDeletionMessage"),
+                                                            [
+                                                                {
+                                                                    text: t("ok"),
+                                                                    onPress: () => router.replace("/(auth)/sign-in"),
+                                                                },
+                                                            ]
+                                                        );
+                                                    } catch (error) {
+                                                        console.error("Error deleting account:", error);
+                                                        Alert.alert(t("error"), t("somethingWentWrong"));
+                                                    }
+                                                },
+                                            },
+                                        ]
+                                    );
+                                }}
+                            >
+                                <Text className="text-white text-lg font-bold">{t("deleteAccount")}</Text>
+                            </TouchableOpacity>
+                        </View>
+                        {/* <View className="flex-row justify-center mb-6">
+                            <Text className="text-gray-600 text-center mt-3">
+                                {t("accountDeletionNote")}
+                            </Text>
+                        </View> */}
+                    </View>
                 </ScrollView>
             )}
-        </SafeAreaView>
+        </SafeAreaView> 
 
     );
 };

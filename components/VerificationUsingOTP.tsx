@@ -21,8 +21,7 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
     const OTP_LENGTH = 6; // Adjust OTP length as needed
     const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
     const [timeRemaining, setTimeRemaining] = useState(59);
-    const [generatedOtp, setGeneratedOtp] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState("");
     const inputRefs = useRef<(TextInput | null)[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -35,10 +34,7 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
 
     useEffect(() => {
         const fetchOtp = async () => {
-            //    // const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
-            //     const randomOtp = '123456';
-            //     setGeneratedOtp(randomOtp);
-            //    // Alert.alert(t("generatedOtp"), randomOtp); // Use translation key
+            setLoading(true);
             const response = await fetchAPI(
                 `${constants.API_URL}/otp/generate/`, t,
                 {
@@ -59,6 +55,10 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
                 onBack();
                 return;
             }
+            setTimeRemaining(59);
+            setErrorMessage('');
+
+            inputRefs.current[0]?.focus();
         };
         fetchOtp();
     }, []);
@@ -71,15 +71,14 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
         if (value && index < OTP_LENGTH - 1) {
             inputRefs.current[index + 1]?.focus();
         }
+
+        // Hide the keyboard when all OTP digits are entered
+        if (index === OTP_LENGTH - 1 && value) {
+            inputRefs.current[index]?.blur();
+        }
     };
 
     const handleResendCode = async () => {
-        // Logic to resend the OTP code
-        // // const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
-        // const randomOtp = '123456';
-        // setGeneratedOtp(randomOtp);
-        // Alert.alert(t("generatedOtp")); // Use translation key
-
         setLoading(true);
         const response = await fetchAPI(
             `${constants.API_URL}/otp/resend/`, t,
@@ -96,20 +95,19 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
                 )
             }
         );
+        setLoading(false);
         if (response === null || response === undefined) {
             return;
         }
         setTimeRemaining(59);
         setErrorMessage('');
-        setLoading(false);
+        inputRefs.current[0]?.focus();
     };
 
     const handleVerify = () => {
-        // Logic to verify the OTP code
         const enteredOtp = otp.join('');
         if (enteredOtp.length < OTP_LENGTH) {
-            setErrorMessage(t("invalidOtp")); // Use translation key
-            return;
+            setErrorMessage(t("invalidOtp"));
         }
         onPress(enteredOtp);
     };
@@ -161,12 +159,16 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
                     {errorMessage ? (
                         <Text className="text-red-500 mb-2">{errorMessage}</Text>
                     ) : null}
-                    <Text className="text-gray-500 mb-2">
-                        {t("timeRemaining")}: 00:{timeRemaining < 10 ? `0${timeRemaining}` : timeRemaining} {/* Use translation key */}
-                    </Text>
-                    <TouchableOpacity onPress={handleResendCode}>
-                        <Text className="text-blue-500 font-bold">{t("resendCode")}</Text> {/* Use translation key */}
-                    </TouchableOpacity>
+                    {timeRemaining > 0 && (
+                        <Text className="text-gray-500 mb-2">
+                            {t("timeRemaining")}: 00:{timeRemaining < 10 ? `0${timeRemaining}` : timeRemaining} {/* Use translation key */}
+                        </Text>
+                    )}
+                    {timeRemaining === 0 && (
+                        <TouchableOpacity onPress={handleResendCode}>
+                            <Text className="text-blue-500 font-bold">{t("resendCode")}</Text> {/* Use translation key */}
+                        </TouchableOpacity>
+                    )}
                     {otp.every((digit) => digit) && (
                         <TouchableOpacity onPress={handleVerify} className="bg-green-500 rounded-lg p-3 mt-5 w-full">
                             <Text className="text-white text-center font-bold">{t("verify")}</Text> {/* Use translation key */}

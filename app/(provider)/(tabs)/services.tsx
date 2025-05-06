@@ -63,7 +63,7 @@ const Services = () => {
           },
         });
         if (response === null || response === undefined) {
-            return;
+          return;
         }
         setListings(transformData(response));
       }
@@ -89,6 +89,58 @@ const Services = () => {
       status: property.is_active,
     }));
   };
+
+  const handleAddPropert = async () => {
+    const token = await AsyncStorage.getItem('token');
+    if (!token) {
+      Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+        [
+          {
+            text: t("ok"),
+            onPress: () => {
+              router.replace("/(auth)/sign-in");
+            },
+          },
+        ]
+      );
+      return;
+    }
+    const response = await fetchAPI(
+      `${constants.API_URL}/user/plan/`,
+      t,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      }
+    );
+    if (response === null || response === undefined) {
+      return;
+    }
+    const plans = response.map((item: any) => ({
+      id: item.id,
+      subscription_id: item.subscription_id,
+      planName: item.title,
+      price: item.amount,
+      description: item.descriptions,
+      period: item.period,
+      credits: item.credits,
+      used: item.used,
+    })) || [];
+
+    if (plans.length === 0 || plans[0].credits <= plans[0].used) {
+      Alert.alert(t("error"), t("invalidPlanToCreateService"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      );
+      return
+    }
+    router.push('/add-property')
+  }
 
   return (
     <>
@@ -155,7 +207,7 @@ const Services = () => {
                 </Text>
                 <TouchableOpacity
                   className="bg-green-500 py-3 px-10 rounded-full mb-5"
-                  onPress={() => router.push('/add-property')}
+                  onPress={() => handleAddPropert()}
                 >
                   <Text className="text-white text-lg font-bold">{t("addNewProperty")}</Text>
                 </TouchableOpacity>

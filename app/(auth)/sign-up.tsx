@@ -1,6 +1,6 @@
 import { Link, router } from "expo-router";
 import { useState, useEffect, useRef } from "react";
-import { Alert, ActivityIndicator, Image, ScrollView, Text, View, TextInput } from "react-native";
+import { Alert, ActivityIndicator, Image, ScrollView, Text, View, TextInput, Linking, TouchableOpacity } from "react-native";
 import { ReactNativeModal } from "react-native-modal";
 import { Dropdown } from "react-native-element-dropdown";
 
@@ -17,7 +17,8 @@ const SignUp = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showVerificationModal, setVerificationModal] = useState(false);
   const [loading, setLoading] = useState(true);
-
+  const [agreedToTerms, setAgreedToTerms] = useState(false); // State to track if the user has agreed to terms and conditions
+  
   const nameInputRef = useRef<TextInput | null>(null);
   const phoneInputRef = useRef<TextInput | null>(null);
 
@@ -95,6 +96,14 @@ const SignUp = () => {
     if (!validateForm()) {
       return;
     }
+    if (!agreedToTerms) {
+      Alert.alert(t("error"), t("agreeToTermsRequired"), [
+        {
+          text: t("ok"),
+        },
+      ]);
+      return;
+    }
     setVerificationModal(true);
   };
 
@@ -133,7 +142,10 @@ const SignUp = () => {
           Alert.alert(t("error"), response_json["error"], [
             {
               text: t("ok"),
-              onPress: () => { return null },
+              onPress: () => {
+                setVerificationModal(true);
+                setLoading(false);
+              },
             },
           ]);
           return;
@@ -141,12 +153,16 @@ const SignUp = () => {
           Alert.alert(t("warning"), response_json["warning"], [
             {
               text: t("ok"),
-              onPress: () => { return null },
+              onPress: () => {
+                setVerificationModal(true);
+                setLoading(false);
+              },
             },
           ]);
           return;
         } else {
           setShowSuccessModal(true);
+          setLoading(false);
         }
       } else {
         Alert.alert(t("error"), t("somethingWentWrong"), [
@@ -163,9 +179,8 @@ const SignUp = () => {
             text: t("ok"),
           },
         ]
-      ); // Use translation key
-    } finally {
-      setLoading(false);
+      );
+      setLoading(false);      
     }
   };
 
@@ -254,8 +269,23 @@ const SignUp = () => {
             )
           }
         );
+        console.log(response)
         if (response === null || response === undefined) {
           return;
+        }
+        let success = true;
+        if (response.hasOwnProperty("success")) {
+          success = response["success"];
+        }
+        if (!success) {
+          Alert.alert(t("error"), response["message"],
+            [
+              {
+                text: t("ok"),
+              },
+            ]
+          );
+          return
         }
       } catch (error) {
         Alert.alert(t("error"), t("invalidOrRegisteredMobile"),
@@ -368,6 +398,58 @@ const SignUp = () => {
                       }}
                       disable={!form.state}
                     />
+                  </View>
+                  <View className="mt-4">
+                    <Text className="text-lg mb-2">{t("termsAndPolicyAgreement")}</Text> {/* Add label for the checkbox */}
+                    <View className="flex-row items-center">
+                      <TouchableOpacity
+                        onPress={() => setAgreedToTerms(!agreedToTerms)}
+                        className="mr-2"
+                      >
+                        <View
+                          className={`w-6 h-6 border-2 rounded-md ${agreedToTerms ? "bg-blue-500 border-blue-500" : "border-gray-400"
+                            } flex items-center justify-center`}
+                        >
+                          {agreedToTerms && (
+                            <Text className="text-white text-center font-bold">✓</Text>
+                          )}
+                        </View>
+                      </TouchableOpacity>
+                      <Text className="text-gray-600">
+                        {t("iAgreeTo")}{" "}
+                        <Text
+                          className="text-blue-500 underline"
+                          onPress={() => {
+                            const url = "https://www.multisolutionofneedindia.com/terms-condition";
+                            Linking.canOpenURL(url).then((supported) => {
+                              if (supported) {
+                                Linking.openURL(url);
+                              } else {
+                                Alert.alert(t("error"), t("unableToOpenLink"));
+                              }
+                            });
+                          }}
+                        >
+                          {t("termsAndConditions")}
+                        </Text>{" "}
+                        {t("and")}{" "}
+                        <Text
+                          className="text-blue-500 underline"
+                          onPress={() => {
+                            const url = "https://www.multisolutionofneedindia.com/privacy-policy";
+                            Linking.canOpenURL(url).then((supported) => {
+                              if (supported) {
+                                Linking.openURL(url);
+                              } else {
+                                Alert.alert(t("error"), t("unableToOpenLink"));
+                              }
+                            });
+                          }}
+                        >
+                          {t("privacyPolicy")}
+                        </Text>
+                      </Text>
+                    </View>
                   </View>
                   <CustomButton
                     title={t("signUp")} // Use translation key
