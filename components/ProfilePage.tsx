@@ -109,7 +109,6 @@ const ProfilePage = () => {
                                     parsedUserInfo.has_subscription = true;
                                     await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
                                 }
-                                router.push('/(seeker)/(tabs)/home');
                             }
                             else if (role === 2) {
                                 if (parsedUserInfo.has_subscription == true || parsedUserInfo.has_subscription_initial == true) {
@@ -124,8 +123,8 @@ const ProfilePage = () => {
                                         await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
                                     }
                                 }
-                                router.push('/(provider)/(tabs)/home');
                             }
+                            router.push('/welcome-page');
                             setUserInfo(parsedUserInfo);
                         }
                     },

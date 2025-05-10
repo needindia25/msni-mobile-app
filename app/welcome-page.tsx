@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, Alert, SafeAreaView } from 'react-native';
+import { View, Text, Image, ScrollView, Alert, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
-import { constants, icons, images } from "@/constants";
+import { images } from "@/constants";
 import { UserInfo } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTranslation } from 'react-i18next'; // Import useTranslation
-import { fetchAPI } from '@/lib/fetch';
+import { useTranslation } from 'react-i18next';
 import CustomButton from '@/components/CustomButton';
 
 const WelcomePage = () => {
-    const { t } = useTranslation(); // Initialize translation hook
+    const { t } = useTranslation();
     const router = useRouter();
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
@@ -24,26 +23,24 @@ const WelcomePage = () => {
     }, []);
 
     const handleNext = async () => {
-        router.replace("/no-subscription");
-        return;
-        // if (userInfo) {
-        //     if (userInfo.has_subscription) {
-        //         router.replace(userInfo.user_type_id === 1 ? "/(seeker)/(tabs)/home" : "/(provider)/(tabs)/home");
-        //     } else {
-        //         router.replace("/no-subscription");
-        //     }
-        // } else {
-        //     Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-        //         [
-        //             {
-        //                 text: t("ok"),
-        //                 onPress: () => {
-        //                     router.replace("/(auth)/sign-in");
-        //                 },
-        //             },
-        //         ]
-        //     );
-        // }
+        if (userInfo) {
+            if (userInfo.has_subscription) {
+                router.replace(userInfo.user_type_id === 1 ? "/(seeker)/(tabs)/home" : "/(provider)/(tabs)/home");
+            } else {
+                router.replace("/no-subscription");
+            }
+        } else {
+            Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                [
+                    {
+                        text: t("ok"),
+                        onPress: () => {
+                            router.replace("/(auth)/sign-in");
+                        },
+                    },
+                ]
+            );
+        }
     }
 
     return (

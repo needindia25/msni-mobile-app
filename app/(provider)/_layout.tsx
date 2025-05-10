@@ -14,6 +14,8 @@ const Layout = () => {
           onPress={() => {
             if (router.canGoBack()) {
               router.back();
+            } else {
+              router.replace("/welcome-page");
             }
           }}
           className="p-5"
