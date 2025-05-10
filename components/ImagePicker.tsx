@@ -185,14 +185,14 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
           className="bg-blue-500 p-3 rounded-lg mr-3"
           onPress={() => handleImagePick('camera')}
         >
-          <Text className="text-white font-bold">{t("useCamera")}</Text> {/* Use translation key */}
+          <Text className="text-white font-bold">{t("useCamera")}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           className="bg-green-500 p-3 rounded-lg"
           onPress={() => handleImagePick('gallery')}
         >
-          <Text className="text-white font-bold">{t("selectFromGallery")}</Text> {/* Use translation key */}
+          <Text className="text-white font-bold">{t("selectFromGallery")}</Text>
         </TouchableOpacity>
       </View>
     </View>

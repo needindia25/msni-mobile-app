@@ -308,7 +308,7 @@ const SignUp = () => {
         {loading ? (
           <View className="flex-1 justify-center mt-[60%] items-center">
             <ActivityIndicator size="large" color="#00ff00" />
-            <Text className="mt-2 text-xl">{t("loading")}</Text> {/* Use translation key */}
+            <Text className="mt-2 text-xl">{t("loading")}</Text>
           </View>
         ) : (
           <>
@@ -323,10 +323,10 @@ const SignUp = () => {
               <>
                 <View className="relative w-full h-[65px]">
                   <Text className="text-2xl text-black font-JakartaSemiBold absolute bottom-5 left-5">
-                    {t("welcome")} {/* Use translation key */}
+                    {t("welcome")}
                   </Text>
                   <Text className="text-1xl text-black font-JakartaSemiBold absolute bottom-0 left-5">
-                    {t("createAccountToGetStarted")} {/* Use translation key */}
+                    {t("createAccountToGetStarted")}
                   </Text>
                 </View>
                 <View className="p-5">
@@ -349,7 +349,7 @@ const SignUp = () => {
                     inputRef={phoneInputRef}
                   />
                   <View>
-                    <Text className="text-lg mb-2">{t("userTypeLabel")}</Text> {/* Use translation key */}
+                    <Text className="text-lg mb-2">{t("userTypeLabel")}</Text>
                     <CustomRadioGroup
                       options={[
                         { label: t("seeker"), value: "1" }, // Use translation key
@@ -361,7 +361,7 @@ const SignUp = () => {
                     />
                   </View>
                   <View className="mt-4">
-                    <Text className="text-lg mb-2">{t("stateLabel")}</Text> {/* Use translation key */}
+                    <Text className="text-lg mb-2">{t("stateLabel")}</Text>
                     <Dropdown
                       data={stateOptions}
                       labelField="label"
@@ -380,7 +380,7 @@ const SignUp = () => {
                     />
                   </View>
                   <View className="mt-4">
-                    <Text className="text-lg mb-2">{t("districtLabel")}</Text> {/* Use translation key */}
+                    <Text className="text-lg mb-2">{t("districtLabel")}</Text>
                     <Dropdown
                       data={districtOptions}
                       labelField="label"
@@ -461,7 +461,7 @@ const SignUp = () => {
                     className="text-lg text-center text-general-200 mt-10"
                   >
                     {t("alreadyHaveAccount")}{" "}
-                    <Text className="text-blue-500">{t("signIn")}</Text> {/* Use translation key */}
+                    <Text className="text-blue-500">{t("signIn")}</Text>
                   </Link>
                 </View>
                 <ReactNativeModal isVisible={showSuccessModal}>
@@ -471,10 +471,10 @@ const SignUp = () => {
                       className="w-[110px] h-[110px] mx-auto my-5"
                     />
                     <Text className="text-3xl font-JakartaBold text-center">
-                      {t("registrationSuccessful")} {/* Use translation key */}
+                      {t("registrationSuccessful")}
                     </Text>
                     <Text className="text-base text-gray-400 font-Jakarta text-center mt-2">
-                      {t("registrationMessage")} {/* Use translation key */}
+                      {t("registrationMessage")}
                     </Text>
                     <CustomButton
                       title={t("loginToContinue")} // Use translation key

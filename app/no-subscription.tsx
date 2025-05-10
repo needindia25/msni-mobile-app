@@ -59,13 +59,13 @@ const NoSubscription = () => {
                 }
                 await AsyncStorage.setItem('user_info', JSON.stringify(response));
                 setUserInfo(response)
-                if (response && response.has_subscription) {
-                    if (response.user_type_id === 1) {
-                        return router.replace("/(seeker)/(tabs)/home");
-                    } else {
-                        return router.replace("/(provider)/(tabs)/home");
-                    }
-                }
+                // if (response && response.has_subscription) {
+                //     if (response.user_type_id === 1) {
+                //         return router.replace("/(seeker)/(tabs)/home");
+                //     } else {
+                //         return router.replace("/(provider)/(tabs)/home");
+                //     }
+                // }
             }
         };
         checkAuth();
@@ -84,20 +84,20 @@ const NoSubscription = () => {
                             className="w-12 h-12"
                         />
                     </View>
-                    <Text className="text-xl font-bold text-black mb-2">{t("noActiveSubscription")}</Text> {/* Use translation key */}
+                    <Text className="text-xl font-bold text-black mb-2">{t("noActiveSubscription")}</Text>
                     <Text className="text-base text-gray-600 text-center mb-10">
-                        {t("noSubscriptionMessage")} {/* Use translation key */}
+                        {t("noSubscriptionMessage")}
                     </Text>
                     <TouchableOpacity
                         className="bg-green-500 py-3 px-10 rounded-full mb-5"
                         onPress={() => router.push("../choose-subscription")}
                     >
-                        <Text className="text-white text-lg font-bold">{t("subscribeNow")}</Text> {/* Use translation key */}
+                        <Text className="text-white text-lg font-bold">{t("subscribeNow")}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => userInfo?.user_type_id === 1 ? router.push('/(seeker)/(tabs)/home') : router.push('/(provider)/(tabs)/home')}
                     >
-                        <Text className="text-lg text-black">{t("subscribeLater")}</Text> {/* Use translation key */}
+                        <Text className="text-lg text-black">{t("subscribeLater")}</Text>
                     </TouchableOpacity>
                 </View>
             </View>

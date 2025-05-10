@@ -139,11 +139,12 @@ const SignIn = () => {
       ]);
 
       // Navigate based on user type and subscription
-      if (user_info.has_subscription) {
-        router.replace(user_info.user_type_id === 1 ? "/(seeker)/(tabs)/home" : "/(provider)/(tabs)/home");
-      } else {
-        router.replace("/no-subscription");
-      }
+      // if (user_info.has_subscription) {
+      //   router.replace(user_info.user_type_id === 1 ? "/(seeker)/(tabs)/home" : "/(provider)/(tabs)/home");
+      // } else {
+      //   router.replace("/no-subscription");
+      // }
+      router.replace("/welcome-page");
     } catch (err) {
       Alert.alert(t("error"), t("loginFailed"),
         [
@@ -165,7 +166,7 @@ const SignIn = () => {
         {loading ? (
           <View className="flex-1 justify-center mt-[60%] items-center">
             <ActivityIndicator size="large" color="#00ff00" />
-            <Text className="mt-2 text-xl">{t("loading")}</Text> {/* Use translation key */}
+            <Text className="mt-2 text-xl">{t("loading")}</Text>
           </View>
         ) : (
           <>
@@ -180,7 +181,7 @@ const SignIn = () => {
               <>
                 <View className="w-full mt-5">
                   <Text className="text-2xl text-black font-JakartaSemiBold bottom-2 left-5">
-                    {t("welcome")} {/* Use translation key */}
+                    {t("welcome")}
                   </Text>
                 </View>
 
@@ -204,7 +205,7 @@ const SignIn = () => {
                     className="text-lg text-center text-general-200 mt-10"
                   >
                     {t("noAccount")}{" "}
-                    <Text className="text-blue-500">{t("signUp")}</Text> {/* Use translation key */}
+                    <Text className="text-blue-500">{t("signUp")}</Text>
                   </Link>
                 </View>
               </>

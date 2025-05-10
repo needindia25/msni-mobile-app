@@ -123,7 +123,7 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
             {loading ? (
                 <View className="flex-1 justify-center mt-[60%] items-center">
                     <ActivityIndicator size="large" color="#00ff00" />
-                    <Text className="mt-2 text-xl">{t("loading")}</Text> {/* Use translation key */}
+                    <Text className="mt-2 text-xl">{t("loading")}</Text>
                 </View>
             ) : (
                 <>
@@ -138,9 +138,9 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
                                 className={`w-6 h-6`}
                             />
                         </TouchableOpacity>
-                        <Text className="text-2xl font-bold mb-2">{t("verifyNumber")}</Text> {/* Use translation key */}
+                        <Text className="text-2xl font-bold mb-2">{t("verifyNumber")}</Text>
                     </View>
-                    <Text className="text-gray-500 mb-5">{t("enterVerificationCode")}</Text> {/* Use translation key */}
+                    <Text className="text-gray-500 mb-5">{t("enterVerificationCode")}</Text>
                     <Text className="text-black font-bold mb-5">+91 {number}</Text>
                     <View className="flex-row justify-center mb-5">
                         {otp.map((digit, index) => (
@@ -161,17 +161,17 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
                     ) : null}
                     {timeRemaining > 0 && (
                         <Text className="text-gray-500 mb-2">
-                            {t("timeRemaining")}: 00:{timeRemaining < 10 ? `0${timeRemaining}` : timeRemaining} {/* Use translation key */}
+                            {t("timeRemaining")}: 00:{timeRemaining < 10 ? `0${timeRemaining}` : timeRemaining}
                         </Text>
                     )}
                     {timeRemaining === 0 && (
                         <TouchableOpacity onPress={handleResendCode}>
-                            <Text className="text-blue-500 font-bold">{t("resendCode")}</Text> {/* Use translation key */}
+                            <Text className="text-blue-500 font-bold">{t("resendCode")}</Text>
                         </TouchableOpacity>
                     )}
                     {otp.every((digit) => digit) && (
                         <TouchableOpacity onPress={handleVerify} className="bg-green-500 rounded-lg p-3 mt-5 w-full">
-                            <Text className="text-white text-center font-bold">{t("verify")}</Text> {/* Use translation key */}
+                            <Text className="text-white text-center font-bold">{t("verify")}</Text>
                         </TouchableOpacity>
                     )}
                 </>

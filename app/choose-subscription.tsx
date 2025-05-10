@@ -90,7 +90,7 @@ const ChooseSubscription = () => {
             {loading ? (
                 <View className="flex-1 justify-center mt-[60%] items-center">
                     <ActivityIndicator size="large" color="#00ff00" />
-                    <Text className="mt-2 text-xl">{t("loading")}</Text> {/* Use translation key */}
+                    <Text className="mt-2 text-xl">{t("loading")}</Text>
                 </View>
             ) : (
                 <>
@@ -107,7 +107,7 @@ const ChooseSubscription = () => {
                                 />
                             </TouchableOpacity>
                             <Text className="text-2xl font-bold text-center flex-1">
-                                {t("choosePlan")} {/* Use translation key */}
+                                {t("choosePlan")}
                             </Text>
                         </View>
                         <FlatList

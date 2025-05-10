@@ -7,11 +7,11 @@ export default function NotFoundScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: t("notFoundTitle") }} /> {/* Use translation key */}
+      <Stack.Screen options={{ title: t("notFoundTitle") }} />
       <View style={styles.container}>
-        <Text>{t("notFoundMessage")}</Text> {/* Use translation key */}
+        <Text>{t("notFoundMessage")}</Text>
         <Link href="/" style={styles.link}>
-          <Text>{t("goToHome")}</Text> {/* Use translation key */}
+          <Text>{t("goToHome")}</Text>
         </Link>
       </View>
     </>

@@ -49,16 +49,16 @@ const Page = () => {
   if (loading) return null;
 
   if (isSignedIn) {
-    if (userInfo && userInfo.has_subscription) {
-      if (userInfo.user_type_id === 1) {
-        return <Redirect href="/(seeker)/(tabs)/home" />;
-      } else {
-        return <Redirect href="/(provider)/(tabs)/home" />;
-      }
-      
-    } else {
-      return <Redirect href="/no-subscription" />;
-    }
+    // if (userInfo && userInfo.has_subscription) {
+    //   if (userInfo.user_type_id === 1) {
+    //     return <Redirect href="/(seeker)/(tabs)/home" />;
+    //   } else {
+    //     return <Redirect href="/(provider)/(tabs)/home" />;
+    //   }
+    // } else {
+    //   return <Redirect href="/no-subscription" />;
+    // }
+    return <Redirect href="/welcome-page" />;
   }
 
   return <Redirect href="/(auth)/language" />;
