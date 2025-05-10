@@ -45,9 +45,9 @@ export default function RootLayout() {
       <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       <Stack.Screen name="(provider)" options={{ headerShown: false }} />
       <Stack.Screen name="(seeker)" options={{ headerShown: false }} />
-      <Stack.Screen name="no-subscription" options={{ headerShown: false }} />
+      <Stack.Screen name="welcome-page" options={{ headerShown: false }} />
       <Stack.Screen name="choose-subscription" options={{ headerShown: false }} />
-      <Stack.Screen name="welcone-page" options={{ headerShown: false }} />
+      <Stack.Screen name="no-subscription" options={{ headerShown: false }} />
       <Stack.Screen name="+not-found" />
     </Stack>
   );

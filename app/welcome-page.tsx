@@ -56,10 +56,10 @@ const WelcomePage = () => {
                     </View>
                     <View className="px-10 py-5 m-5">
                         <Text className="text-3xl text-gray-600 text-justify mb-10">
-                            Need India is a brand name of multi solution of need India company there are easily solve your multiple basically and social requirement. App is only feber you give and take services all types of property rent and lease india's village City town & market and there is large Seekar and provider provides all work on single App with subscription.
+                            <Text className="font-bold">Need India</Text> is the <Text className="font-bold">brand</Text> name of <Text className="font-bold">Multi Solution of Need India</Text>, a company dedicated to simplifying multiple basic and social needs. The app facilitates a seamless exchange of services, allowing users to give and receive favors effortlessly. It covers <Text className="font-bold">all types of property rentals and leases across India's villages, cities, towns, and markets</Text>. With a vast network of seekers and providers, the platform brings various services together in a single subscription-based app.
                         </Text>
                         <Text className="text-3xl text-gray-600 text-justify mb-10">
-                            नीड इंडिया, नीड इंडिया कंपनी के मल्टी सॉल्यूशन का एक ब्रांड नाम है, जो आपकी कई बुनियादी और सामाजिक आवश्यकताओं को आसानी से हल करता है। ऐप केवल फ़ेबर है, आप सभी प्रकार की संपत्ति किराए पर लेते हैं और भारत के गाँव शहर शहर और बाजार में पट्टे देते हैं और बड़ी संख्या में सीकर और प्रदाता सदस्यता के साथ एकल ऐप पर सभी काम प्रदान करते हैं।
+                            <Text className="font-bold">नीड इंडिया</Text>, <Text className="font-bold">मल्टी सॉल्यूशन ऑफ नीड इंडिया</Text> कंपनी का <Text className="font-bold">ब्रांड</Text> नाम है, जो आपकी कई मूलभूत और सामाजिक आवश्यकताओं को आसानी से पूरा करने में मदद करता है। यह ऐप सेवाओं के आदान-प्रदान को सरल बनाता है, जिससे उपयोगकर्ता आसानी से मदद दे और ले सकते हैं। यह <Text className="font-bold">भारत के गांवों, शहरों, कस्बों और बाजारों में सभी प्रकार की संपत्तियों के किराये और लीज की सुविधा प्रदान करता है।</Text> एक व्यापक नेटवर्क के माध्यम से, ऐप एकल सब्सक्रिप्शन के तहत सेवाओं के सीकर और प्रोवाइडर को एक साथ जोड़ता है
                         </Text>
                     </View>
                 </ScrollView>
