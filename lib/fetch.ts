@@ -25,7 +25,7 @@ export const fetchAPI = async (url: string, t: (key: string) => string, options?
     }
     const response_json =  await response.json();
     if (response_json.hasOwnProperty("error")) {
-      Alert.alert(t("error"), response_json["error"], [
+      Alert.alert(t("error"), t(response_json["error"]), [
         {
           text: t("ok"),
           onPress: () => {return null},
@@ -33,7 +33,7 @@ export const fetchAPI = async (url: string, t: (key: string) => string, options?
       ]);
       return null;
     } else if (response_json.hasOwnProperty("warning")) {
-      Alert.alert(t("warning"), response_json["warning"], [
+      Alert.alert(t("warning"), t(response_json["warning"]), [
         {
           text: t("ok"),
           onPress: () => {return null},

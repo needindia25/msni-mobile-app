@@ -1,94 +1,25 @@
 import React from 'react';
 import { Stack } from 'expo-router';
-import { View, Image, TouchableOpacity, Alert } from 'react-native';
+import { View, Image, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { images, constants, icons } from "@/constants"; // Adjust the import path according to your project structure
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { fetchAPI } from '@/lib/fetch';
-import { useTranslation } from 'react-i18next'; // Import useTranslation
-import TransactionsPage from '@/components/TransactionsPage';
+import { images, icons } from "@/constants"; // Adjust the import path according to your project structure
 
 const Layout = () => {
   const router = useRouter();
-  const { t } = useTranslation(); // Initialize translation hook
-
-  const handleLogout = async () => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      const refresh = await AsyncStorage.getItem('refresh');
-      if (!token || !refresh) {
-        Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-          [
-            {
-              text: t("ok"),
-              onPress: () => {
-                // Perform the action when "OK" is pressed
-                router.replace("/(auth)/sign-in");
-              },
-            },
-          ]
-        );
-        return;
-      }
-
-      Alert.alert(
-        t("logout"), // Use translation key
-        t("logoutMessage"), // Use translation key
-        [
-          { text: t("no"), style: "cancel" }, // Use translation key
-          {
-            text: t("yes"), // Use translation key
-            onPress: async () => {
-              const response = await fetchAPI(`${constants.API_URL}/auth/logout/`, t, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({ refresh: refresh }),
-              });
-              await AsyncStorage.clear();
-              Alert.alert(
-                t("success"),
-                t("logoutSuccess"),
-                [
-                  {
-                    text: t("ok"),
-                    onPress: () => {
-                      // Perform the action when "OK" is pressed
-                      router.replace("/(auth)/sign-in");
-                    },
-                  },
-                ]
-              );
-            },
-          },
-        ]
-      );
-    } catch (err) {
-      Alert.alert(
-        t("error"),
-        t("logoutFailed"),
-        [
-          {
-            text: t("ok"),
-          },
-        ]
-      ); // Use translation keys
-      return;
-    }
-  };
-
   return (
     <>
       <View className="w-full flex-row justify-between items-center mt-5 px-5 bg-white pt-2 border-b-2 border-gray-200">
         <Image source={images.HorizontalLogo} className="w-[125px] h-[50px]" />
         <TouchableOpacity
-          onPress={handleLogout}
+          onPress={() => {
+            if (router.canGoBack()) {
+              router.back();
+            }
+          }}
           className="p-5"
         >
           <Image
-            source={icons.out}
+            source={icons.backArrow}
             resizeMode="contain"
             className={`w-6 h-6`}
           />

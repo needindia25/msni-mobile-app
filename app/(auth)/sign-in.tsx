@@ -78,7 +78,7 @@ const SignIn = () => {
       if (!response.ok) {
         const errorData = await response.json().catch(() => null); // Handle JSON parsing errors
         const errorMessage = errorData?.detail || t("invalidCredentials");
-        Alert.alert(t("error"), errorMessage,
+        Alert.alert(t("error"), t(errorMessage),
           [
             {
               text: t("ok"),
@@ -89,7 +89,7 @@ const SignIn = () => {
       }
       const response_json = await response.json();
       if (response_json.hasOwnProperty("error")) {
-        Alert.alert(t("error"), response_json["error"], [
+        Alert.alert(t("error"), t(response_json["error"]), [
           {
             text: t("ok"),
             onPress: () => {
@@ -100,7 +100,7 @@ const SignIn = () => {
         ]);
         return;
       } else if (response_json.hasOwnProperty("warning")) {
-        Alert.alert(t("warning"), response_json["warning"], [
+        Alert.alert(t("warning"), t(response_json["warning"]), [
           {
             text: t("ok"),
             onPress: () => {
@@ -186,8 +186,8 @@ const SignIn = () => {
 
                 <View className="p-5">
                   <InputField
-                    label={t("phoneLabel")} // Use translation key
-                    placeholder={t("phonePlaceholder")} // Use translation key
+                    label={t("phoneRegisteredLabel")} // Use translation key
+                    placeholder={t("phoneRegisteredPlaceholder")} // Use translation key
                     icon={icons.phone}
                     keyboardType="phone-pad"
                     textContentType="none"

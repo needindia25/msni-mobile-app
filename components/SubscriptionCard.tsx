@@ -99,10 +99,11 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                 return;
             }
 
-            // const mobile = userInfo?.email.split("@")[0];
             SabPaisaSDK.openSabpaisaSDK(
                 [price.toString(), userInfo?.full_name, "", userInfo?.username, transaction_code, "payment@msni.in", ],
                 async (error: any, message: string, clientTxnId: string) => {
+                    console.log("transaction_code: ", transaction_code);
+                    console.log("clientTxnId: ", clientTxnId);
                     if (clientTxnId) {
                         try {
                             const paymentResponse: any = await fetchAPI(`${constants.API_URL}/user/payment/`, t, {
@@ -126,16 +127,23 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                                     console.log("INSIDE IF BLOCK: User Info: ", userInfo)
                                     userInfo.has_subscription = true;
                                     userInfo.plan_id = paymentResponse.plan_id;
+                                    let userTypeId = null;
+                                    if (paymentResponse.hasOwnProperty("user_type_id")) {
+                                        userTypeId = paymentResponse["user_type_id"];
+                                    }
+                                    if (userTypeId === 3) {
+                                        userInfo.is_both_access = true;
+                                    }
                                     await AsyncStorage.setItem("user_info", JSON.stringify(userInfo));
-                                }
-                                Alert.alert(t("success"), t("transactionSuccessful"), [
-                                    {
-                                        text: t("ok"),
-                                        onPress: () => {
-                                            router.push(userInfo?.user_type_id == 1 ? "/(seeker)/(tabs)/profile" : "/(provider)/(tabs)/profile")
+                                    Alert.alert(t("success"), t("transactionSuccessful"), [
+                                        {
+                                            text: t("ok"),
+                                            onPress: () => {
+                                                router.push(userInfo.user_type_id == 1 ? "/(seeker)/(tabs)/profile" : "/(provider)/(tabs)/profile")
+                                            },
                                         },
-                                    },
-                                ]);
+                                    ]);
+                                }
                             } else {
                                 Alert.alert(t("error"), paymentResponse.message, [
                                     {
@@ -200,7 +208,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                     <Text className={`mb-5 ${isPremium ? 'text-white' : 'text-gray-600'}`}>{descriptions}</Text>
                     {(expiryDate === "N/A" || (credits !== -1 && credits <= used)) && (
                         <CustomButton
-                            title={(credits === -1 || credits > used) ? t("selectSubscription") : t("upgradeSubscription")}
+                            title={t("payNow")}
                             className="my-2"
                             onPress={() => handleOnPress()}
                         />

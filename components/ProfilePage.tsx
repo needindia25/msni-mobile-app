@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, Alert, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, ActivityIndicator, Image, Alert, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { UserInfo } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { constants } from '@/constants';
+import { constants, icons, images } from '@/constants';
 import { fetchAPI } from '@/lib/fetch';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
@@ -71,18 +71,36 @@ const ProfilePage = () => {
     };
     const handleSelectedRole = async (role: number) => {
         if (role === selectedRole) return;
+
+        // userInfo?.is_both_access
         Alert.alert(
             t("switchUser"),
-            (role == 1 ? t("seekerSwitchConfirmation") : t("providerSwitchConfirmation")),
+            (
+                userInfo?.is_both_access
+                    ? (role == 1 ? t("seekerSwitchConfirmation") : t("providerSwitchConfirmation"))
+                    : t("switchConfirmation")
+            ),
             [
-                { text: t("cancel"), style: "cancel" },
+                { text: (userInfo?.is_both_access ? t("cancel") : t("no")), style: "cancel" },
                 {
-                    text: t("ok"),
+                    text: (userInfo?.is_both_access ? t("ok") : t("yes")),
                     style: "destructive",
                     onPress: async () => {
                         let userInfo = await AsyncStorage.getItem('user_info');
                         const parsedUserInfo = userInfo ? JSON.parse(userInfo) : null;
+                        console.log("parsedUserInfo ", parsedUserInfo)
                         if (parsedUserInfo) {
+                            console.log("parsedUserInfo ", parsedUserInfo)
+                            console.log("is_both_access ", parsedUserInfo.is_both_access)
+                            if (!parsedUserInfo.is_both_access) {
+                                router.push({
+                                    pathname: '/choose-subscription',
+                                    params: {
+                                        userType: 3
+                                    },
+                                });
+                                return;
+                            }
                             parsedUserInfo.user_type_id = role;
                             console.log("parsedUserInfo ", parsedUserInfo)
                             await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
@@ -188,6 +206,73 @@ const ProfilePage = () => {
         }
     };
 
+    const handleLogout = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const refresh = await AsyncStorage.getItem('refresh');
+            if (!token || !refresh) {
+                Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                    [
+                        {
+                            text: t("ok"),
+                            onPress: () => {
+                                // Perform the action when "OK" is pressed
+                                router.replace("/(auth)/sign-in");
+                            },
+                        },
+                    ]
+                );
+                return;
+            }
+
+            Alert.alert(
+                t("logout"), // Use translation key
+                t("logoutMessage"), // Use translation key
+                [
+                    { text: t("no"), style: "cancel" }, // Use translation key
+                    {
+                        text: t("yes"), // Use translation key
+                        onPress: async () => {
+                            const response = await fetchAPI(`${constants.API_URL}/auth/logout/`, t, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`,
+                                },
+                                body: JSON.stringify({ refresh: refresh }),
+                            });
+                            await AsyncStorage.clear();
+                            Alert.alert(
+                                t("success"),
+                                t("logoutSuccess"),
+                                [
+                                    {
+                                        text: t("ok"),
+                                        onPress: () => {
+                                            // Perform the action when "OK" is pressed
+                                            router.replace("/(auth)/sign-in");
+                                        },
+                                    },
+                                ]
+                            );
+                        },
+                    },
+                ]
+            );
+        } catch (err) {
+            Alert.alert(
+                t("error"),
+                t("logoutFailed"),
+                [
+                    {
+                        text: t("ok"),
+                    },
+                ]
+            ); // Use translation keys
+            return;
+        }
+    };
+
     return (
         <SafeAreaView className="flex-1 bg-white px-4 pt-6">
             {loading ? (
@@ -197,9 +282,21 @@ const ProfilePage = () => {
             ) : (
                 <ScrollView contentContainerStyle={{ paddingBottom: 30 }} showsVerticalScrollIndicator={false}>
                     {/* Profile Title */}
-                    <Text className="text-3xl font-extrabold text-center text-gray-800 mb-6">
-                        {userInfo?.user_type_id === 1 ? t("seekerProfile") : t("providerProfile")}
-                    </Text>
+                    <View className="w-full flex-row justify-between items-center mt-5 px-5 bg-white pt-2">
+                        <Text className="text-3xl font-extrabold text-center text-gray-800 mb-6">
+                            {userInfo?.user_type_id === 1 ? t("seekerProfile") : t("providerProfile")}
+                        </Text>
+                        <TouchableOpacity
+                            onPress={() => handleLogout()}
+                            className="p-5"
+                        >
+                            <Image
+                                source={icons.out}
+                                resizeMode="contain"
+                                className={`w-6 h-6`}
+                            />
+                        </TouchableOpacity>
+                    </View>
 
                     {/* User Info */}
                     <View className="items-center bg-gray-100 rounded-2xl p-5 mb-6 shadow-sm">
@@ -215,8 +312,8 @@ const ProfilePage = () => {
                             {userInfo?.user_type_id === 1 ? t("seeker") : t("provider")}
                         </Text>
                     </View>
-                    {userInfo?.is_both_access && (
-                        <>
+                    <View className="items-center flex-row justify-center mt-1 mb-5 ">
+                        <View className="flex-1 bg-yellow-100 rounded-xl shadow-sm p-6">
                             {/* Switch Role Title */}
                             <Text className="text-xl font-bold text-center text-gray-800 mb-4">
                                 {t("switchUser")}
@@ -240,9 +337,33 @@ const ProfilePage = () => {
                                     </TouchableOpacity>
                                 ))}
                             </View>
-                        </>
-                    )}
+                        </View>
+                        <View className="flex-1 bg-yellow-200 rounded-xl shadow-sm p-6">
+                            {/* Language Selector Title */}
+                            <Text className="text-xl font-bold text-center text-gray-800 mb-4">
+                                {t("selectLanguage")}
+                            </Text>
 
+                            {/* Language Options */}
+                            <View className="flex-row justify-center mb-6">
+                                {[
+                                    { code: "en", name: "English" },
+                                    { code: "hi", name: "हिंदी" },
+                                ].map((lang) => (
+                                    <TouchableOpacity
+                                        key={lang.code}
+                                        className={`rounded-full px-5 py-3 mx-2 shadow-md ${selectedLanguage === lang.code
+                                            ? "bg-green-500"
+                                            : "bg-gray-300"
+                                            }`}
+                                        onPress={() => changeLanguage(lang.code)}
+                                    >
+                                        <Text className="text-white font-bold">{lang.name}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </View>
+                    </View>
                     {/* <View className="flex-row justify-end mb-4">
                         <TouchableOpacity
                             className="bg-transparent"
@@ -253,7 +374,7 @@ const ProfilePage = () => {
                     </View> */}
                     {plans.length === 1 && (
                         <>
-                            <View className={`rounded-lg p-5 mb-5 border border-gray-300`}>
+                            <View className={`rounded-lg p-5 mb-5 border border-gray-300 mt-1 `}>
                                 <View className="flex-row justify-between mb-3">
                                     <Text className={`text-2xl font-bold text-black`}>{plans[0].planName}</Text>
                                     <Text className={`text-2xl text-blue-500 mb-1`}>
@@ -310,29 +431,7 @@ const ProfilePage = () => {
                         </View>
                     )}
 
-                    {/* Language Selector Title */}
-                    <Text className="text-xl font-bold text-center text-gray-800 mb-4 mt-4">
-                        {t("selectLanguage")}
-                    </Text>
 
-                    {/* Language Options */}
-                    <View className="flex-row justify-center mb-6">
-                        {[
-                            { code: "en", name: "English" },
-                            { code: "hi", name: "हिंदी" },
-                        ].map((lang) => (
-                            <TouchableOpacity
-                                key={lang.code}
-                                className={`rounded-full px-5 py-3 mx-2 shadow-md ${selectedLanguage === lang.code
-                                    ? "bg-green-500"
-                                    : "bg-gray-300"
-                                    }`}
-                                onPress={() => changeLanguage(lang.code)}
-                            >
-                                <Text className="text-white font-bold">{lang.name}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
 
                     <View className="items-center bg-red-100 rounded-2xl p-5 my-6 shadow-sm">
                         <View className="flex-row justify-center my-6">
@@ -409,7 +508,7 @@ const ProfilePage = () => {
                     </View>
                 </ScrollView>
             )}
-        </SafeAreaView> 
+        </SafeAreaView>
 
     );
 };

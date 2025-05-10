@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, Alert, Image, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import SubscriptionCard from '@/components/SubscriptionCard';
 import { Subscription, UserInfo } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,11 +8,13 @@ import { fetchAPI } from '@/lib/fetch';
 import { constants, icons, images } from "@/constants";
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 
+
 const ChooseSubscription = () => {
     const { t } = useTranslation(); // Initialize translation hook
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [subscriptions, setSubscription] = useState<Subscription[]>([]);
+    const { userType } = useLocalSearchParams();
 
     useEffect(() => {
         const fetchSubscriptions = async () => {
@@ -22,9 +24,12 @@ const ChooseSubscription = () => {
                 const token = await AsyncStorage.getItem('token');
 
                 let user_type_id = userInfo?.user_type_id;
-                if (userInfo?.is_both_access) {
+                if (userType == "3" || userInfo?.is_both_access) {
                     user_type_id = 3;
                 }
+                console.log("userType", userType);
+                console.log("userInfo?.is_both_access", userInfo?.is_both_access);
+                console.log("user_type_id", user_type_id);
                 if (!token || user_type_id === null || user_type_id === undefined) {
                     Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
                         [

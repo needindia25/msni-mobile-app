@@ -22,7 +22,6 @@ const Requests = () => {
 
     const fetchDetails = async () => {
         const token = await AsyncStorage.getItem('token');
-        await AsyncStorage.setItem("passServiceId", "");
         if (!token) {
             Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"), [
                 {
@@ -100,8 +99,13 @@ const Requests = () => {
     };
 
     const handleView = async (id: number) => {
-        await AsyncStorage.setItem("passServiceId", id.toString());
-        router.push(`/(seeker)/property-details`);
+        router.push({
+            pathname: '/(seeker)/property-details',
+            params: {
+                passServiceId: id.toString()
+            },
+        });
+        return;
     };
 
     return (

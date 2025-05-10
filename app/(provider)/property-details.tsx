@@ -1,7 +1,7 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { format } from "date-fns";
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity, Dimensions, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons"; // Import icons
 import { constants, icons } from "@/constants";
@@ -14,7 +14,7 @@ import GoogleTextInput from '@/components/GoogleTextInput';
 const PropertyDetails = () => {
     const { t } = useTranslation(); // Initialize translation hook
     const router = useRouter();
-    const [id, setId] = useState<number | null>(null);
+    const { passServiceId } = useLocalSearchParams()
     const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({
         propertyFor: "Rent",
@@ -60,10 +60,6 @@ const PropertyDetails = () => {
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                const passServiceId = await AsyncStorage.getItem("passServiceId");
-                if (passServiceId) {
-                    setId(parseInt(passServiceId, 10));
-                }
                 const token = await AsyncStorage.getItem('token');
                 if (!token) {
                     Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
@@ -147,131 +143,6 @@ const PropertyDetails = () => {
         return format(date, "do MMMM yyyy HH:mm");
     };
 
-    const handleDelete = (id: number) => {
-        Alert.alert(
-            t("deleteProperty"), // Use translation key
-            t("deleteConfirmation"), // Use translation key
-            [
-                { text: t("cancel"), style: "cancel" }, // Use translation key
-                {
-                    text: t("delete"), // Use translation key
-                    style: "destructive",
-                    onPress: async () => {
-                        const token = await AsyncStorage.getItem('token');
-                        if (!token) {
-                            Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-                                [
-                                    {
-                                        text: t("ok"),
-                                        onPress: () => {
-                                            router.replace("/(auth)/sign-in");
-                                        },
-                                    },
-                                ]
-                            );
-                            return;
-                        }
-                        if (token) {
-                            const response = await fetchAPI(`${constants.API_URL}/user-services/${id}/`, t, {
-                                method: "DELETE",
-                                headers: {
-                                    'Authorization': `Bearer ${token}`,
-                                },
-                            });
-                            if (response === null || response === undefined) {
-                                return;
-                            }
-                            Alert.alert(
-                                t("success"),
-                                t("propertyDeleted"),
-                                [
-                                    {
-                                        text: t("ok"),
-                                        onPress: () => {
-                                            router.back()
-                                        },
-                                    },
-                                ]
-                            );
-                        }
-                    },
-                },
-            ]
-        );
-    };
-
-    const handleEdit = async (id: number) => {
-        try {
-            await AsyncStorage.setItem("passServiceId", id.toString());
-            router.push(`/add-property`);
-        } catch (error) {
-            Alert.alert(t("error"), t("errorSavingServiceId"),
-                [
-                    {
-                        text: t("ok"),
-                    },
-                ]
-            );
-            return;
-        }
-    };
-
-    const handleChangeStatus = (id: number) => {
-        Alert.alert(
-            t("changeStatus"), // Use translation key
-            t("changeStatusConfirmation"), // Use translation key
-            [
-                { text: t("cancel"), style: "cancel" }, // Use translation key
-                {
-                    text: t("changeStatus"), // Use translation key
-                    onPress: async () => {
-                        const token = await AsyncStorage.getItem('token');
-                        if (!token) {
-                            Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-                                [
-                                    {
-                                        text: t("ok"),
-                                        onPress: () => {
-                                            router.replace("/(auth)/sign-in");
-                                        },
-                                    },
-                                ]
-                            );
-                            return;
-                        }
-                        if (token) {
-                            const response = await fetchAPI(`${constants.API_URL}/user-services/${id}/toggle_status/`, t, {
-                                method: "PATCH",
-                                headers: {
-                                    'Authorization': `Bearer ${token}`,
-                                },
-                            });
-                            if (response === null || response === undefined) {
-                                return;
-                            }
-
-                            Alert.alert(
-                                t("success"),
-                                t("statusUpdated"),
-                                [
-                                    {
-                                        text: t("ok"),
-                                        onPress: () => {
-                                            setFormData((prevFormData: any) => ({
-                                                ...prevFormData,
-                                                status: !prevFormData.status,
-                                            }));
-                                        },
-                                    },
-                                ]
-                            );
-                        }
-                    },
-                },
-            ]
-        );
-    };
-
     const floorNumber = [
         "Ground Floor",
         "1st Floor",
@@ -316,9 +187,9 @@ const PropertyDetails = () => {
                 </View>
             ) : (
                 <>
-                    <TouchableOpacity onPress={() => router.back()} className="mb-5">
+                    {/* <TouchableOpacity onPress={() => router.back()} className="mb-5">
                         <MaterialIcons name="arrow-back" size={24} color="blue" />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
 
                     <View className="bg-white rounded-lg shadow-md mb-5 p-5">
                         {/* Image Carousel */}
@@ -666,37 +537,6 @@ const PropertyDetails = () => {
                             )
                         }
 
-                    </View>
-
-                    <View className="flex-row justify-between mb-[40px] mt-[20px]">
-                        <TouchableOpacity
-                            className="bg-blue-500 py-2 px-4 rounded-lg"
-                            onPress={() => router.back()}
-                        >
-                            <Text className="text-white font-bold">{t("back")}</Text>
-                        </TouchableOpacity>
-                        {/* <TouchableOpacity
-                            className="bg-yellow-500 py-2 px-4 rounded-lg"
-                            onPress={() => id !== null && handleEdit(id)}
-                        >
-                            <Text className="text-white font-bold">{t("edit")}</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            className="bg-green-500 py-2 px-4 rounded-lg"
-                            onPress={() => id !== null && handleChangeStatus(id)}
-                        >
-                            <Text className="text-white font-bold">
-                                {formData.status ? t("deactivate") : t("activate")}
-                            </Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            className="bg-red-500 py-2 px-4 rounded-lg"
-                            onPress={() => id !== null && handleDelete(id)}
-                        >
-                            <Text className="text-white font-bold">{t("delete")}  </Text>
-                        </TouchableOpacity> */}
                     </View>
                 </>
             )}

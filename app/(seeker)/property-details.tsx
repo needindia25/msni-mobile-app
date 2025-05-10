@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { format } from "date-fns";
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
@@ -16,6 +16,7 @@ const PropertyDetails = () => {
     const { t } = useTranslation();
     const [showContactInfo, setShowContactInfo] = useState(false);
     const router = useRouter();
+    const { passServiceId } = useLocalSearchParams()
     const [id, setId] = useState<number | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -69,8 +70,7 @@ const PropertyDetails = () => {
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                const passServiceId = await AsyncStorage.getItem("passServiceId");
-                if (passServiceId) {
+                if (typeof passServiceId === "string") {
                     setId(parseInt(passServiceId, 10));
                 }
                 const token = await AsyncStorage.getItem('token');
@@ -311,9 +311,9 @@ const PropertyDetails = () => {
                 </View>
             ) : (
                 <>
-                    <TouchableOpacity onPress={() => router.back()} className="mb-5">
+                    {/* <TouchableOpacity onPress={() => router.back()} className="mb-5">
                         <MaterialIcons name="arrow-back" size={24} color="blue" />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
 
                     <View className="bg-white rounded-lg shadow-md mb-5 p-5">
                         <ImageCarousel images={formData.images} />
@@ -658,12 +658,12 @@ const PropertyDetails = () => {
                     </View>
 
                     <View className="flex-row justify-between mb-[40px] mt-[20px]">
-                        <TouchableOpacity
+                        {/* <TouchableOpacity
                             className="bg-blue-500 py-2 px-4 rounded-lg"
                             onPress={() => router.back()}
                         >
                             <Text className="text-white font-bold">{t("back")}</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                         {!showContactInfo && (
                             <TouchableOpacity className="bg-orange-500 rounded-lg p-3" onPress={() => getOwnerDetails()}>
                                 <Text className="text-white text-center font-bold">{t("contactOwner")}</Text>

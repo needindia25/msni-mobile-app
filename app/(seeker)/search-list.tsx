@@ -22,7 +22,6 @@ const SearchList = () => {
     useEffect(() => {
         const checkAuth = async () => {
             const token = await AsyncStorage.getItem('token');
-            await AsyncStorage.setItem("passServiceId", "");
             if (!token) {
                 Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
                     [
@@ -77,8 +76,13 @@ const SearchList = () => {
     };
 
     const handleView = async (id: number) => {
-        await AsyncStorage.setItem("passServiceId", id.toString());
-        router.push(`/property-details`);
+        router.push({
+            pathname: '/property-details',
+            params: {
+                passServiceId: id.toString()
+            },
+        });
+        return;
     };
 
 

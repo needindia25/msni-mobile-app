@@ -14,7 +14,6 @@ const Home = () => {
 
     const [loading, setLoading] = useState(true);
     const [listings, setListings] = useState<Listing[]>([]);
-
     useEffect(() => {
         const checkAuth = async () => {
             const token = await AsyncStorage.getItem('token');
@@ -68,8 +67,13 @@ const Home = () => {
     };
 
     const handleView = async (id: number) => {
-        await AsyncStorage.setItem("passServiceId", id.toString());
-        router.push(`/property-details`);
+        router.push({
+            pathname: '/property-details',
+            params: {
+                passServiceId: id.toString()
+            },
+        });
+        return;
     };
 
     const handleDelete = (id: number, is_deletable: boolean = true) => {
@@ -137,8 +141,13 @@ const Home = () => {
 
     const handleEdit = async (id: number) => {
         try {
-            await AsyncStorage.setItem("passServiceId", id.toString());
-            router.push(`/add-property`);
+            router.push({
+                pathname: '/add-property',
+                params: {
+                    passServiceId: id.toString()
+                },
+            });
+            return;
         } catch (error) {
             Alert.alert(t("error"), t("errorSavingServiceId"),
                 [
@@ -258,6 +267,7 @@ const Home = () => {
             );
             return
         }
+        await AsyncStorage.setItem("passServiceId", "");
         router.push('/add-property')
     }
 

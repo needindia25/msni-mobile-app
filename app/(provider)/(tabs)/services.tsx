@@ -19,22 +19,54 @@ const Services = () => {
   const handleViewRequests = async (service: any) => {
     const token = await AsyncStorage.getItem('token');
     if (!token) {
-      Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-        [
-          {
-            text: t("ok"),
-            onPress: () => {
-              // Perform the action when "OK" is pressed
-              router.replace("/(auth)/sign-in");
-            },
-          },
-        ]
-      );
-      return;
-    } else {
-      await AsyncStorage.setItem("passService", JSON.stringify(service));
-      router.push('/(provider)/service-requests');
+        Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+            [
+                {
+                    text: t("ok"),
+                    onPress: () => {
+                        router.replace("/(auth)/sign-in");
+                    },
+                },
+            ]
+        );
+        return;
     }
+    const response = await fetchAPI(
+        `${constants.API_URL}/user/plan/`,
+        t,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        }
+    );
+    if (response === null || response === undefined) {
+        return;
+    }
+    const plans = response.map((item: any) => ({
+        id: item.id,
+        subscription_id: item.subscription_id,
+        planName: item.title,
+        price: item.amount,
+        description: item.descriptions,
+        period: item.period,
+        credits: item.credits,
+        used: item.used,
+    })) || [];
+
+    if (plans.length === 0 || plans[0].credits <= plans[0].used) {
+        Alert.alert(t("warning"), t("invalidPlanToAccessInfo"),
+            [
+                {
+                    text: t("ok"),
+                },
+            ]
+        );
+        return
+    }
+    await AsyncStorage.setItem("passService", JSON.stringify(service));
+    router.push('/(provider)/service-requests');
   }
 
   useEffect(() => {

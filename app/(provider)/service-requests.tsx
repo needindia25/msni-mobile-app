@@ -92,9 +92,9 @@ const ServiceRequests = () => {
     <SafeAreaView className="flex h-full bg-gray-100">
       {/* Header */}
       <View className="bg-blue-500 py-4 px-10 shadow-md">
-        <TouchableOpacity onPress={() => router.back()} className="absolute left-5 top-5">
+        {/* <TouchableOpacity onPress={() => router.back()} className="absolute left-5 top-5">
           <MaterialIcons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <Text className="text-xl font-bold text-white text-center">{t("serviceRequests")}</Text>
       </View>
 

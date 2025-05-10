@@ -139,7 +139,7 @@ const SignUp = () => {
       if (response.ok) {
         const response_json = await response.json();
         if (response_json.hasOwnProperty("error")) {
-          Alert.alert(t("error"), response_json["error"], [
+          Alert.alert(t("error"), t(response_json["error"]), [
             {
               text: t("ok"),
               onPress: () => {
@@ -150,7 +150,7 @@ const SignUp = () => {
           ]);
           return;
         } else if (response_json.hasOwnProperty("warning")) {
-          Alert.alert(t("warning"), response_json["warning"], [
+          Alert.alert(t("warning"), t(response_json["warning"]), [
             {
               text: t("ok"),
               onPress: () => {
@@ -278,7 +278,7 @@ const SignUp = () => {
           success = response["success"];
         }
         if (!success) {
-          Alert.alert(t("error"), response["message"],
+          Alert.alert(t("error"), t(response["message"]),
             [
               {
                 text: t("ok"),

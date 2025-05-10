@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, SafeAreaView, ActivityIndicator, Alert, KeyboardAvoidingView, FlatList, Platform, Image, ScrollView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 
 import { constants, icons } from "@/constants";
@@ -20,6 +20,7 @@ import { getStaticData } from "@/constants/staticData";
 const MultiStepForm = () => {
   const router = useRouter();
   const { t } = useTranslation();
+  const {passServiceId} = useLocalSearchParams();
 
   const [loading, setLoading] = useState(true);
   const [btnLoading, setBtnLoading] = useState(false);
@@ -80,7 +81,6 @@ const MultiStepForm = () => {
     const fetchData = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
-        const passServiceId = await AsyncStorage.getItem('passServiceId');
         if (!token) {
           Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
             [
@@ -109,7 +109,9 @@ const MultiStepForm = () => {
         }
 
         if (passServiceId) {
-          setServiceId(parseInt(passServiceId, 10));
+          if (typeof passServiceId === "string") {
+            setServiceId(parseInt(passServiceId, 10));
+          }
           const serviceResponse = await fetchAPI(`${constants.API_URL}/user-services/${passServiceId}/`, t, {
             headers: {
               'Content-Type': 'application/json',
