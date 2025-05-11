@@ -281,19 +281,21 @@ const ProfilePage = () => {
             ) : (
                 <ScrollView contentContainerStyle={{ paddingBottom: 30 }} showsVerticalScrollIndicator={false}>
                     {/* Profile Title */}
-                    <View className="w-full flex-row justify-between items-center mt-5 px-5 bg-white pt-2">
-                        <Text className="text-3xl font-extrabold text-center text-gray-800 mb-6">
+                    <View className="w-full flex-row justify-between items-center mt-2 px-5 bg-white pt-2 mb-5">
+                        <Text className="text-2xl font-extrabold text-gray-800">
                             {userInfo?.user_type_id === 1 ? t("seekerProfile") : t("providerProfile")}
                         </Text>
+
                         <TouchableOpacity
-                            onPress={() => handleLogout()}
-                            className="p-5"
+                            onPress={handleLogout}
+                            className="flex-row items-center space-x-1"
                         >
                             <Image
                                 source={icons.out}
                                 resizeMode="contain"
-                                className={`w-6 h-6`}
+                                className="w-5 h-5"
                             />
+                            <Text className="text-lg text-gray-500 ml-2">{t("logout")}</Text>
                         </TouchableOpacity>
                     </View>
 
