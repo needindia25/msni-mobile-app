@@ -111,7 +111,7 @@ const Services = () => {
       id: property.id,
       title: property.title,
       location: property.options.address || "Unknown Location",
-      price: `₹ ${property.options.rent || "N/A"}`,
+      price: property.options.rent ? '₹ ' + parseFloat(property.options.rent) : "N/A",
       requests: property.service_request_count.requests || 0,
       favorites: property.service_request_count.favorites || 0,
       rating: property.service_request_count.avg_rating || 0,

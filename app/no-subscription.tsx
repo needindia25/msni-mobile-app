@@ -77,6 +77,7 @@ const NoSubscription = () => {
                 <View className="w-full justify-center items-center mt-10">
                     <Image source={images.HorizontalLogo} className="z-0 w-[250px] h-[100px]" />
                 </View>
+                                        
                 <View className="flex-1 items-center justify-center bg-white p-5">
                     <View className="bg-gray-200 rounded-full p-5 mb-5">
                         <Image

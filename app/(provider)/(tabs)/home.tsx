@@ -55,7 +55,7 @@ const Home = () => {
             title: property.title,
             location: property.options.address || "Unknown Location",
             rating: "New",
-            price: `₹ ${property.options.rent || "N/A"}`,
+            price: property.options.rent ? '₹ ' + parseFloat(property.options.rent) : "N/A",
             requests: 0,
             favorites: 0,
             images: property.options.images && property.options.images.length > 0

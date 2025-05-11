@@ -117,7 +117,10 @@ const ProfilePage = () => {
                                     if (response === null) {
                                         return;
                                     }
-                                    if (!(response.credits > response.used)) {
+                                    console.log("response.credits ", response[0].credits)
+                                    console.log("response.used ", response[0].used)
+                                    console.log("used", !(response[0].credits > response.used))
+                                    if (!(response[0].credits > response[0].used)) {
                                         parsedUserInfo.has_subscription = false;
                                         parsedUserInfo.has_subscription_initial = true;
                                         await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
@@ -136,8 +139,11 @@ const ProfilePage = () => {
         const checkAuth = async () => {
             const userInfo = await AsyncStorage.getItem('user_info');
             console.log("userInfo::::: ", userInfo)
-            setUserInfo(userInfo ? JSON.parse(userInfo) : null);
-            setSelectedRole(userInfo ? JSON.parse(userInfo).user_type_id : 1);
+            const parsedUserInfo = userInfo ? JSON.parse(userInfo) : null;
+            if (parsedUserInfo) {
+                setUserInfo(parsedUserInfo);
+                setSelectedRole(parsedUserInfo.user_type_id == 1 ? 1 : 2);
+            }
         };
         const fetchSubscriptions = async () => {
             try {
@@ -301,69 +307,46 @@ const ProfilePage = () => {
                     </View>
 
                     {/* User Info */}
-                    <View className="items-center bg-gray-100 rounded-2xl p-5 mb-6 shadow-sm">
-                        <View className="bg-green-500 rounded-full w-24 h-24 items-center justify-center mb-3 shadow-md">
-                            <Text className="text-3xl text-white font-bold">
-                                {userInfo?.full_name ? getInitialURL(userInfo.full_name) : 'NI'}
+                    <View className="items-center flex-row justify-center mt-1 mb-5 bg-gray-100 border border-gray-500 rounded-2xl p-5 shadow-sm">
+                        <View className="flex-1 p-6 items-end">
+                            <View className="bg-green-500 rounded-full w-24 h-24 items-center justify-center mb-3 shadow-md">
+                                <Text className="text-3xl text-white font-bold">
+                                    {userInfo?.full_name ? getInitialURL(userInfo.full_name) : 'NI'}
+                                </Text>
+                            </View>
+                        </View>
+                        <View className="flex-1 p-6 items-start">
+                            <Text className="text-xl font-semibold text-gray-900">{userInfo?.full_name}</Text>
+                            <Text className="text-gray-600 text-sm">+91 {userInfo?.email.split('@')[0]}</Text>
+                            <Text className="text-gray-600 text-sm">{userInfo?.code}</Text>
+                            <Text className="text-green-600 text-base mt-1 font-medium">
+                                {userInfo?.user_type_id === 1 ? t("seeker") : t("provider")}
                             </Text>
                         </View>
-                        <Text className="text-xl font-semibold text-gray-900">{userInfo?.full_name}</Text>
-                        <Text className="text-gray-600 text-sm">+91 {userInfo?.email.split('@')[0]}</Text>
-                        <Text className="text-gray-600 text-sm">{userInfo?.code}</Text>
-                        <Text className="text-green-600 text-base mt-1 font-medium">
-                            {userInfo?.user_type_id === 1 ? t("seeker") : t("provider")}
-                        </Text>
                     </View>
-                    <View className="items-center flex-row justify-center mt-1 mb-5 ">
-                        <View className="flex-1 bg-yellow-100 rounded-xl shadow-sm p-6">
-                            {/* Switch Role Title */}
-                            <Text className="text-xl font-bold text-center text-gray-800 mb-4">
-                                {t("switchUser")}
-                            </Text>
+                    <View className="items-center flex justify-center mt-1 mb-5 bg-gray-100 border border-gray-500 rounded-2xl p-5 shadow-sm">
+                        {/* Switch Role Title */}
+                        <Text className="text-xl font-bold text-center text-gray-800 mb-4">
+                            {t("switchUser")}
+                        </Text>
 
-                            {/* Switch Role Options */}
-                            <View className="flex-row justify-center mb-6">
-                                {[
-                                    { code: 1, name: t("seeker") },
-                                    { code: 2, name: t("provider") },
-                                ].map((role) => (
-                                    <TouchableOpacity
-                                        key={role.code}
-                                        className={`rounded-full px-5 py-3 mx-2 shadow-md ${selectedRole === role.code
-                                            ? "bg-green-500"
-                                            : "bg-gray-300"
-                                            }`}
-                                        onPress={() => handleSelectedRole(role.code)}
-                                    >
-                                        <Text className="text-white font-bold">{role.name}</Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
-                        </View>
-                        <View className="flex-1 bg-yellow-200 rounded-xl shadow-sm p-6">
-                            {/* Language Selector Title */}
-                            <Text className="text-xl font-bold text-center text-gray-800 mb-4">
-                                {t("selectLanguage")}
-                            </Text>
-
-                            {/* Language Options */}
-                            <View className="flex-row justify-center mb-6">
-                                {[
-                                    { code: "en", name: "English" },
-                                    { code: "hi", name: "हिंदी" },
-                                ].map((lang) => (
-                                    <TouchableOpacity
-                                        key={lang.code}
-                                        className={`rounded-full px-5 py-3 mx-2 shadow-md ${selectedLanguage === lang.code
-                                            ? "bg-green-500"
-                                            : "bg-gray-300"
-                                            }`}
-                                        onPress={() => changeLanguage(lang.code)}
-                                    >
-                                        <Text className="text-white font-bold">{lang.name}</Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
+                        {/* Switch Role Options */}
+                        <View className="flex-row justify-center mb-6">
+                            {[
+                                { code: 1, name: t("seeker") },
+                                { code: 2, name: t("provider") },
+                            ].map((role) => (
+                                <TouchableOpacity
+                                    key={role.code}
+                                    className={`rounded-full px-3 py-3 mx-1 shadow-md ${selectedRole === role.code
+                                        ? "bg-green-500"
+                                        : "bg-gray-400"
+                                        }`}
+                                    onPress={() => handleSelectedRole(role.code)}
+                                >
+                                    <Text className="text-white font-bold px-2">{role.name}</Text>
+                                </TouchableOpacity>
+                            ))}
                         </View>
                     </View>
                     {/* <View className="flex-row justify-end mb-4">
@@ -376,7 +359,7 @@ const ProfilePage = () => {
                     </View> */}
                     {plans.length === 1 && (
                         <>
-                            <View className={`rounded-lg p-5 mb-5 border border-gray-300 mt-1 `}>
+                            <View className={`rounded-lg p-5 mb-5 bg-gray-100 border border-gray-500 mt-1 `}>
                                 <View className="flex-row justify-between mb-3">
                                     <Text className={`text-2xl font-bold text-black`}>{plans[0].planName}</Text>
                                     <Text className={`text-2xl text-blue-500 mb-1`}>
@@ -432,11 +415,35 @@ const ProfilePage = () => {
                             </TouchableOpacity>
                         </View>
                     )}
+                    
+                    <View className="items-center flex justify-center mt-1 mb-5 bg-gray-100 border border-gray-500 rounded-2xl p-5 shadow-sm">
+                        {/* Language Selector Title */}
+                        <Text className="flex text-xl font-bold text-center text-gray-800 mb-4">
+                            {t("selectLanguage")}
+                        </Text>
 
+                        {/* Language Options */}
+                        <View className="flex-row justify-center mb-6">
+                            {[
+                                { code: "en", name: "English" },
+                                { code: "hi", name: "हिंदी" },
+                            ].map((lang) => (
+                                <TouchableOpacity
+                                    key={lang.code}
+                                    className={`rounded-full px-3 py-3 mx-1 shadow-md ${selectedLanguage === lang.code
+                                        ? "bg-green-500"
+                                        : "bg-gray-400"
+                                        }`}
+                                    onPress={() => changeLanguage(lang.code)}
+                                >
+                                    <Text className="text-white font-bold px-2">{lang.name}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </View>
 
-
-                    <View className="items-center bg-red-100 rounded-2xl p-5 my-6 shadow-sm">
-                        <View className="flex-row justify-center my-6">
+                    <View className="items-center bg-red-100 rounded-2xl p-5 shadow-sm border border-red-500">
+                        <View className="flex-row justify-center">
                             <TouchableOpacity
                                 className="bg-red-500 px-8 py-3 rounded-full shadow-md"
                                 onPress={() => {

@@ -306,7 +306,7 @@ const hi = {
         contactOwner: "मालिक से संपर्क करें",
         noRequestFound: "कोई अनुरोध नहीं मिला",
         noRequestMessage: "आपने अभी तक कोई सेवा अनुरोध नहीं किया है",
-        switchUser: "उपयोगकर्ता",
+        switchUser: "उपयोगकर्ता बदलें",
         switchConfirmation: "आपकी वर्तमान योजना इस सुविधा का समर्थन नहीं करती है। क्या आप अपनी योजना को उन्नत करना चाहते हैं?",
         providerSwitchConfirmation: "क्या आप वाकई प्रदाता में बदलना चाहते हैं?",
         seekerSwitchonfirmation: "क्या आप वाकई खोजकर्ता में बदलना चाहते हैं?",

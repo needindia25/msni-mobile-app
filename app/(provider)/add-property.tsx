@@ -329,6 +329,10 @@ const MultiStepForm = () => {
         method = "PATCH"
         url = `${constants.API_URL}/user-services/${serviceId}/update_option/`;
       }
+      
+      formData.rent = formData.rent ? parseFloat(formData.rent) : 0;
+      formData.areaInSize = formData.areaInSize ? parseFloat(formData.areaInSize) : 0;
+      formData.advance = formData.rent ? parseFloat(formData.rent) : 0;
       const response = await fetchAPI(url, t, {
         method: method,
         headers: {

@@ -305,7 +305,7 @@ const en = {
         contactOwner: "Contact Owner",
         noRequestFound: "No Request Found",
         noRequestMessage: "You have not requested any services yet",
-        switchUser: "Switch",
+        switchUser: "Switch User",
         switchConfirmation: "Your current plan does not support this feature. Do you wnat to upgrade your plan?",
         providerSwitchConfirmation: "Are you sure, you want to switch to provider? if yes, you will redirected to home screen.",
         seekerSwitchConfirmation: "Are you sure, you want to switch to seeker? if yes, you will redirected to home screen.",

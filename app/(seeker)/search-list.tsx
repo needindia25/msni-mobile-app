@@ -4,8 +4,8 @@ import { Listing } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
-import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Alert } from 'react-native';
+import { MaterialIcons } from "@expo/vector-icons";
+import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 import en from '../locales/en';
 import ImageCarousel from '@/components/ImageCarousel';
@@ -61,7 +61,7 @@ const SearchList = () => {
             title: property.title,
             location: property.options.address || "Unknown Location",
             rating: "New",
-            price: `₹ ${property.options.rent || "N/A"}`,
+            price: property.options.rent ? '₹ ' + parseFloat(property.options.rent) : "N/A",
             requests: 0,
             favorites: 0,
             propertyType: property.options.propertyType || "Unknown Type",
@@ -106,9 +106,6 @@ const SearchList = () => {
                     </View>
                 ) : (
                     <>
-                        <TouchableOpacity onPress={() => router.back()} className="mb-5">
-                            <MaterialIcons name="arrow-back" size={24} color="blue" />
-                        </TouchableOpacity>
                         {listings.length > 0 ? (
                             listings.map((listing: any) => (
                                 <View key={listing.id} className="bg-white rounded-lg shadow-md mb-5 p-5 relative">
