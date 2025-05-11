@@ -383,7 +383,7 @@ const ProfilePage = () => {
                                 </View>
                             </View>
                             {(plans[0].has_subscription === false || (plans[0].credits !== -1 && plans[0].used >= plans[0].credits)) && (
-                                <View className="items-center bg-yellow-50 rounded-xl p-6 shadow-sm mt-1 mb-1 ">
+                                <View className="items-center bg-gray-50 border border-gray-500 rounded-xl p-6 shadow-sm mt-1 mb-1 ">
                                     <Text className="text-xl font-bold text-gray-800 mb-3">
                                         {plans[0].has_subscription === false ? t("noActiveSubscription") : t("creditBalanceExhausted")}
                                     </Text>

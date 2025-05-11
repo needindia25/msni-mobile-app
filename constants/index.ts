@@ -97,20 +97,20 @@ export const icons = {
   radioUnchecked,
 };
 
-export const constants = {
-  DEFAULT_LAT: 24.787674373711102,
-  DEFAULT_LONG: 84.99152133511204,
-  BASE_URL: "https://msniassets.rarsolutions.com",
-  API_URL: "https://msniapi.rarsolutions.com",
-  DEFAULT_PASSWORD: "MSNI@2025",
-  EXPO_PUBLIC_PLACES_API_KEY: "AIzaSyBhSmc340OCHOV1eHAWfH7KqVsMBvFO4mE",
-};
-
 // export const constants = {
 //   DEFAULT_LAT: 24.787674373711102,
 //   DEFAULT_LONG: 84.99152133511204,
-//   BASE_URL: "https://assets.multisolutionofneedindia.com",
-//   API_URL: "https://api.multisolutionofneedindia.com",
+//   BASE_URL: "https://msniassets.rarsolutions.com",
+//   API_URL: "https://msniapi.rarsolutions.com",
 //   DEFAULT_PASSWORD: "MSNI@2025",
 //   EXPO_PUBLIC_PLACES_API_KEY: "AIzaSyBhSmc340OCHOV1eHAWfH7KqVsMBvFO4mE",
 // };
+
+export const constants = {
+  DEFAULT_LAT: 24.787674373711102,
+  DEFAULT_LONG: 84.99152133511204,
+  BASE_URL: "https://assets.multisolutionofneedindia.com",
+  API_URL: "https://api.multisolutionofneedindia.com",
+  DEFAULT_PASSWORD: "MSNI@2025",
+  EXPO_PUBLIC_PLACES_API_KEY: "AIzaSyBhSmc340OCHOV1eHAWfH7KqVsMBvFO4mE",
+};

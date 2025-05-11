@@ -117,7 +117,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                                     "client_txn_id": clientTxnId,
                                 }),
                             });
-                            if (paymentResponse === null || response === undefined) {
+                            if (paymentResponse === null || paymentResponse === undefined) {
                                 setLoading(false);
                                 return;
                             }
@@ -143,6 +143,9 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                                             },
                                         },
                                     ]);
+                                } else {
+                                    setLoading(false)
+                                    return;
                                 }
                             } else {
                                 Alert.alert(t("error"), paymentResponse.message, [
@@ -163,6 +166,9 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                             setLoading(false)
                             return;
                         }
+                    } else {
+                        setLoading(false);
+                        return;
                     }
                 }
             );
