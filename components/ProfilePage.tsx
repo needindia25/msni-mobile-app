@@ -283,7 +283,8 @@ const ProfilePage = () => {
                     {/* Profile Title */}
                     <View className="w-full flex-row justify-between items-center mt-2 px-5 bg-white pt-2 mb-5">
                         <Text className="text-2xl font-extrabold text-gray-800">
-                            {userInfo?.user_type_id === 1 ? t("seekerProfile") : t("providerProfile")}
+                            {/* {userInfo?.user_type_id === 1 ? t("seekerProfile") : t("providerProfile")} */}
+                            {t("profile")}
                         </Text>
 
                         <TouchableOpacity
