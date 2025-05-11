@@ -16,6 +16,7 @@ const SignUp = () => {
   const { t } = useTranslation(); // Initialize translation hook
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showVerificationModal, setVerificationModal] = useState(false);
+  const [invaidOTP, setInvalidOTP] = useState(false);
   const [loading, setLoading] = useState(true);
   const [agreedToTerms, setAgreedToTerms] = useState(false); // State to track if the user has agreed to terms and conditions
   
@@ -143,6 +144,7 @@ const SignUp = () => {
             {
               text: t("ok"),
               onPress: () => {
+                setInvalidOTP(true);
                 setVerificationModal(true);
                 setLoading(false);
               },
@@ -154,6 +156,7 @@ const SignUp = () => {
             {
               text: t("ok"),
               onPress: () => {
+                setInvalidOTP(true);
                 setVerificationModal(true);
                 setLoading(false);
               },
@@ -317,6 +320,7 @@ const SignUp = () => {
                 onPress={(enterdOTP) => { onSignUpPress(enterdOTP); }}
                 onBack={() => setVerificationModal(false)}
                 optFor="sign-up"
+                invaidOTP={invaidOTP}
                 number={form.phone}
               />
             ) : (

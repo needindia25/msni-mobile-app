@@ -45,10 +45,10 @@ const WelcomePage = () => {
     }
 
     return (
-        <SafeAreaView  className="flex-1 bg-white">
+        <SafeAreaView className="flex h-full bg-white">
             <View className="flex-1">
                 {/* Scrollable Content */}
-                <ScrollView contentContainerStyle={{ paddingBottom: 20 }} className="flex-grow bg-white">
+                <ScrollView contentContainerStyle={{ paddingBottom: 20 }} className="flex-grow bg-white mx-5">
                     <View className="w-full justify-center items-center mt-10 mb-10">
                         <Image source={images.HorizontalLogo} className="z-0 w-[250px] h-[100px]" />
                     </View>

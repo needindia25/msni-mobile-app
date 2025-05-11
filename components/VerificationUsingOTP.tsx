@@ -8,6 +8,7 @@ interface VerificationUsingOTPProps {
     onPress: (enterdOTP: string) => void;
     onBack: () => void;
     optFor: string;
+    invaidOTP: boolean;
     number: string;
 }
 
@@ -15,6 +16,7 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
     onPress,
     onBack,
     optFor,
+    invaidOTP,
     number,
 }) => {
     const { t } = useTranslation(); // Initialize translation hook
@@ -34,6 +36,13 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
 
     useEffect(() => {
         const fetchOtp = async () => {
+            if (invaidOTP) {
+                setTimeRemaining(59);
+                setErrorMessage('');
+                setLoading(false);
+                inputRefs.current[0]?.focus();
+                return;
+            }
             setLoading(true);
             const response = await fetchAPI(
                 `${constants.API_URL}/otp/generate/`, t,
@@ -57,7 +66,6 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
             }
             setTimeRemaining(59);
             setErrorMessage('');
-
             inputRefs.current[0]?.focus();
         };
         fetchOtp();

@@ -13,6 +13,7 @@ const SignIn = () => {
   const { t } = useTranslation(); // Initialize translation hook
 
   const [username, setUsername] = useState("");
+  const [invaidOTP, setInvalidOTP] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showVerificationModal, setVerificationModal] = useState(false);
 
@@ -93,6 +94,7 @@ const SignIn = () => {
           {
             text: t("ok"),
             onPress: () => {
+              setInvalidOTP(true);
               setVerificationModal(true);
               setLoading(false);
             },
@@ -104,6 +106,7 @@ const SignIn = () => {
           {
             text: t("ok"),
             onPress: () => {
+              setInvalidOTP(true);
               setVerificationModal(true);
               setLoading(false);
             },
@@ -175,6 +178,7 @@ const SignIn = () => {
                 onPress={(enteredOtp) => handleLogin(enteredOtp)}
                 onBack={() => setVerificationModal(false)}
                 optFor="signin"
+                invaidOTP={invaidOTP}
                 number={username}
               />
             ) : (
