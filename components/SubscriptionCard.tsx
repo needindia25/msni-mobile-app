@@ -127,13 +127,6 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                                     console.log("INSIDE IF BLOCK: User Info: ", userInfo)
                                     userInfo.has_subscription = true;
                                     userInfo.plan_id = paymentResponse.plan_id;
-                                    let userTypeId = null;
-                                    if (paymentResponse.hasOwnProperty("user_type_id")) {
-                                        userTypeId = paymentResponse["user_type_id"];
-                                    }
-                                    if (userTypeId === 3) {
-                                        userInfo.is_both_access = true;
-                                    }
                                     await AsyncStorage.setItem("user_info", JSON.stringify(userInfo));
                                     Alert.alert(t("success"), t("transactionSuccessful"), [
                                         {
@@ -183,6 +176,9 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
             ]);
             setLoading(false)
             return;
+        } finally {
+            setLoading(false)
+            return;
         }
     };
     return (
@@ -196,6 +192,8 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                 <View className={`rounded-lg p-5 mb-5 ${isPremium ? 'bg-orange-500' : 'border border-gray-300'}`}>
                     <View className="flex-row justify-between mb-3">
                         <Text className={`text-2xl font-bold ${isPremium ? 'text-white' : 'text-black'}`}>{planName}</Text>
+                    </View>
+                    <View className="flex-row justify-between mb-3">
                         <Text className={`text-2xl ${isPremium ? 'text-white' : 'text-blue-500'} mb-1`}>
                             ₹ {price}
                             <Text className={`ml-5 text-base ${isPremium ? 'text-white' : 'text-gray-600'}`}> / {period} {t("months")}</Text>

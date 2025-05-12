@@ -403,6 +403,11 @@ const en = {
         olderTransaction: "This is an older transaction.",
         invalidTransaction: "Invalid Transaction.",
         unableToFetchPaymentDetails: "Unable to fetch your payment details, if your payment has been deducted please contact support.",
+        noActivePlan: "No Active Plan!",
+        planExpired: "Plan Expired!",
+        creditBalanceExhaustedTitle: "Credit Balance Exhausted!",
+        subscribeNowToAddProperty: "Subscribe now to add new property details.",
+        subscribeNowToViewDetails: "Subscribe now to view details.",
     },
 };
 

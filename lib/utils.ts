@@ -1,46 +1,50 @@
-import { Ride } from "@/types/type";
+import { constants } from "@/constants";
+import { fetchAPI } from "./fetch";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const sortRides = (rides: Ride[]): Ride[] => {
-  const result = rides.sort((a, b) => {
-    const dateA = new Date(`${a.created_at}T${a.ride_time}`);
-    const dateB = new Date(`${b.created_at}T${b.ride_time}`);
-    return dateB.getTime() - dateA.getTime();
-  });
 
-  return result.reverse();
-};
-
-export function formatTime(minutes: number): string {
-  const formattedMinutes = +minutes?.toFixed(0) || 0;
-
-  if (formattedMinutes < 60) {
-    return `${minutes} min`;
-  } else {
-    const hours = Math.floor(formattedMinutes / 60);
-    const remainingMinutes = formattedMinutes % 60;
-    return `${hours}h ${remainingMinutes}m`;
-  }
+export async function getUserInfo(t: any) {
+  const token = await AsyncStorage.getItem('token');
+  return await fetchAPI(
+    `${constants.API_URL}/auth/user_info/`,
+    t,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    }
+  );
 }
 
-export function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  const day = date.getDate();
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-  const month = monthNames[date.getMonth()];
-  const year = date.getFullYear();
+export async function getUserPlan(t: any) {
+  const token = await AsyncStorage.getItem('token');
+  return await fetchAPI(
+    `${constants.API_URL}/user/plan/`,
+    t,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    }
+  );
+}
 
-  return `${day < 10 ? "0" + day : day} ${month} ${year}`;
+export async function generateOTP(t: any, number: string, optFor: string, type: string = "generate") {
+  return await fetchAPI(
+    `${constants.API_URL}/otp/${type}/`, t,
+    {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(
+        {
+          "username": number,
+          "otp_for": optFor
+        }
+      )
+    }
+  );
 }

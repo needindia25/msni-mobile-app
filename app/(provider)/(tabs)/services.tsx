@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { MaterialIcons } from "@expo/vector-icons"; // Import icons
 import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
+import { getUserPlan } from '@/lib/utils';
 
 const Services = () => {
   const { t } = useTranslation(); // Initialize translation hook
@@ -17,53 +18,33 @@ const Services = () => {
   const [listings, setListings] = useState<Listing[]>([]);
 
   const handleViewRequests = async (service: any) => {
-    const token = await AsyncStorage.getItem('token');
-    if (!token) {
-        Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-            [
-                {
-                    text: t("ok"),
-                    onPress: () => {
-                        router.replace("/(auth)/sign-in");
-                    },
-                },
-            ]
-        );
-        return;
+    const userPlan = await getUserPlan(t);
+    console.log(userPlan)
+    let title = "";
+    if (userPlan.length > 0) {
+      if (userPlan[0].has_subscription === false) {
+        title = "planExpired"
+      }
+    } else {
+      title = "noActivePlan";
     }
-    const response = await fetchAPI(
-        `${constants.API_URL}/user/plan/`,
-        t,
-        {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
+    if (title) {
+      Alert.alert(
+        t(title),
+        t("subscribeNowToViewDetails"),
+        [
+          { text: t("cancel"), style: "cancel" },
+          {
+            text: t("ok"),
+            style: "destructive",
+            onPress: async () => {
+              router.push('/choose-subscription');
+              return;
             },
-        }
-    );
-    if (response === null || response === undefined) {
-        return;
-    }
-    const plans = response.map((item: any) => ({
-        id: item.id,
-        subscription_id: item.subscription_id,
-        planName: item.title,
-        price: item.amount,
-        description: item.descriptions,
-        period: item.period,
-        credits: item.credits,
-        used: item.used,
-    })) || [];
-
-    if (plans.length === 0 || plans[0].credits <= plans[0].used) {
-        Alert.alert(t("warning"), t("invalidPlanToAccessInfo"),
-            [
-                {
-                    text: t("ok"),
-                },
-            ]
-        );
-        return
+          },
+        ]
+      );
+      return;
     }
     await AsyncStorage.setItem("passService", JSON.stringify(service));
     router.push('/(provider)/service-requests');
@@ -123,54 +104,37 @@ const Services = () => {
   };
 
   const handleAddPropert = async () => {
-    const token = await AsyncStorage.getItem('token');
-    if (!token) {
-      Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+    const userPlan = await getUserPlan(t);
+    console.log(userPlan)
+    let title = "";
+    if (userPlan.length > 0) {
+      if (userPlan[0].has_subscription === false) {
+        title = "planExpired"
+      } else if (userPlan[0].credits <= userPlan[0].used) {
+        title = "creditBalanceExhausted"
+      }
+    } else {
+      title = "noActivePlan";
+    }
+    if (title) {
+      Alert.alert(
+        t(title),
+        t("subscribeNowToAddProperty"),
         [
+          { text: t("cancel"), style: "cancel" },
           {
             text: t("ok"),
-            onPress: () => {
-              router.replace("/(auth)/sign-in");
+            style: "destructive",
+            onPress: async () => {
+              router.push('/choose-subscription');
+              return;
             },
           },
         ]
       );
       return;
     }
-    const response = await fetchAPI(
-      `${constants.API_URL}/user/plan/`,
-      t,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      }
-    );
-    if (response === null || response === undefined) {
-      return;
-    }
-    const plans = response.map((item: any) => ({
-      id: item.id,
-      subscription_id: item.subscription_id,
-      planName: item.title,
-      price: item.amount,
-      description: item.descriptions,
-      period: item.period,
-      credits: item.credits,
-      used: item.used,
-    })) || [];
-
-    if (plans.length === 0 || plans[0].credits <= plans[0].used) {
-      Alert.alert(t("error"), t("invalidPlanToCreateService"),
-        [
-          {
-            text: t("ok"),
-          },
-        ]
-      );
-      return
-    }
+    await AsyncStorage.setItem("passServiceId", "");
     router.push('/add-property')
   }
 

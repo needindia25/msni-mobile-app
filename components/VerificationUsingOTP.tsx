@@ -3,12 +3,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, Image, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 import { fetchAPI } from '@/lib/fetch';
+import { generateOTP } from '@/lib/utils';
 
 interface VerificationUsingOTPProps {
     onPress: (enterdOTP: string) => void;
     onBack: () => void;
     optFor: string;
-    invaidOTP: boolean;
     number: string;
 }
 
@@ -16,7 +16,6 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
     onPress,
     onBack,
     optFor,
-    invaidOTP,
     number,
 }) => {
     const { t } = useTranslation(); // Initialize translation hook
@@ -25,50 +24,13 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
     const [timeRemaining, setTimeRemaining] = useState(59);
     const [errorMessage, setErrorMessage] = useState("");
     const inputRefs = useRef<(TextInput | null)[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const timer = setInterval(() => {
             setTimeRemaining((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
         }, 1000);
         return () => clearInterval(timer);
-    }, []);
-
-    useEffect(() => {
-        const fetchOtp = async () => {
-            if (invaidOTP) {
-                setTimeRemaining(59);
-                setErrorMessage('');
-                setLoading(false);
-                inputRefs.current[0]?.focus();
-                return;
-            }
-            setLoading(true);
-            const response = await fetchAPI(
-                `${constants.API_URL}/otp/generate/`, t,
-                {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(
-                        {
-                            "username": number,
-                            "otp_for": optFor
-                        }
-                    )
-                }
-            );
-            setLoading(false);
-            if (response === null || response === undefined) {
-                onBack();
-                return;
-            }
-            setTimeRemaining(59);
-            setErrorMessage('');
-            inputRefs.current[0]?.focus();
-        };
-        fetchOtp();
     }, []);
 
     const handleOtpChange = (index: number, value: string) => {
@@ -88,28 +50,13 @@ const VerificationUsingOTP: React.FC<VerificationUsingOTPProps> = ({
 
     const handleResendCode = async () => {
         setLoading(true);
-        const response = await fetchAPI(
-            `${constants.API_URL}/otp/resend/`, t,
-            {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(
-                    {
-                        "username": number,
-                        "otp_for": optFor
-                    }
-                )
-            }
-        );
-        setLoading(false);
-        if (response === null || response === undefined) {
-            return;
+        const otpGenerated = await generateOTP(t, number, optFor, "resend");
+        if (otpGenerated) {
+            setTimeRemaining(59);
+            setErrorMessage('');
+            inputRefs.current[0]?.focus();
         }
-        setTimeRemaining(59);
-        setErrorMessage('');
-        inputRefs.current[0]?.focus();
+        setLoading(false);
     };
 
     const handleVerify = () => {

@@ -7,6 +7,7 @@ import { constants, icons, images } from '@/constants';
 import { fetchAPI } from '@/lib/fetch';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import { getUserPlan } from '@/lib/utils';
 
 const ProfilePage = () => {
     const { t, i18n } = useTranslation();
@@ -23,118 +24,9 @@ const ProfilePage = () => {
                 await AsyncStorage.setItem("selectedTab", "");
             };
             resetTab();
+
         }, [])
     );
-
-    const getUserPlan = async () => {
-        try {
-            const token = await AsyncStorage.getItem('token');
-            if (!token) {
-                Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"), [
-                    {
-                        text: t("ok"),
-                        onPress: () => {
-                            router.replace("/(auth)/sign-in");
-                        },
-                    },
-                ]);
-                return null;
-            }
-
-            const response = await fetchAPI(
-                `${constants.API_URL}/user/plan/`,
-                t,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                }
-            );
-
-            if (!response) {
-                console.error("Failed to fetch user plan: Response is null or undefined.");
-                return null;
-            }
-
-            console.log("User Plan Response: ", response);
-            return response;
-        } catch (error) {
-            console.error("Error fetching user plan:", error);
-            Alert.alert(t("error"), t("somethingWentWrong"), [
-                {
-                    text: t("ok"),
-                },
-            ]);
-            return null;
-        }
-    };
-    const handleSelectedRole = async (role: number) => {
-        if (role === selectedRole) return;
-
-        // userInfo?.is_both_access
-        Alert.alert(
-            t("switchUser"),
-            (
-                userInfo?.is_both_access
-                    ? (role == 1 ? t("seekerSwitchConfirmation") : t("providerSwitchConfirmation"))
-                    : t("switchConfirmation")
-            ),
-            [
-                { text: (userInfo?.is_both_access ? t("cancel") : t("no")), style: "cancel" },
-                {
-                    text: (userInfo?.is_both_access ? t("ok") : t("yes")),
-                    style: "destructive",
-                    onPress: async () => {
-                        let userInfo = await AsyncStorage.getItem('user_info');
-                        const parsedUserInfo = userInfo ? JSON.parse(userInfo) : null;
-                        console.log("parsedUserInfo ", parsedUserInfo)
-                        if (parsedUserInfo) {
-                            console.log("parsedUserInfo ", parsedUserInfo)
-                            console.log("is_both_access ", parsedUserInfo.is_both_access)
-                            if (!parsedUserInfo.is_both_access) {
-                                router.push({
-                                    pathname: '/choose-subscription',
-                                    params: {
-                                        userType: 3
-                                    },
-                                });
-                                return;
-                            }
-                            parsedUserInfo.user_type_id = role;
-                            console.log("parsedUserInfo ", parsedUserInfo)
-                            await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
-                            if (role === 1) {
-                                if (parsedUserInfo.has_subscription_initial == true) {
-                                    parsedUserInfo.has_subscription = true;
-                                    await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
-                                }
-                            }
-                            else if (role === 2) {
-                                if (parsedUserInfo.has_subscription == true || parsedUserInfo.has_subscription_initial == true) {
-                                    const response = await getUserPlan();
-                                    console.log("response ", response)
-                                    if (response === null) {
-                                        return;
-                                    }
-                                    console.log("response.credits ", response[0].credits)
-                                    console.log("response.used ", response[0].used)
-                                    console.log("used", !(response[0].credits > response.used))
-                                    if (!(response[0].credits > response[0].used)) {
-                                        parsedUserInfo.has_subscription = false;
-                                        parsedUserInfo.has_subscription_initial = true;
-                                        await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
-                                    }
-                                }
-                            }
-                            router.push('/welcome-page');
-                            setUserInfo(parsedUserInfo);
-                        }
-                    },
-                },
-            ]
-        );
-    }
     useEffect(() => {
         const checkAuth = async () => {
             const userInfo = await AsyncStorage.getItem('user_info');
@@ -147,8 +39,7 @@ const ProfilePage = () => {
         };
         const fetchSubscriptions = async () => {
             try {
-                const response = await getUserPlan();
-
+                const response = await getUserPlan(t);
                 console.log("fetchSubscriptions response ", response)
                 if (response === null) {
                     return;
@@ -186,6 +77,49 @@ const ProfilePage = () => {
         checkAuth();
         fetchSubscriptions();
     }, []);
+    const handleSelectedRole = async (role: number) => {
+        if (role === selectedRole) return;
+        const userPlan = await getUserPlan(t);
+        let isUpgradePlan = true
+        if (userPlan.length > 0) {
+            isUpgradePlan = userPlan[0].user_type_code !== "B"
+        }
+        console.log(userPlan, isUpgradePlan)
+        Alert.alert(
+            t("switchUser"),
+            (
+                !isUpgradePlan
+                    ? (role == 1 ? t("seekerSwitchConfirmation") : t("providerSwitchConfirmation"))
+                    : t("switchConfirmation")
+            ),
+            [
+                { text: (!isUpgradePlan ? t("cancel") : t("no")), style: "cancel" },
+                {
+                    text: (!isUpgradePlan ? t("ok") : t("yes")),
+                    style: "destructive",
+                    onPress: async () => {
+                        if (isUpgradePlan) {
+                            router.push({
+                                pathname: '/choose-subscription',
+                                params: {
+                                    userType: 3
+                                },
+                            });
+                            return;
+                        }
+                        let userInfo = await AsyncStorage.getItem('user_info');
+                        const parsedUserInfo = userInfo ? JSON.parse(userInfo) : null;
+                        if (parsedUserInfo) {
+                            parsedUserInfo.user_type_id = role;
+                            await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
+                            router.push('/welcome-page');
+                            setUserInfo(parsedUserInfo);
+                        }
+                    },
+                },
+            ]
+        );
+    }
 
     const getInitialURL = (name: string) => {
         let names = name.split(' ');
@@ -324,44 +258,47 @@ const ProfilePage = () => {
                             </Text>
                         </View>
                     </View>
-                    <View className="items-center flex justify-center mt-1 mb-5 bg-gray-100 border border-gray-500 rounded-2xl p-5 shadow-sm">
-                        {/* Switch Role Title */}
-                        <Text className="text-xl font-bold text-center text-gray-800 mb-4">
-                            {t("switchUser")}
-                        </Text>
 
-                        {/* Switch Role Options */}
-                        <View className="flex-row justify-center mb-6">
-                            {[
-                                { code: 1, name: t("seeker") },
-                                { code: 2, name: t("provider") },
-                            ].map((role) => (
-                                <TouchableOpacity
-                                    key={role.code}
-                                    className={`rounded-full px-3 py-3 mx-1 shadow-md ${selectedRole === role.code
-                                        ? "bg-green-500"
-                                        : "bg-gray-400"
-                                        }`}
-                                    onPress={() => handleSelectedRole(role.code)}
-                                >
-                                    <Text className="text-white font-bold px-2">{role.name}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-                    </View>
-                    {/* <View className="flex-row justify-end mb-4">
-                        <TouchableOpacity
-                            className="bg-transparent"
-                            onPress={() => router.push("/transactions")}
-                        >
-                            <Text className="text-blue-500 text-sm font-bold underline">{t("viewTransactions")}</Text>
-                        </TouchableOpacity>
-                    </View> */}
                     {plans.length === 1 && (
                         <>
+                            <View className="items-center flex justify-center mt-1 mb-5 bg-gray-100 border border-gray-500 rounded-2xl p-5 shadow-sm">
+                                {/* Switch Role Title */}
+                                <Text className="text-xl font-bold text-center text-gray-800 mb-4">
+                                    {t("switchUser")}
+                                </Text>
+
+                                {/* Switch Role Options */}
+                                <View className="flex-row justify-center mb-6">
+                                    {[
+                                        { code: 1, name: t("seeker") },
+                                        { code: 2, name: t("provider") },
+                                    ].map((role) => (
+                                        <TouchableOpacity
+                                            key={role.code}
+                                            className={`rounded-full px-3 py-3 mx-1 shadow-md ${selectedRole === role.code
+                                                ? "bg-green-500"
+                                                : "bg-gray-400"
+                                                }`}
+                                            onPress={() => handleSelectedRole(role.code)}
+                                        >
+                                            <Text className="text-white font-bold px-2">{role.name}</Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            </View>
+                            {/* <View className="flex-row justify-end mb-4">
+                                <TouchableOpacity
+                                    className="bg-transparent"
+                                    onPress={() => router.push("/transactions")}
+                                >
+                                    <Text className="text-blue-500 text-sm font-bold underline">{t("viewTransactions")}</Text>
+                                </TouchableOpacity>
+                            </View> */}
                             <View className={`rounded-lg p-5 mb-5 bg-gray-100 border border-gray-500 mt-1 `}>
                                 <View className="flex-row justify-between mb-3">
                                     <Text className={`text-2xl font-bold text-black`}>{plans[0].planName}</Text>
+                                </View>
+                                <View className="flex-row justify-between mb-3">
                                     <Text className={`text-2xl text-blue-500 mb-1`}>
                                         ₹ {plans[0].price}
                                         <Text className={`ml-5 text-base text-gray-600`}> / {plans[0].period} {t("months")}</Text>
@@ -382,7 +319,7 @@ const ProfilePage = () => {
                                     <Text className="text-center text-blue-500">Expire on : {plans[0].expiryDate}</Text>
                                 </View>
                             </View>
-                            {(plans[0].has_subscription === false || (plans[0].credits !== -1 && plans[0].used >= plans[0].credits)) && (
+                            {/* {(plans[0].has_subscription === false || (plans[0].credits !== -1 && plans[0].used >= plans[0].credits)) && (
                                 <View className="items-center bg-gray-50 border border-gray-500 rounded-xl p-6 shadow-sm mt-1 mb-5 ">
                                     <Text className="text-xl font-bold text-gray-800 mb-3">
                                         {plans[0].has_subscription === false ? t("noActiveSubscription") : t("creditBalanceExhausted")}
@@ -396,7 +333,7 @@ const ProfilePage = () => {
                                         </Text>
                                     </TouchableOpacity>
                                 </View>
-                            )}
+                            )} */}
                         </>
                     )}
 
@@ -415,7 +352,7 @@ const ProfilePage = () => {
                             </TouchableOpacity>
                         </View>
                     )}
-                    
+
                     <View className="items-center flex justify-center mt-1 mb-5 bg-gray-100 border border-gray-500 rounded-2xl p-5 shadow-sm">
                         {/* Language Selector Title */}
                         <Text className="flex text-xl font-bold text-center text-gray-800 mb-4">
