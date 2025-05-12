@@ -125,12 +125,12 @@ const TransactionsPage: React.FC = () => {
                     </View>
                 )}
             />
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 className="absolute bottom-5 right-5 bg-green-500 p-4 rounded-full shadow-lg"
                 onPress={() => router.back()}
             >
                 <Text className="text-white font-bold">{t("back")}</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
     );
 };

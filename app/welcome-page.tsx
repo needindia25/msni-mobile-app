@@ -25,8 +25,8 @@ const WelcomePage = () => {
     const handleNext = async () => {
         console.log("userInfo ", userInfo);
         if (userInfo) {
-            if (userInfo.has_subscription) {
-                router.replace(userInfo.user_type_id === 1 ? "/(seeker)/(tabs)/home" : "/(provider)/(tabs)/home");
+            if (userInfo.has_subscription || userInfo.plan_id) {
+                router.replace(userInfo.user_type_id === 1 ? "/(seeker)/(tabs)/home" : "/(provider)/(tabs)/services");
             } else {
                 router.replace("/no-subscription");
             }

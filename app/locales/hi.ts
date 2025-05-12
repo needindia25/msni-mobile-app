@@ -404,6 +404,11 @@ const hi = {
         olderTransaction: "यह एक पुराना लेन-देन है।",
         invalidTransaction: "अमान्य लेन-देन।",
         unableToFetchPaymentDetails: "आपके भुगतान विवरण प्राप्त करने में असमर्थ, यदि आपका भुगतान कट गया है तो कृपया सहायता से संपर्क करें।",
+        noActivePlan: "कोई सक्रिय योजना नहीं!",
+        planExpired: "योजना समाप्त हो गई है!",
+        creditBalanceExhaustedTitle: "क्रेडिट बैलेंस समाप्त हो गया है!",
+        subscribeNowToAddProperty: "नई संपत्ति विवरण जोड़ने के लिए अभी सदस्यता लें।",
+        subscribeNowToViewDetails: "विवरण देखने के लिए अभी सदस्यता लें।",
     },
 };
 

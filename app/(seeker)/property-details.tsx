@@ -11,6 +11,7 @@ import en from '../locales/en';
 import ImageCarousel from '@/components/ImageCarousel';
 import GoogleTextInput from '@/components/GoogleTextInput';
 import { UserInfo } from '@/types/type';
+import { getUserPlan } from '@/lib/utils';
 
 const PropertyDetails = () => {
     const { t } = useTranslation();
@@ -87,7 +88,7 @@ const PropertyDetails = () => {
                     );
                     return;
                 }
-                
+
                 const userInfoString = await AsyncStorage.getItem('user_info');
                 const userInfoJson = userInfoString ? JSON.parse(userInfoString) : null
                 setUserInfo(userInfoJson)
@@ -205,24 +206,29 @@ const PropertyDetails = () => {
     };
 
     const getOwnerDetails = async () => {
-        if (!token) {
-            Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-                [
-                    {
-                        text: t("ok"),
-                        onPress: () => {
-                            router.replace("/(auth)/sign-in");
-                        },
-                    },
-                ]
-            );
-            return;
+        const userPlan = await getUserPlan(t);
+        console.log(userPlan)
+        let title = "";
+        if (userPlan.length > 0) {
+            if (userPlan[0].has_subscription === false) {
+                title = "planExpired"
+            }
+        } else {
+            title = "noActivePlan";
         }
-        if (userInfo?.has_subscription === false) {
-            Alert.alert(t("warning"), t("noActiveSubscriptionToViewOwner"),
+        if (title) {
+            Alert.alert(
+                t(title),
+                t("subscribeNowToViewDetails"),
                 [
+                    { text: t("cancel"), style: "cancel" },
                     {
                         text: t("ok"),
+                        style: "destructive",
+                        onPress: async () => {
+                            router.push('/choose-subscription');
+                            return;
+                        },
                     },
                 ]
             );

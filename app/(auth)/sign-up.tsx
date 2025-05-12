@@ -11,12 +11,12 @@ import CustomRadioGroup from "@/components/CustomRadioGroup";
 import { fetchAPI } from "@/lib/fetch";
 import VerificationUsingOTP from "@/components/VerificationUsingOTP";
 import { useTranslation } from "react-i18next"; // Import useTranslation
+import { generateOTP } from "@/lib/utils";
 
 const SignUp = () => {
   const { t } = useTranslation(); // Initialize translation hook
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showVerificationModal, setVerificationModal] = useState(false);
-  const [invaidOTP, setInvalidOTP] = useState(false);
   const [loading, setLoading] = useState(true);
   const [agreedToTerms, setAgreedToTerms] = useState(false); // State to track if the user has agreed to terms and conditions
   
@@ -105,14 +105,19 @@ const SignUp = () => {
       ]);
       return;
     }
-    setVerificationModal(true);
+    setLoading(true);
+    const otpGenerated = await generateOTP(t, form.phone, "signup");
+    setLoading(false);
+    if (otpGenerated) {
+      setVerificationModal(true);
+    }
   };
 
   const onSignUpPress = async (enterdOTP: any) => {
     setLoading(true);
     setVerificationModal(false);
     try {
-      const response = await fetch(`${constants.API_URL}/otp/verify/`, {
+      const response = await fetchAPI(`${constants.API_URL}/otp/verify/`, t, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -128,15 +133,12 @@ const SignUp = () => {
           otp_for: "signup",
         }),
       });
-      if (response.status === 401) {
-        Alert.alert(t("error"), t("somethingWentWrong"), [
-          {
-            text: "OK",
-          },
-        ]);
+      console.log("Response:", response); // Log the response object
+      if (response === null || response === undefined) {
+        setVerificationModal(true);
+        setLoading(false);
         return;
       }
-      console.log("Response:", response); // Log the response object
       if (response.ok) {
         const response_json = await response.json();
         if (response_json.hasOwnProperty("error")) {
@@ -144,7 +146,6 @@ const SignUp = () => {
             {
               text: t("ok"),
               onPress: () => {
-                setInvalidOTP(true);
                 setVerificationModal(true);
                 setLoading(false);
               },
@@ -156,7 +157,6 @@ const SignUp = () => {
             {
               text: t("ok"),
               onPress: () => {
-                setInvalidOTP(true);
                 setVerificationModal(true);
                 setLoading(false);
               },
@@ -320,7 +320,6 @@ const SignUp = () => {
                 onPress={(enterdOTP) => { onSignUpPress(enterdOTP); }}
                 onBack={() => setVerificationModal(false)}
                 optFor="sign-up"
-                invaidOTP={invaidOTP}
                 number={form.phone}
               />
             ) : (

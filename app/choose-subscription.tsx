@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchAPI } from '@/lib/fetch';
 import { constants, icons, images } from "@/constants";
 import { useTranslation } from 'react-i18next'; // Import useTranslation
+import { getUserPlan } from '@/lib/utils';
 
 
 const ChooseSubscription = () => {
@@ -22,26 +23,18 @@ const ChooseSubscription = () => {
                 const userInfoString = await AsyncStorage.getItem('user_info');
                 const userInfo: UserInfo | null = userInfoString ? JSON.parse(userInfoString) : null;
                 const token = await AsyncStorage.getItem('token');
-
-                let user_type_id = userInfo?.user_type_id;
-                if (userType == "3" || userInfo?.is_both_access) {
-                    user_type_id = 3;
+                const userPlan = await getUserPlan(t);
+                let user_type_id = userInfo?.user_type_id;                
+                const userTypeList = {
+                    "S": 1,
+                    "P": 2,
+                    "B": 3,
                 }
-                console.log("userType", userType);
-                console.log("userInfo?.is_both_access", userInfo?.is_both_access);
-                console.log("user_type_id", user_type_id);
-                if (!token || user_type_id === null || user_type_id === undefined) {
-                    Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-                        [
-                            {
-                                text: t("ok"),
-                                onPress: () => {
-                                    router.replace("/(auth)/sign-in");
-                                },
-                            },
-                        ]
-                    );
-                    return;
+                if (userPlan.length > 0) {
+                    user_type_id = userTypeList[userPlan[0].user_type_code as keyof typeof userTypeList];
+                }
+                if (userType == "3") {
+                    user_type_id = 3;
                 }
                 const response = await fetchAPI(
                     `${constants.API_URL}/master/subscriotion/${user_type_id}/list`,

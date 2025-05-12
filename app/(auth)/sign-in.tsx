@@ -8,12 +8,13 @@ import InputField from "@/components/InputField";
 import { icons, images, constants } from "@/constants";
 import VerificationUsingOTP from "@/components/VerificationUsingOTP";
 import { useTranslation } from "react-i18next"; // Import useTranslation
+import { fetchAPI } from "@/lib/fetch";
+import { generateOTP } from "@/lib/utils";
 
 const SignIn = () => {
   const { t } = useTranslation(); // Initialize translation hook
 
   const [username, setUsername] = useState("");
-  const [invaidOTP, setInvalidOTP] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showVerificationModal, setVerificationModal] = useState(false);
 
@@ -52,70 +53,34 @@ const SignIn = () => {
     if (!validateForm()) {
       return;
     }
-    setVerificationModal(true);
+    setLoading(true);
+    const otpGenerated = await generateOTP(t, username, "signin");
+    console.log(otpGenerated)
+    setLoading(false);
+    if (otpGenerated) {
+      setVerificationModal(true);
+    }
   };
 
   const handleLogin = async (enterdOTP: string) => {
     setLoading(true);
     setVerificationModal(false);
     try {
-      const response = await fetch(`${constants.API_URL}/otp/verify/`, {
+      const response = await fetchAPI(`${constants.API_URL}/otp/verify/`, t, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username: username, otp_for: "signin", otp: enterdOTP }),
       });
-      console.log("Response:", response); // Log the response object
-      if (response.status === 401) {
-        Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"), [
-          {
-            text: t("ok"),
-            onPress: () => router.push(`/(auth)/sign-in`),
-          },
-        ]);
+
+      if (response === null || response === undefined) {
+        setVerificationModal(true);
+        setLoading(false);
         return;
       }
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null); // Handle JSON parsing errors
-        const errorMessage = errorData?.detail || t("invalidCredentials");
-        Alert.alert(t("error"), t(errorMessage),
-          [
-            {
-              text: t("ok"),
-            },
-          ]
-        );
-        return;
-      }
-      const response_json = await response.json();
-      if (response_json.hasOwnProperty("error")) {
-        Alert.alert(t("error"), t(response_json["error"]), [
-          {
-            text: t("ok"),
-            onPress: () => {
-              setInvalidOTP(true);
-              setVerificationModal(true);
-              setLoading(false);
-            },
-          },
-        ]);
-        return;
-      } else if (response_json.hasOwnProperty("warning")) {
-        Alert.alert(t("warning"), t(response_json["warning"]), [
-          {
-            text: t("ok"),
-            onPress: () => {
-              setInvalidOTP(true);
-              setVerificationModal(true);
-              setLoading(false);
-            },
-          },
-        ]);
-        return;
-      }
-      console.log("Data:", response_json); // Log the parsed data
-      const { refresh, access, user_info } = response_json;
+      console.log("Data:", response); // Log the parsed data
+      const { refresh, access, user_info } = response;
 
       if (!refresh || !access || !user_info) {
         Alert.alert(t("error"), t("unexpectedResponse"),
@@ -125,13 +90,8 @@ const SignIn = () => {
             },
           ]
         );
+        setLoading(false);
         return;
-      }
-      user_info.is_both_access = false;
-      if (user_info.user_type_id === 3) {
-        user_info.user_type_id = 2; // Change user type to provider
-        user_info.is_both_access = true; // Set is_both_user to true
-        user_info.has_subscription_initial = user_info.has_subscription;
       }
 
       // Store tokens and user info
@@ -140,13 +100,6 @@ const SignIn = () => {
         ["refresh", refresh],
         ["user_info", JSON.stringify(user_info)],
       ]);
-
-      // Navigate based on user type and subscription
-      // if (user_info.has_subscription) {
-      //   router.replace(user_info.user_type_id === 1 ? "/(seeker)/(tabs)/home" : "/(provider)/(tabs)/home");
-      // } else {
-      //   router.replace("/no-subscription");
-      // }
       router.replace("/welcome-page");
     } catch (err) {
       Alert.alert(t("error"), t("loginFailed"),
@@ -178,7 +131,6 @@ const SignIn = () => {
                 onPress={(enteredOtp) => handleLogin(enteredOtp)}
                 onBack={() => setVerificationModal(false)}
                 optFor="signin"
-                invaidOTP={invaidOTP}
                 number={username}
               />
             ) : (

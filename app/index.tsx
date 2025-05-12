@@ -33,10 +33,8 @@ const Page = () => {
           return;
         }
         setUserInfo(response)
-        response.is_both_access = false;
         if (response.user_type_id === 3) {
-          response.user_type_id = 2; // Change user type to provider
-          response.is_both_access = true; // Set is_both_user to true
+          response.user_type_id = 2;
         }
         await AsyncStorage.setItem('user_info', JSON.stringify(response));
       }
@@ -49,15 +47,6 @@ const Page = () => {
   if (loading) return null;
 
   if (isSignedIn) {
-    // if (userInfo && userInfo.has_subscription) {
-    //   if (userInfo.user_type_id === 1) {
-    //     return <Redirect href="/(seeker)/(tabs)/home" />;
-    //   } else {
-    //     return <Redirect href="/(provider)/(tabs)/home" />;
-    //   }
-    // } else {
-    //   return <Redirect href="/no-subscription" />;
-    // }
     return <Redirect href="/welcome-page" />;
   }
 
