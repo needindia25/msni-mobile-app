@@ -22,11 +22,11 @@ const RequestCard: React.FC<{ request: Request }> = ({ request }) => {
                 </View>
                 <View className="flex-1 items-end">
                     <View className="flex-row">
-                        <Text className="text-lg font-semibold text-gray-800">{request.name}</Text>
+                        <Text className="text-base font-semibold text-gray-800">{request.name}</Text>
                     </View>
                     <View className="flex-row">
-                        <MaterialIcons name="phone" size={24} color="#4CAF50" />
-                        <Text className="text-lg font-semibold text-gray-800 ml-2">+91 {request.phone}</Text>
+                        <MaterialIcons name="phone" size={20} color="#4CAF50" />
+                        <Text className="text-base font-semibold text-gray-800 ml-2">+91 {request.phone}</Text>
                     </View>
                 </View>
             </View>

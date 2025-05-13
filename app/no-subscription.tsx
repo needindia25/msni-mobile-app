@@ -14,11 +14,11 @@ const NoSubscription = () => {
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
     const checkAuth = async () => {
-        const _userInfo = await getUserInfo(t)
-        setUserInfo(_userInfo)
-        await AsyncStorage.setItem('user_info', JSON.stringify(_userInfo));
-        if (_userInfo && _userInfo.userInfo.has_subscription || _userInfo.plan_id) {
-            router.replace(_userInfo.user_type_id === 1 ? "/(seeker)/(tabs)/home" : "/(provider)/(tabs)/services");
+        const _userInfo = await AsyncStorage.getItem('user_info')
+        const parsedIUserInfo = _userInfo ? JSON.parse(_userInfo) : null;
+        setUserInfo(parsedIUserInfo)
+        if (parsedIUserInfo && parsedIUserInfo.userInfo.has_subscription || parsedIUserInfo.plan_id) {
+            router.replace(parsedIUserInfo.user_type_id === 1 ? "/(seeker)/(tabs)/home" : "/(provider)/(tabs)/services");
         }
     };
 
