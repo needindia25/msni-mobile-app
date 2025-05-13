@@ -26,7 +26,7 @@ export const fetchAPI = async (url: string, t: (key: string) => string, options?
         return response_json
       }
     } else {
-      Alert.alert(t("error"), t("somethingWentWrong") + ": " + response.text, [
+      Alert.alert(t("error"), t("somethingWentWrong"), [
         {
           text: t("ok"),
           onPress: () => { return null },

@@ -306,7 +306,7 @@ const en = {
         noRequestFound: "No Request Found",
         noRequestMessage: "You have not requested any services yet",
         switchUser: "Switch User",
-        switchConfirmation: "Your current plan does not support this feature. Do you wnat to upgrade your plan?",
+        switchConfirmation: "Your current plan does not support this feature. Do you want to upgrade your plan?",
         providerSwitchConfirmation: "Are you sure, you want to switch to provider? if yes, you will redirected to home screen.",
         seekerSwitchConfirmation: "Are you sure, you want to switch to seeker? if yes, you will redirected to home screen.",
         providerProfile: "Provider Profile",
@@ -408,6 +408,7 @@ const en = {
         creditBalanceExhaustedTitle: "Credit Balance Exhausted!",
         subscribeNowToAddProperty: "Subscribe now to add new property details.",
         subscribeNowToViewDetails: "Subscribe now to view details.",
+        transactionUpdatedToSuccess: "Your last transaction was pending, now it is updated as successful.",
     },
 };
 

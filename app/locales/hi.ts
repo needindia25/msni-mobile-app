@@ -409,6 +409,7 @@ const hi = {
         creditBalanceExhaustedTitle: "क्रेडिट बैलेंस समाप्त हो गया है!",
         subscribeNowToAddProperty: "नई संपत्ति विवरण जोड़ने के लिए अभी सदस्यता लें।",
         subscribeNowToViewDetails: "विवरण देखने के लिए अभी सदस्यता लें।",
+        transactionUpdatedToSuccess: "आपका पिछला लेन-देन लंबित था, अब इसे सफल के रूप में अपडेट कर दिया गया है।",
     },
 };
 

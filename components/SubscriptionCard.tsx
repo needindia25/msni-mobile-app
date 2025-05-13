@@ -81,6 +81,23 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                 setLoading(false);
                 return;
             }
+            
+            if (response.hasOwnProperty("plan_id")) {
+                if (userInfo) {
+                    userInfo.has_subscription = true;
+                    userInfo.plan_id = response.plan_id;
+                    await AsyncStorage.setItem("user_info", JSON.stringify(userInfo));
+                    Alert.alert(t("success"), t("transactionUpdatedToSuccess"), [
+                        {
+                            text: t("ok"),
+                            onPress: () => {
+                                router.push(userInfo.user_type_id == 1 ? "/(seeker)/(tabs)/profile" : "/(provider)/(tabs)/profile")
+                            },
+                        },
+                    ]);
+                }
+                return;
+            }
 
             let transaction_code = null;
             if (response.hasOwnProperty("transaction_code")) {
