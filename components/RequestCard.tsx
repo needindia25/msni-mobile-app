@@ -14,19 +14,21 @@ const RequestCard: React.FC<{ request: Request }> = ({ request }) => {
     const { t } = useTranslation();
 
     return (
-        <View className="border border-gray-300 rounded-lg p-5 mb-5 mx-2 bg-white shadow-md">
+        <View className="border border-gray-300 rounded-lg p-5 mb-5 bg-white shadow-md">
             {/* Header Row */}
             <View className="flex-row items-center mb-4">
                 <View className="bg-blue-500 rounded-full w-14 h-14 items-center justify-center mr-4">
                     <Text className="text-xl text-white font-bold">{request.initials}</Text>
                 </View>
-                <View className="flex-1">
-                    <Text className="text-lg font-semibold text-gray-800">{request.name}</Text>
+                <View className="flex-1 items-end">
+                    <View className="flex-row">
+                        <Text className="text-lg font-semibold text-gray-800">{request.name}</Text>
+                    </View>
+                    <View className="flex-row">
+                        <MaterialIcons name="phone" size={24} color="#4CAF50" />
+                        <Text className="text-lg font-semibold text-gray-800 ml-2">+91 {request.phone}</Text>
+                    </View>
                 </View>
-                <TouchableOpacity className="flex-row items-center">
-                    <MaterialIcons name="phone" size={24} color="#4CAF50" />
-                    <Text className="text-lg font-semibold text-gray-800 ml-2">+91 {request.phone}</Text>
-                </TouchableOpacity>
             </View>
 
             {/* Divider */}
