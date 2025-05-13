@@ -117,7 +117,7 @@ const SignUp = () => {
     setLoading(true);
     setVerificationModal(false);
     try {
-      const response = await fetchAPI(`${constants.API_URL}/otp/verify/`, t, {
+      const response_json = await fetchAPI(`${constants.API_URL}/otp/verify/`, t, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -133,47 +133,38 @@ const SignUp = () => {
           otp_for: "signup",
         }),
       });
-      console.log("Response:", response); // Log the response object
-      if (response === null || response === undefined) {
+      console.log("Response:", response_json);
+      if (response_json === null || response_json === undefined) {
         setVerificationModal(true);
         setLoading(false);
         return;
       }
-      if (response.ok) {
-        const response_json = await response.json();
-        if (response_json.hasOwnProperty("error")) {
-          Alert.alert(t("error"), t(response_json["error"]), [
-            {
-              text: t("ok"),
-              onPress: () => {
-                setVerificationModal(true);
-                setLoading(false);
-              },
-            },
-          ]);
-          return;
-        } else if (response_json.hasOwnProperty("warning")) {
-          Alert.alert(t("warning"), t(response_json["warning"]), [
-            {
-              text: t("ok"),
-              onPress: () => {
-                setVerificationModal(true);
-                setLoading(false);
-              },
-            },
-          ]);
-          return;
-        } else {
-          setShowSuccessModal(true);
-          setLoading(false);
-        }
-      } else {
-        Alert.alert(t("error"), t("somethingWentWrong"), [
+      console.log("response_json:", response_json);
+      if (response_json.hasOwnProperty("error")) {
+        Alert.alert(t("error"), t(response_json["error"]), [
           {
-            text: "OK",
+            text: t("ok"),
+            onPress: () => {
+              setVerificationModal(true);
+              setLoading(false);
+            },
           },
         ]);
         return;
+      } else if (response_json.hasOwnProperty("warning")) {
+        Alert.alert(t("warning"), t(response_json["warning"]), [
+          {
+            text: t("ok"),
+            onPress: () => {
+              setVerificationModal(true);
+              setLoading(false);
+            },
+          },
+        ]);
+        return;
+      } else {
+        setShowSuccessModal(true);
+        setLoading(false);
       }
     } catch (err) {
       Alert.alert(t("error"), t("errorOccurred"),

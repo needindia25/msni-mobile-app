@@ -4,50 +4,41 @@ import { router } from "expo-router";
 export const fetchAPI = async (url: string, t: (key: string) => string, options?: RequestInit) => {
   try {
     const response = await fetch(url, options);
-    console.log(response)
-    if (response.status === 401) {
-      Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"), [
-        {
-          text: t("ok"),
-          onPress: () => router.push(`/(auth)/sign-in`),
-        },
-      ]);
-      return;
-    }
-    if (!response.ok || response.status === 400) {
-      Alert.alert(t("error"), t("somethingWentWrong"), [
-        {
-          text: t("ok"),
-          onPress: () => router.push(`/(auth)/sign-in`),
-        },
-      ]);
-      return;
-    }
-    const response_json =  await response.json();
-    if (response_json.hasOwnProperty("error")) {
-      Alert.alert(t("error"), t(response_json["error"]), [
-        {
-          text: t("ok"),
-          onPress: () => {return null},
-        },
-      ]);
-      return null;
-    } else if (response_json.hasOwnProperty("warning")) {
-      Alert.alert(t("warning"), t(response_json["warning"]), [
-        {
-          text: t("ok"),
-          onPress: () => {return null},
-        },
-      ]);
-      return null;
+    if (response.ok) {
+      const response_json = await response.json();
+      if (response_json.hasOwnProperty("error")) {
+        Alert.alert(t("error"), t(response_json["error"]), [
+          {
+            text: t("ok"),
+            onPress: () => { return null },
+          },
+        ]);
+        return null;
+      } else if (response_json.hasOwnProperty("warning")) {
+        Alert.alert(t("warning"), t(response_json["warning"]), [
+          {
+            text: t("ok"),
+            onPress: () => { return null },
+          },
+        ]);
+        return null;
+      } else {
+        return response_json
+      }
     } else {
-      return response_json
+      Alert.alert(t("error"), t("somethingWentWrong") + ": " + response.text, [
+        {
+          text: t("ok"),
+          onPress: () => { return null },
+        },
+      ]);
+      return;
     }
   } catch (error) {
-    Alert.alert(t("error"), t("somethingWentWrong"), [
+    Alert.alert(t("error"), String(error), [
       {
         text: t("ok"),
-        onPress: () => router.push(`/(auth)/sign-in`),
+        onPress: () => { return null },
       },
     ]);
     return null;
