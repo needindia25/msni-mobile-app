@@ -49,10 +49,13 @@ const WelcomePage = () => {
             <View className="flex-1">
                 {/* Scrollable Content */}
                 <ScrollView contentContainerStyle={{ paddingBottom: 20 }} className="flex-grow bg-white mx-5">
-                    <View className="w-full justify-center items-center mt-10 mb-10">
+                    <View className="w-full justify-center items-center mt-10 mb-5">
                         <Image source={images.HorizontalLogo} className="z-0 w-[250px] h-[100px]" />
                     </View>
-                    <View className="py-5 m-5">
+                    <View className="py-5 mx-10">
+                        <Text className="text-4xl  text-orange-400 text-center mb-5">
+                            <Text className="font-bold">Description</Text>
+                        </Text>
                         <Text className="text-lg text-gray-600 text-justify mb-10">
                             <Text className="font-bold">Need India</Text> is the <Text className="font-bold">brand</Text> name of <Text className="font-bold">Multi Solution of Need India</Text>, a company dedicated to simplifying multiple basic and social needs. The app facilitates a seamless exchange of services, allowing users to give and receive favors effortlessly. It covers <Text className="font-bold">all types of property rentals and leases across India's villages, cities, towns, and markets</Text>. With a vast network of seekers and providers, the platform brings various services together in a single subscription-based app.
                         </Text>

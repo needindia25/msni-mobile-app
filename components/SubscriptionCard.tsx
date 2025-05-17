@@ -5,10 +5,17 @@ import { UserInfo } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NativeModules } from 'react-native';
 import CustomButton from './CustomButton';
-const { SabPaisaSDK } = NativeModules
+const { SabPaisaModule } = NativeModules
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 import { constants } from '@/constants';
 import { fetchAPI } from '@/lib/fetch';
+
+interface PaymentResponse {
+  status: string;
+  clientTxnId: string;
+  amount: string;
+  payerName: string;
+}
 
 interface SubscriptionCardProps {
     subscriptionId: number;
@@ -67,61 +74,61 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
     const handleOnPress = async () => {
         setLoading(true)
         try {
-            const response: any = await fetchAPI(`${constants.API_URL}/user/transaction/`, t, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    "subscription_id": subscriptionId,
-                }),
-            });
-            if (response === null || response === undefined) {
-                setLoading(false);
-                return;
-            }
-            
-            if (response.hasOwnProperty("plan_id")) {
-                if (userInfo) {
-                    userInfo.has_subscription = true;
-                    userInfo.plan_id = response.plan_id;
-                    await AsyncStorage.setItem("user_info", JSON.stringify(userInfo));
-                    Alert.alert(t("success"), t("transactionUpdatedToSuccess"), [
+            if (userInfo) {
+                const response: any = await fetchAPI(`${constants.API_URL}/user/transaction/`, t, {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        "subscription_id": subscriptionId,
+                    }),
+                });
+                if (response === null || response === undefined) {
+                    setLoading(false);
+                    return;
+                }
+                
+                if (response.hasOwnProperty("plan_id")) {
+                    if (userInfo) {
+                        userInfo.has_subscription = true;
+                        userInfo.plan_id = response.plan_id;
+                        await AsyncStorage.setItem("user_info", JSON.stringify(userInfo));
+                        Alert.alert(t("success"), t("transactionUpdatedToSuccess"), [
+                            {
+                                text: t("ok"),
+                                onPress: () => {
+                                    router.push(userInfo.user_type_id == 1 ? "/(seeker)/(tabs)/profile" : "/(provider)/(tabs)/profile")
+                                },
+                            },
+                        ]);
+                    }
+                    return;
+                }
+
+                let transaction_code = null;
+                if (response.hasOwnProperty("transaction_code")) {
+                    transaction_code = response["transaction_code"];
+                }
+
+                if (!transaction_code) {
+                    Alert.alert(t("error"), t("unableToCreateTransaction"), [
                         {
                             text: t("ok"),
                             onPress: () => {
-                                router.push(userInfo.user_type_id == 1 ? "/(seeker)/(tabs)/profile" : "/(provider)/(tabs)/profile")
+                                setLoading(false)
                             },
                         },
                     ]);
+                    return;
                 }
-                return;
-            }
-
-            let transaction_code = null;
-            if (response.hasOwnProperty("transaction_code")) {
-                transaction_code = response["transaction_code"];
-            }
-
-            if (!transaction_code) {
-                Alert.alert(t("error"), t("unableToCreateTransaction"), [
-                    {
-                        text: t("ok"),
-                        onPress: () => {
-                            setLoading(false)
-                        },
-                    },
-                ]);
-                return;
-            }
-
-            SabPaisaSDK.openSabpaisaSDK(
-                [price.toString(), userInfo?.full_name, "", userInfo?.username, transaction_code, "payment@msni.in", ],
-                async (error: any, message: string, clientTxnId: string) => {
-                    console.log("transaction_code: ", transaction_code);
-                    console.log("clientTxnId: ", clientTxnId);
-                    if (clientTxnId) {
+                try {
+                    const paymentModuleResponse: PaymentResponse = await SabPaisaModule.initiatePayment(
+                        [price.toString(), userInfo.full_name, userInfo.username, "payment@msni.in", transaction_code ]
+                    )
+                    console.log(paymentModuleResponse)
+                    if (paymentModuleResponse.clientTxnId) {
                         try {
                             const paymentResponse: any = await fetchAPI(`${constants.API_URL}/user/payment/`, t, {
                                 method: "POST",
@@ -131,7 +138,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                                 },
                                 body: JSON.stringify({
                                     "transaction_code": transaction_code,
-                                    "client_txn_id": clientTxnId,
+                                    "client_txn_id": paymentModuleResponse.clientTxnId,
                                 }),
                             });
                             if (paymentResponse === null || paymentResponse === undefined) {
@@ -177,11 +184,107 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                             return;
                         }
                     } else {
+                        Alert.alert(
+                            t("error"),
+                            JSON.stringify(paymentModuleResponse),
+                            [
+                                {
+                                    text: t("ok"),
+                                    onPress: () => {
+                                        setLoading(false)
+                                    },
+                                },
+                            ]
+                        );
                         setLoading(false);
                         return;
                     }
+                } catch (error: any) {
+                    Alert.alert('Error', error.message);
                 }
-            );
+            } else {
+                Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                    [
+                        {
+                            text: t("ok"),
+                            onPress: () => {
+                                router.replace("/(auth)/sign-in");
+                            },
+                        },
+                    ]
+                );
+                return;
+            }
+
+            // SabPaisaSDK.initiatePayment(
+            //     [price.toString(), userInfo?.full_name, userInfo?.username, "payment@msni.in", transaction_code, ],
+            //     async (error: any, message: string, clientTxnId: string) => {
+            //         console.log("error: ", error);
+            //         console.log("message: ", message);
+            //         console.log("transaction_code: ", transaction_code);
+            //         console.log("transaction_code: ", transaction_code);
+            //         console.log("clientTxnId: ", clientTxnId);
+            //         if (clientTxnId) {
+            //             try {
+            //                 const paymentResponse: any = await fetchAPI(`${constants.API_URL}/user/payment/`, t, {
+            //                     method: "POST",
+            //                     headers: {
+            //                         'Content-Type': 'application/json',
+            //                         'Authorization': `Bearer ${token}`,
+            //                     },
+            //                     body: JSON.stringify({
+            //                         "transaction_code": transaction_code,
+            //                         "client_txn_id": clientTxnId,
+            //                     }),
+            //                 });
+            //                 if (paymentResponse === null || paymentResponse === undefined) {
+            //                     setLoading(false);
+            //                     return;
+            //                 }
+            //                 if (paymentResponse.status === "0000") {
+            //                     console.log("User Info: ", userInfo)
+            //                     if (userInfo) {
+            //                         console.log("INSIDE IF BLOCK: User Info: ", userInfo)
+            //                         userInfo.has_subscription = true;
+            //                         userInfo.plan_id = paymentResponse.plan_id;
+            //                         await AsyncStorage.setItem("user_info", JSON.stringify(userInfo));
+            //                         Alert.alert(t("success"), t("transactionSuccessful"), [
+            //                             {
+            //                                 text: t("ok"),
+            //                                 onPress: () => {
+            //                                     router.push(userInfo.user_type_id == 1 ? "/(seeker)/(tabs)/profile" : "/(provider)/(tabs)/profile")
+            //                                 },
+            //                             },
+            //                         ]);
+            //                     } else {
+            //                         setLoading(false)
+            //                         return;
+            //                     }
+            //                 } else {
+            //                     Alert.alert(t("error"), paymentResponse.message, [
+            //                         {
+            //                             text: t("ok"),
+            //                         },
+            //                     ]);
+            //                     setLoading(false)
+            //                     return;
+            //                 }
+            //             } catch (error) {
+            //                 Alert.alert(t("error"), t("somethingWentWrong"), [
+            //                     {
+            //                         text: t("ok"),
+            //                         onPress: () => router.push(`/(auth)/sign-in`),
+            //                     },
+            //                 ]);
+            //                 setLoading(false)
+            //                 return;
+            //             }
+            //         } else {
+            //             setLoading(false);
+            //             return;
+            //         }
+            //     }
+            // );
         } catch (error) {
             Alert.alert(t("error"), t("unableToCreateTransaction"), [
                 {
