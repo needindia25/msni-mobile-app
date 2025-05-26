@@ -15,6 +15,7 @@ const Services = () => {
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
+  const [totalActiveServices, setTotalActiveServices] = useState(0);
   const [listings, setListings] = useState<Listing[]>([]);
 
   const handleViewRequests = async (service: any) => {
@@ -78,6 +79,7 @@ const Services = () => {
         if (response === null || response === undefined) {
           return;
         }
+        setTotalActiveServices(response.length);
         setListings(transformData(response));
       }
       setLoading(false);
@@ -197,16 +199,20 @@ const Services = () => {
                     className="w-12 h-12"
                   />
                 </View>
-                <Text className="text-xl font-bold text-black mb-2">{t("noPropertyFound")}</Text>
-                <Text className="text-base text-gray-600 text-center mb-10">
-                  {t("noPropertyMessage")}
+                <Text className="text-xl font-bold text-black mb-2">
+                  {totalActiveServices ? t("noActivityFound") : t("noPropertyFound")}
                 </Text>
-                <TouchableOpacity
-                  className="bg-green-500 py-3 px-10 rounded-full mb-5"
-                  onPress={() => handleAddPropert()}
-                >
-                  <Text className="text-white text-lg font-bold">{t("addNewProperty")}</Text>
-                </TouchableOpacity>
+                <Text className="text-base text-gray-600 text-center mb-10">
+                  {totalActiveServices ? t("noActivityMessage") : t("noPropertyMessage")}
+                </Text>
+                {!totalActiveServices && (
+                  <TouchableOpacity
+                    className="bg-green-500 py-3 px-10 rounded-full mb-5"
+                    onPress={() => handleAddPropert()}
+                  >
+                    <Text className="text-white text-lg font-bold">{t("addNewProperty")}</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             )}
           </>

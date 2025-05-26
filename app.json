@@ -2,23 +2,23 @@
   "expo": {
     "name": "Need India",
     "slug": "need-india",
-    "version": "0.1.10",
+    "version": "1.0.1",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/icon.png"
+      "favicon": "./assets/images/icon-3.png"
     },
     "platforms": [
       "ios",
       "android",
       "web"
     ],
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/icon-3.png",
     "splash": {
-      "image": "./assets/images/icon.png",
+      "image": "./assets/images/icon-3.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -41,7 +41,7 @@
     "android": {
       "package": "com.needindia25.needindia",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon.png",
+        "foregroundImage": "./assets/images/icon-3.png",
         "backgroundColor": "#ffffff"
       }
     },

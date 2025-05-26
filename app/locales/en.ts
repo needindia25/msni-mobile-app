@@ -409,6 +409,8 @@ const en = {
         subscribeNowToAddProperty: "Subscribe now to add new property details.",
         subscribeNowToViewDetails: "Subscribe now to view details.",
         transactionUpdatedToSuccess: "Your last transaction was pending, now it is updated as successful.",
+        noActivityFound: "No Activity Found",
+        noActivityMessage: "No user as performed any activity on your posted service(s)",
     },
 };
 

@@ -618,7 +618,7 @@ const PropertyDetails = () => {
                             </View>
                         </View>
                         {
-                            (formData?.latitude != 0 && formData?.longitude != 0) && (
+                            (showContactInfo && formData?.latitude != 0 && formData?.longitude != 0) && (
                                 <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
                                     <GoogleTextInput
                                         icon={icons.target}
