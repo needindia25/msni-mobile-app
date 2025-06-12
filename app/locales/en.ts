@@ -411,6 +411,16 @@ const en = {
         transactionUpdatedToSuccess: "Your last transaction was pending, now it is updated as successful.",
         noActivityFound: "No Activity Found",
         noActivityMessage: "No user as performed any activity on your posted service(s)",
+        guestHouse: "Guest House",
+        double: "Double",
+        ratePerDayNight: "Rate per Day",
+        enterRatePerDayNight: "Enter Rate per Day",
+        priceDayNight: " /Day",
+        "2Beds": "2 Beds",
+        "3Beds": "3 Beds",
+        "4Beds": "4 Beds",
+        "5Beds": "5 Beds",
+        dormitory: "Dormitory",
     },
 };
 

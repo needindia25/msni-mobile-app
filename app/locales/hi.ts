@@ -412,6 +412,16 @@ const hi = {
         transactionUpdatedToSuccess: "आपका पिछला लेन-देन लंबित था, अब इसे सफल के रूप में अपडेट कर दिया गया है।",        
         noActivityFound: "कोई गतिविधि नहीं मिली",
         noActivityMessage: "आपकी पोस्ट की गई सेवाओं पर किसी भी उपयोगकर्ता ने कोई गतिविधि नहीं की है",
+        guestHouse: "गेस्ट हाउस",
+        double: "डबल",
+        ratePerDayNight: "प्रति दिन दर",
+        enterRatePerDayNight: "प्रति दिन दर दर्ज करें",
+        priceDayNight: " / दिन",
+        "2Beds": "2 बिस्तर",
+        "3Beds": "3 बिस्तर",
+        "4Beds": "4 बिस्तर",
+        "5Beds": "5 बिस्तर",
+        dormitory: "डॉर्मिटरी",
     },
 };
 
