@@ -635,49 +635,50 @@ const PropertyDetails = () => {
                                 <Text className="text-black font-semibold">{formatDate(formData.date_created)}</Text>
                             </View>
                         </View>
-                        {
-                            (showContactInfo && formData?.latitude != 0 && formData?.longitude != 0) && (
-                                <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
-                                    <GoogleTextInput
-                                        icon={icons.target}
-                                        initialLocation={{
-                                            latitude: formData?.latitude,
-                                            longitude: formData?.longitude,
-                                            address: String(formData?.location),
-                                            draggable: false
-                                        }}
-                                    />
-                                </View>
-                            )
-                        }
                         {showContactInfo && (
-                            <View className="bg-[#FF7F19] p-4 rounded-lg shadow-md mb-5">
-                                <Text className="text-lg text-white font-bold mb-3">{t("ownerDetails")}</Text>
-                                <View className="flex-row justify-between mb-2">
-                                    <View className="flex-row items-center">
-                                        <MaterialIcons name="person" size={20} color="white" />
-                                        <Text className="text-white ml-2">{t("ownerName")}</Text>
+                            <>
+                                <View className="bg-[#FF7F19] p-4 rounded-lg shadow-md mb-5">
+                                    <Text className="text-lg text-white font-bold mb-3">{t("ownerDetails")}</Text>
+                                    <View className="flex-row justify-between mb-2">
+                                        <View className="flex-row items-center">
+                                            <MaterialIcons name="person" size={20} color="white" />
+                                            <Text className="text-white ml-2">{t("ownerName")}</Text>
+                                        </View>
+                                        <Text className="text-white font-semibold">{formData.owner_name}</Text>
                                     </View>
-                                    <Text className="text-white font-semibold">{formData.owner_name}</Text>
-                                </View>
-                                <View className="flex-row justify-between mb-3">
-                                    <View className="flex-row items-center">
-                                        <MaterialIcons name="phone" size={20} color="white" />
-                                        <Text className="text-white ml-2">{t("phoneNumber")}</Text>
+                                    <View className="flex-row justify-between mb-3">
+                                        <View className="flex-row items-center">
+                                            <MaterialIcons name="phone" size={20} color="white" />
+                                            <Text className="text-white ml-2">{t("phoneNumber")}</Text>
+                                        </View>
+                                        <Text className="text-white font-semibold">{formData.owner_contact}</Text>
                                     </View>
-                                    <Text className="text-white font-semibold">{formData.owner_contact}</Text>
-                                </View>
-
-                                <View className="flex-row justify-between items-start">
-                                    <View className="flex-row items-center flex-shrink-0 mr-4">
-                                        <MaterialIcons name="location-on" size={20} color="white" />
-                                        <Text className="text-white ml-2">{t("address")}</Text>
+                                    <View className="flex-row justify-between items-start">
+                                        <View className="flex-row items-center flex-shrink-0 mr-4">
+                                            <MaterialIcons name="location-on" size={20} color="white" />
+                                            <Text className="text-white ml-2">{t("address")}</Text>
+                                        </View>
+                                        <Text className="text-white font-semibold flex-shrink text-right">
+                                            {`${formData.address}, ${formData.city}, ${formData.districtName}, ${formData.stateName} - ${formData.zip}`}
+                                        </Text>
                                     </View>
-                                    <Text className="text-white font-semibold flex-shrink text-right">
-                                        {`${formData.address}, ${formData.city}, ${formData.districtName}, ${formData.stateName} - ${formData.zip}`}
-                                    </Text>
                                 </View>
-                            </View>
+                                {
+                                    (formData?.latitude != 0 && formData?.longitude != 0) && (
+                                        <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
+                                            <GoogleTextInput
+                                                icon={icons.target}
+                                                initialLocation={{
+                                                    latitude: formData?.latitude,
+                                                    longitude: formData?.longitude,
+                                                    address: String(formData?.location),
+                                                    draggable: false
+                                                }}
+                                            />
+                                        </View>
+                                    )
+                                }
+                            </>
                         )}
                     </View>
 
