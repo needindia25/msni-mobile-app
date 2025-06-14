@@ -3,8 +3,8 @@ import { fetchAPI } from '@/lib/fetch';
 import { Listing } from '@/types/type';
 import ImageCarousel from "@/components/ImageCarousel";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import React, { useCallback, useState } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 import { getUserPlan } from '@/lib/utils';
@@ -15,39 +15,47 @@ const Home = () => {
 
     const [loading, setLoading] = useState(true);
     const [listings, setListings] = useState<Listing[]>([]);
-    useEffect(() => {
-        const checkAuth = async () => {
-            const token = await AsyncStorage.getItem('token');
-            await AsyncStorage.setItem("passServiceId", "");
-            if (!token) {
-                Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-                    [
-                        {
-                            text: t("ok"),
-                            onPress: () => {
-                                router.replace("/(auth)/sign-in");
-                            },
+
+    useFocusEffect(
+        useCallback(() => {
+            console.log("Services screen focused");
+            reloadData(); // Run checkAuth every time the screen comes into focus
+        }, [])
+    );
+
+    const reloadData = async () => {
+        setLoading(true);
+        const token = await AsyncStorage.getItem('token');
+        await AsyncStorage.setItem("passServiceId", "");
+        if (!token) {
+            Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                [
+                    {
+                        text: t("ok"),
+                        onPress: () => {
+                            router.replace("/(auth)/sign-in");
                         },
-                    ]
-                );
+                    },
+                ]
+            );
+            setLoading(false);
+            return;
+        }
+        if (!!token) {
+            const response: any = await fetchAPI(`${constants.API_URL}/user-services/my_property/`, t, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            setLoading(false);
+            if (response === null || response === undefined) {
                 return;
             }
-            if (!!token) {
-                const response: any = await fetchAPI(`${constants.API_URL}/user-services/my_property/`, t, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
-                if (response === null || response === undefined) {
-                    return;
-                }
-                setListings(transformData(response));
-            }
-            setLoading(false);
-        };
-        checkAuth();
-    }, []);
+            console.log("Data:", response); // Log the parsed data
+            setListings(transformData(response));
+        }
+    };
 
     const transformData = (data: any[]): Listing[] => {
         const sortedData = data.sort((a, b) => b.id - a.id);
@@ -57,6 +65,7 @@ const Home = () => {
             location: property.options.address || "Unknown Location",
             rating: "New",
             price: property.options.rent ? '₹ ' + parseFloat(property.options.rent) : "N/A",
+            propertyType: property.options.propertyType || "Unknown Type",
             requests: 0,
             favorites: 0,
             images: property.options.images && property.options.images.length > 0
@@ -293,7 +302,7 @@ const Home = () => {
 
                                     <View className="flex-row justify-between items-center mb-1">
                                         <Text className="text-blue-500 text-lg font-bold">
-                                            {listing.price} <Text className="text-sm text-gray-500">/month</Text>
+                                            {listing.price} <Text className="text-sm text-gray-500">{t(listing.propertyType !== "Guest House" ? "pricePerMonth" : "priceDayNight")}</Text>
                                         </Text>
                                     </View>
 

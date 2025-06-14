@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, ActivityIndicator, Image, Alert, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { UserInfo } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { constants, icons, images } from '@/constants';
+import { constants, icons } from '@/constants';
 import { fetchAPI } from '@/lib/fetch';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
@@ -24,59 +24,59 @@ const ProfilePage = () => {
                 await AsyncStorage.setItem("selectedTab", "");
             };
             resetTab();
-
+            checkAuth();
+            fetchSubscriptions();
         }, [])
     );
-    useEffect(() => {
-        const checkAuth = async () => {
-            const userInfo = await AsyncStorage.getItem('user_info');
-            console.log("userInfo::::: ", userInfo)
-            const parsedUserInfo = userInfo ? JSON.parse(userInfo) : null;
-            if (parsedUserInfo) {
-                setUserInfo(parsedUserInfo);
-                setSelectedRole(parsedUserInfo.user_type_id == 1 ? 1 : 2);
-            }
-        };
-        const fetchSubscriptions = async () => {
-            try {
-                const response = await getUserPlan(t);
-                console.log("fetchSubscriptions response ", response)
-                if (response === null) {
-                    return;
-                }
-                const plans = response?.map((item: any) => ({
-                    id: item.id,
-                    subscription_id: item.subscription_id,
-                    planName: item.title,
-                    price: item.amount,
-                    description: item.descriptions,
-                    period: item.period,
-                    credits: item.credits,
-                    isPremium: false,
-                    has_subscription: item.has_subscription,
-                    used: item.used,
-                    expiryDate: item.expired_on ? format(new Date(item.expired_on), 'dd-MMM-yyyy hh:mm a') : 'N/A',
-                })) || [];
-                setPlan(plans);
-
-            } catch (error) {
-                setPlan([]);
-                Alert.alert(t("error"), t("subscriptionError"),
-                    [
-                        {
-                            text: t("ok"),
-                        },
-                    ]
-                );
-                setLoading(false);
+    
+    const checkAuth = async () => {
+        const userInfo = await AsyncStorage.getItem('user_info');
+        console.log("userInfo::::: ", userInfo)
+        const parsedUserInfo = userInfo ? JSON.parse(userInfo) : null;
+        if (parsedUserInfo) {
+            setUserInfo(parsedUserInfo);
+            setSelectedRole(parsedUserInfo.user_type_id == 1 ? 1 : 2);
+        }
+    };
+    const fetchSubscriptions = async () => {
+        setLoading(true);
+        try {
+            const response = await getUserPlan(t);
+            console.log("fetchSubscriptions response ", response)
+            if (response === null) {
                 return;
-            } finally {
-                setLoading(false);
             }
-        };
-        checkAuth();
-        fetchSubscriptions();
-    }, []);
+            const plans = response?.map((item: any) => ({
+                id: item.id,
+                subscription_id: item.subscription_id,
+                planName: item.title,
+                price: item.amount,
+                description: item.descriptions,
+                period: item.period,
+                credits: item.credits,
+                isPremium: false,
+                has_subscription: item.has_subscription,
+                used: item.used,
+                expiryDate: item.expired_on ? format(new Date(item.expired_on), 'dd-MMM-yyyy hh:mm a') : 'N/A',
+            })) || [];
+            setPlan(plans);
+
+        } catch (error) {
+            setPlan([]);
+            Alert.alert(t("error"), t("subscriptionError"),
+                [
+                    {
+                        text: t("ok"),
+                    },
+                ]
+            );
+            setLoading(false);
+            return;
+        } finally {
+            setLoading(false);
+        }
+    };
+    
     const handleSelectedRole = async (role: number) => {
         if (role === selectedRole) return;
         const userPlan = await getUserPlan(t);
@@ -217,6 +217,7 @@ const ProfilePage = () => {
             {loading ? (
                 <View className="flex-1 items-center justify-center">
                     <ActivityIndicator size="large" color="#10b981" />
+                    <Text className="mt-2 text-xl">{t("loading")}</Text>
                 </View>
             ) : (
                 <ScrollView contentContainerStyle={{ paddingBottom: 30 }} showsVerticalScrollIndicator={false}>
