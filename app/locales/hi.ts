@@ -430,6 +430,7 @@ const hi = {
         quadRoom: "क्वाड रूम",
         executiveRoom: "एग्जीक्यूटिव रूम",
         meetingRoom: "मीटिंग रूम",
+        longPressMarkerHint: "सही स्थान चुनने के लिए नक्शे पर लाल मार्कर को लंबे समय तक दबाएं",        
     },
 };
 

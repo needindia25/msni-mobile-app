@@ -429,6 +429,7 @@ const en = {
         quadRoom: "Quad Room",
         executiveRoom: "Executive Room",
         meetingRoom: "Meeting Room",
+        longPressMarkerHint: "Long press on the red marker on the map to select the correct location",
     },
 };
 

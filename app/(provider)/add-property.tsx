@@ -689,6 +689,7 @@ const MultiStepForm = () => {
                   minHeight: Math.min(350, Math.round(require('react-native').Dimensions.get('window').height * 0.7)),
                 }}
               >
+                <Text className="mt-2 text-base">{t("longPressMarkerHint")}</Text>
                 <GoogleTextInput
                   icon={icons.target}
                   initialLocation={{
