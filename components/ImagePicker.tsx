@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, TouchableOpacity, Text, Alert } from 'react-native';
+import { View, Image, TouchableOpacity, Text, Alert, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from "expo-router";
 import { constants } from '@/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
+import { set } from 'date-fns';
 
 interface ImagePickerProps {
   images: string[];
@@ -16,6 +17,8 @@ interface ImagePickerProps {
 const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], serviceId, onImageSelect, onImageDelete }) => {
   const { t } = useTranslation(); // Initialize translation hook
   const [selectedImages, setSelectedImages] = useState<string[]>(images);
+  const [uploading, setUploading] = useState(false); // Add this
+  const [imageLoading, setImageLoading] = useState<{ [key: number]: boolean }>({});
 
   const getMimeType = (uri: string) => {
     const extension = uri.split(".").pop()?.toLowerCase() ?? "";
@@ -59,6 +62,7 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
       }
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
+        setUploading(true); // Set uploading true here
         const token = await AsyncStorage.getItem('token');
         if (!token) {
           Alert.alert(t("error"), t("noTokenError"),
@@ -84,8 +88,10 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
         } else {
           Alert.alert('Error', t("imageProcessError")); // Use translation key
         }
+        setUploading(false); // Set uploading false after process
       }
     } catch (error) {
+      setUploading(false); // Ensure uploading is false on error
       Alert.alert('Error', t("imageUploadError")); // Use translation key
     }
   };
@@ -103,6 +109,7 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
           id: serviceId,
         }),
       });
+      console.log("Data", response);
       if (response.status === 401) {
         Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"), [
           {
@@ -160,43 +167,67 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
   };
 
   return (
-    <View className="p-4 items-center">
-      {selectedImages.length > 0 && (
-        <View className="flex-row flex-wrap gap-2">
-          {selectedImages.map((image, index) => (
-            <View key={index} className="relative">
-              <Image
-                source={{ uri: constants.BASE_URL + image }}
-                className="w-40 h-40 rounded-lg mb-4"
-              />
-              <TouchableOpacity
-                className="absolute top-0 right-0 bg-red-500 p-1 rounded-full"
-                onPress={() => handleDeleteImage(image)}
-              >
-                <Text className="text-white font-bold">X</Text>
-              </TouchableOpacity>
-            </View>
-          ))}
+    <>
+      <View className="p-4 items-center">
+        {selectedImages.length > 0 && (
+          <View className="flex-row flex-wrap gap-2">
+            {selectedImages.map((image, index) => (
+              <View key={index} className="relative">
+                <Image
+                  source={{ uri: constants.BASE_URL + image }}
+                  className="w-40 h-40 rounded-lg mb-4"
+                  onLoadStart={() =>
+                    setImageLoading((prev) => ({ ...prev, [index]: true }))
+                  }
+                  onLoadEnd={() =>
+                    setImageLoading((prev) => ({ ...prev, [index]: false }))
+                  }
+                />
+                {imageLoading[index] && (
+                  <View className="absolute inset-0 justify-center items-center bg-white/60 rounded-lg">
+                    <ActivityIndicator size="large" color="#00ff00" />
+                  </View>
+                )}
+                <TouchableOpacity
+                  className="absolute top-0 right-0 bg-red-500 p-1 rounded-full"
+                  onPress={() => handleDeleteImage(image)}
+                >
+                  <Text className="text-white font-bold">X</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+            {uploading && (
+              <View className="w-40 h-40 rounded-lg mb-4 justify-center items-center bg-gray-200">
+                <ActivityIndicator size="large" color="#00ff00" />
+              </View>
+            )}
+          </View>
+        )}
+        {!selectedImages.length && uploading && (
+          <View className="w-40 h-40 rounded-lg mb-4 justify-center items-center bg-gray-200">
+            <ActivityIndicator size="large" color="#00ff00" />
+          </View>
+        )}
+
+        <View className="flex-row justify-center space-x-4">
+          <TouchableOpacity
+            className="bg-blue-500 p-3 rounded-lg mr-3"
+            onPress={() => handleImagePick('camera')}
+            disabled={uploading}
+          >
+            <Text className="text-white font-bold">{t("useCamera")}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className="bg-green-500 p-3 rounded-lg"
+            onPress={() => handleImagePick('gallery')}
+            disabled={uploading}
+          >
+            <Text className="text-white font-bold">{t("selectFromGallery")}</Text>
+          </TouchableOpacity>
         </View>
-      )}
-
-      <View className="flex-row justify-center space-x-4">
-        <TouchableOpacity
-          className="bg-blue-500 p-3 rounded-lg mr-3"
-          onPress={() => handleImagePick('camera')}
-        >
-          <Text className="text-white font-bold">{t("useCamera")}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          className="bg-green-500 p-3 rounded-lg"
-          onPress={() => handleImagePick('gallery')}
-        >
-          <Text className="text-white font-bold">{t("selectFromGallery")}</Text>
-        </TouchableOpacity>
       </View>
-    </View>
-  );
-};
-
+    </>
+  )
+}
 export default ImagePickerComponent;

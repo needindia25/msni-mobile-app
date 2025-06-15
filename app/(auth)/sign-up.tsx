@@ -1,4 +1,4 @@
-import { Link, router } from "expo-router";
+import { Link, router, useLocalSearchParams } from "expo-router";
 import { useState, useEffect, useRef } from "react";
 import { Alert, ActivityIndicator, Image, ScrollView, Text, View, TextInput, Linking, TouchableOpacity } from "react-native";
 import { ReactNativeModal } from "react-native-modal";
@@ -15,6 +15,7 @@ import { generateOTP } from "@/lib/utils";
 
 const SignUp = () => {
   const { t } = useTranslation(); // Initialize translation hook
+  const { mobileNumber } = useLocalSearchParams()
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showVerificationModal, setVerificationModal] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -183,6 +184,12 @@ const SignUp = () => {
 
   useEffect(() => {
     const fetchStates = async () => {
+      if (mobileNumber && typeof mobileNumber === "string") {
+          setForm((prev) => ({
+            ...prev,
+            "phone": mobileNumber.trim(),
+          }));
+      }
       try {
         const response = await fetchAPI(`${constants.API_URL}/master/states`, t);
         if (response) {
@@ -341,6 +348,7 @@ const SignUp = () => {
                     value={form.phone}
                     onChangeText={(value) => handleMobile(value)}
                     inputRef={phoneInputRef}
+                    maxLength={10}
                   />
                   <View>
                     <Text className="text-lg mb-2">{t("userTypeLabel")}</Text>

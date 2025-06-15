@@ -2,8 +2,8 @@ import { constants, icons } from '@/constants';
 import { fetchAPI } from '@/lib/fetch';
 import { Listing } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
 import { MaterialIcons } from "@expo/vector-icons";
 import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
@@ -19,40 +19,46 @@ const SearchList = () => {
     const [loading, setLoading] = useState(true);
     const [listings, setListings] = useState<Listing[]>([]);
 
-    useEffect(() => {
-        const checkAuth = async () => {
-            const token = await AsyncStorage.getItem('token');
-            if (!token) {
-                Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-                    [
-                        {
-                            text: t("ok"),
-                            onPress: () => {
-                                router.replace("/(auth)/sign-in");
-                            },
+    useFocusEffect(
+        useCallback(() => {
+            console.log("Services screen focused");
+            reloadData(); // Run checkAuth every time the screen comes into focus
+        }, [])
+    );
+    const reloadData = async () => {
+        setLoading(true);
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+            Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                [
+                    {
+                        text: t("ok"),
+                        onPress: () => {
+                            router.replace("/(auth)/sign-in");
                         },
-                    ]
-                );
+                    },
+                ]
+            );
+            return;
+        }
+        setLoading(false);
+        if (!!token) {
+            console.log("filtersData", filtersData);
+            const response: any = await fetchAPI(`${constants.API_URL}/search/`, t, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(filtersData), // Send filters as JSON
+            });
+            setLoading(false);
+            if (response === null || response === undefined) {
                 return;
             }
-            if (!!token) {
-                const response: any = await fetchAPI(`${constants.API_URL}/search/`, t, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(filtersData), // Send filters as JSON
-                });
-                if (response === null || response === undefined) {
-                    return;
-                }
-                setListings(transformData(response));
-            }
-            setLoading(false);
-        };
-        checkAuth();
-    }, []);
+            setListings(transformData(response));
+        }
+    };
 
     const transformData = (data: any[]): Listing[] => {
         const sortedData = data.sort((a, b) => b.id - a.id);
@@ -84,7 +90,6 @@ const SearchList = () => {
         });
         return;
     };
-
 
     const getKeyByValue = (value: string): string => {
         // Find the key by value
@@ -148,7 +153,7 @@ const SearchList = () => {
                                     {/* Price */}
                                     <View className="flex-row justify-between items-center mb-3">
                                         <Text className="text-blue-600 text-lg font-bold">
-                                            {listing.price} <Text className="text-sm text-gray-500">{t("pricePerMonth")}</Text>
+                                            {listing.price} <Text className="text-sm text-gray-500">{t(listing.propertyType !== "Guest House" ? "pricePerMonth" : "priceDayNight")}</Text>
                                         </Text>
                                     </View>
 

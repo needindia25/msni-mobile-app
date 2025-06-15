@@ -3,8 +3,8 @@ import { fetchAPI } from '@/lib/fetch';
 import { Listing } from '@/types/type';
 import ImageCarousel from "@/components/ImageCarousel";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import React, { useCallback, useState } from 'react';
 import { MaterialIcons } from "@expo/vector-icons"; // Import icons
 import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
@@ -17,6 +17,13 @@ const Services = () => {
   const [loading, setLoading] = useState(true);
   const [totalActiveServices, setTotalActiveServices] = useState(0);
   const [listings, setListings] = useState<Listing[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      console.log("Services screen focused");
+      reloadData(); // Run checkAuth every time the screen comes into focus
+    }, [])
+  );
 
   const handleViewRequests = async (service: any) => {
     const userPlan = await getUserPlan(t);
@@ -51,41 +58,42 @@ const Services = () => {
     router.push('/(provider)/service-requests');
   }
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const token = await AsyncStorage.getItem('token');
-      await AsyncStorage.setItem("passServiceId", "");
-      if (!token) {
-        Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-          [
-            {
-              text: t("ok"),
-              onPress: () => {
-                // Perform the action when "OK" is pressed
-                router.replace("/(auth)/sign-in");
-              },
+  const reloadData = async () => {
+    setLoading(true);
+    const token = await AsyncStorage.getItem('token');
+    await AsyncStorage.setItem("passServiceId", "");
+    if (!token) {
+      Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+        [
+          {
+            text: t("ok"),
+            onPress: () => {
+              // Perform the action when "OK" is pressed
+              router.replace("/(auth)/sign-in");
             },
-          ]
-        );
+          },
+        ]
+      );
+      setLoading(false);
+      return;
+    }
+    if (!!token) {
+      const response: any = await fetchAPI(`${constants.API_URL}/user-services/my_property/`, t, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
+      setLoading(false);
+      if (response === null || response === undefined) {
         return;
       }
-      if (!!token) {
-        const response: any = await fetchAPI(`${constants.API_URL}/user-services/my_property/`, t, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        if (response === null || response === undefined) {
-          return;
-        }
-        setTotalActiveServices(response.length);
-        setListings(transformData(response));
-      }
-      setLoading(false);
-    };
-    checkAuth();
-  }, []);
+      console.log("Data:", response); // Log the parsed data
+      setTotalActiveServices(response.length);
+      setListings(transformData(response));
+    }
+  };
 
   const transformData = (data: any[]): Listing[] => {
     let sortedData = data.sort((a, b) => b.id - a.id);
@@ -93,6 +101,7 @@ const Services = () => {
     return sortedData.map((property) => ({
       id: property.id,
       title: property.title,
+      propertyType: property.options.propertyType || "Unknown Type",
       location: property.options.address || "Unknown Location",
       price: property.options.rent ? '₹ ' + parseFloat(property.options.rent) : "N/A",
       requests: property.service_request_count.requests || 0,
@@ -160,7 +169,7 @@ const Services = () => {
                   {/* Rating and Price Row */}
                   <View className="flex-row justify-between items-center mb-1">
                     <Text className="text-blue-500 text-lg font-bold">
-                      {listing.price} <Text className="text-sm text-gray-500">{t("pricePerMonth")}</Text>
+                      {listing.price} <Text className="text-sm text-gray-500">{t(listing.propertyType !== "Guest House" ? "pricePerMonth" : "priceDayNight")}</Text>
                     </Text>
                     <View className="flex-row items-center">
                       {[1, 2, 3, 4, 5].map((star) => (

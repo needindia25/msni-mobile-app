@@ -77,6 +77,16 @@ const GoogleTextInput = ({
   // }, []);
 
   const getAddressFromCoordinates = async (latitude: number, longitude: number) => {
+    if (selectedLocation?.draggable) {
+      setSelectedLocation({
+        latitude,
+        longitude,
+        address: "",
+        draggable: true,
+      });
+    } else {
+      return;
+    }
     try {
       const response = await fetch(
         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${googlePlacesApiKey}`
@@ -113,11 +123,10 @@ const GoogleTextInput = ({
   return (
     <View className="flex-1 bg-gray-100">
       {selectedLocation?.draggable && (
-        <View style={{ zIndex: 10, elevation: 10 }} className="">
+        <View style={{ zIndex: 10, elevation: 10, position: "absolute", top: 20, left: 20, right: 20 }}>
           <GooglePlacesAutocomplete
             fetchDetails={true}
             placeholder={t("searchPlaceholder")}
-            debounce={200}
             styles={{
               textInputContainer: {
                 alignItems: "center",
@@ -166,6 +175,7 @@ const GoogleTextInput = ({
                 handlePress(locationData);
               }
             }}
+            onFail={(error) => console.error(error)}
             query={{
               key: googlePlacesApiKey,
               language: "en",
@@ -188,8 +198,9 @@ const GoogleTextInput = ({
       )}
 
       <MapView
-        style={{ height: 300, width: "100%", marginTop: 10 }}
+        style={{ height: Math.min(350, Math.round(require('react-native').Dimensions.get('window').height * 0.7)), width: "100%", marginTop: 10 }}
         region={region}
+        showsUserLocation={true}
         onRegionChangeComplete={(newRegion) => setRegion(newRegion)}
         onMarkerDragEnd={(e) => {
           const { latitude, longitude } = e.nativeEvent.coordinate;
@@ -208,10 +219,22 @@ const GoogleTextInput = ({
         )}
       </MapView>
       {(selectedLocation?.draggable && selectedLocation.address) && (
-        <View className="bg-gray-100 p-4 rounded-lg shadow-md mt-5">
-          <View className="flex-row items-center mb-3">
+        <View style={{
+          position: "absolute",
+          bottom: 30,
+          left: 20,
+          right: 20,
+          backgroundColor: "#f3f4f6",
+          padding: 16,
+          borderRadius: 12,
+          shadowColor: "#000",
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 5,
+        }}>
+          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
             <MaterialIcons name="location-on" size={20} color="gray" />
-            <Text className="text-gray-500 ml-1">
+            <Text style={{ color: "#6b7280", marginLeft: 4 }}>
               {selectedLocation.address}
             </Text>
           </View>

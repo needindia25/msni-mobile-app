@@ -18,6 +18,7 @@ export const getStaticData = (t: TFunction) => ({
             { label: t("pgHostel"), value: "PG/Hostel" },
             { label: t("commercial"), value: "Commercial" },
             { label: t("land"), value: "Land" },
+            { label: t("guestHouse"), value: "Guest House" },
         ],
     },
     propertyTypeOptions: {
@@ -31,6 +32,7 @@ export const getStaticData = (t: TFunction) => ({
             { label: t("pgHostel"), value: "PG/Hostel" },
             { label: t("commercial"), value: "Commercial" },
             { label: t("land"), value: "Land" },
+            { label: t("guestHouse"), value: "Guest House" },
         ],
     },
     roomTypeOptions: [
@@ -38,6 +40,21 @@ export const getStaticData = (t: TFunction) => ({
         { label: t("sharing2Beds"), value: "Sharing 2 Beds" },
         { label: t("sharing3Beds"), value: "Sharing 3 Beds" },
         { label: t("sharing4Beds"), value: "Sharing 4 Beds" },
+    ],
+    guestHouseRoomTypeOptions: [
+        { label: t("signalBedAc"), value: "Signal Bed AC" },
+        { label: t("signalBedNonAc"), value: "Signal Bed Non AC" },
+        { label: t("doubleBedAc"), value: "Double Bed AC" },
+        { label: t("doubleBedNonAc"), value: "Double Bed Non AC" },
+        { label: t("tripleBedAc"), value: "Triple Bed AC" },
+        { label: t("tripleBedNonAc"), value: "Triple Bed Non AC" },
+        { label: t("dormitory"), value: "Dormitory" },
+        { label: t("familyRoom"), value: "Family Room"},
+        { label: t("deluxeRoom"), value: "Deluxe Room"},
+        { label: t("suiteRoom"), value: "Suite Room"},
+        { label: t("quadRoom"), value: "Quad Room"},
+        { label: t("executiveRoom"), value: "Executive Room"},
+        { label: t("meetingRoom"), value: "Meeting Room"},
     ],
     genderPreferenceOptions: [
         { label: t("male"), value: "Male" },
