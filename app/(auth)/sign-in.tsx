@@ -162,6 +162,7 @@ const SignIn = () => {
           );
           return false;
         }
+        return true;
       } catch (error) {
         Alert.alert(t("error"), t("mobileNumberDoesNotRegistered"),
           [
@@ -181,7 +182,7 @@ const SignIn = () => {
         return false;
       }
     }
-    return true;
+    return false;
   }
 
   return (
@@ -221,6 +222,7 @@ const SignIn = () => {
                     textContentType="none"
                     value={username}
                     onChangeText={(value) => setUsername(value)}
+                    maxLength={10}
                   />
                   <CustomButton
                     title={t("verify")} // Use translation key

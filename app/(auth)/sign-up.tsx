@@ -348,6 +348,7 @@ const SignUp = () => {
                     value={form.phone}
                     onChangeText={(value) => handleMobile(value)}
                     inputRef={phoneInputRef}
+                    maxLength={10}
                   />
                   <View>
                     <Text className="text-lg mb-2">{t("userTypeLabel")}</Text>
