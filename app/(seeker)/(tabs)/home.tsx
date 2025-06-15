@@ -1,19 +1,20 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Alert, View, Text, TouchableOpacity, SafeAreaView, ScrollView, TextInput, Modal, Dimensions, Image, ActivityIndicator } from 'react-native';
-import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import React, { useState, useEffect } from 'react';
+import { Alert, View, Text, TouchableOpacity, SafeAreaView, ScrollView, TextInput, Image, ActivityIndicator } from 'react-native';
+// import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import CustomCheckBox from '@/components/CustomCheckBox';
-import CustomRadioGroup from '@/components/CustomRadioGroup';
+// import CustomRadioGroup from '@/components/CustomRadioGroup';
 import { useFocusEffect, useRouter } from 'expo-router';
 // import ComingSoon from '@/components/ComingSoon';
+// Add at the top if not present:
+import { PermissionsAndroid, Platform } from 'react-native';
 import { fetchAPI } from "@/lib/fetch";
-import { Dropdown } from 'react-native-element-dropdown';
-import { constants, icons, images } from "@/constants";
-
+// import { Dropdown } from 'react-native-element-dropdown';
+import { constants, icons } from "@/constants";
+import Geolocation from '@react-native-community/geolocation';
 import { getStaticData } from "@/constants/staticData"; // Import static data
 import { useTranslation } from "react-i18next"; // Import useTranslation
 import CustomDropdown from '@/components/CustomDropdown';
 import { DropdownProps } from '@/types/type';
-import en from '../../locales/en';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Home = () => {
@@ -24,6 +25,7 @@ const Home = () => {
 
   const [searchData, setSearchData] = useState({
     propertyFor: "Rent",
+    nearByMe: false,
     latitude: 0,
     longitude: 0,
     address: "",
@@ -84,6 +86,65 @@ const Home = () => {
     }));
   };
 
+  const getCurrentLocation = async () => {
+    try {
+      // Request permission on Android
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: t("locationPermissionTitle") || "Location Permission",
+            message: t("locationPermissionMessage") || "This app needs access to your location.",
+            buttonNeutral: t("askMeLater") || "Ask Me Later",
+            buttonNegative: t("cancel") || "Cancel",
+            buttonPositive: t("ok") || "OK",
+          }
+        );
+        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+          Alert.alert(t("error"), t("locationPermissionsDenied"));
+          setSearchData((prev) => ({
+            ...prev,
+            nearByMe: false,
+            latitude: 0,
+            longitude: 0,
+          }));
+          return;
+        }
+      }
+      Geolocation.getCurrentPosition(
+        (position) => {
+          console.log("Current position:", position);
+          setSearchData((prev) => ({
+            ...prev,
+            nearByMe: true,
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          }));
+        },
+        (error) => {
+          Alert.alert(t("error"), t("failedToGetLocation"));
+          setSearchData((prev) => ({
+            ...prev,
+            nearByMe: false,
+            latitude: 0,
+            longitude: 0,
+          }));
+          console.error("Error getting current location:", error);
+        },
+        { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 }
+      );
+    } catch (error) {
+      Alert.alert(t("error"), t("failedToGetLocation"));
+      setSearchData((prev) => ({
+        ...prev,
+        nearByMe: false,
+        latitude: 0,
+        longitude: 0,
+      }));
+      console.error("Error getting current location:", error);
+    }
+  };
+
   // useEffect(() => {
   //   const loadSearchData = async () => {
   //     try {
@@ -99,60 +160,58 @@ const Home = () => {
   //   loadSearchData();
   // }, []);
 
-  const [bhkTypeModalVisible, setBhkTypeModalVisible] = useState(false);
-  const [selectedBhkTypes, setSelectedBhkTypes] = useState<string[]>([]);
-  const [roomTypeModalVisible, setRoomTypeModalVisible] = useState(false);
-  const [selectedRoomTypes, setSelectedRoomTypes] = useState<string[]>([]);
-  const [housingTypeModalVisible, setHousingTypesVisible] = useState(false);
-  const [selectedHousingTypes, setSelectedHousingTypes] = useState<string[]>([]);
+  // const [bhkTypeModalVisible, setBhkTypeModalVisible] = useState(false);
+  // const [selectedBhkTypes, setSelectedBhkTypes] = useState<string[]>([]);
+  // const [roomTypeModalVisible, setRoomTypeModalVisible] = useState(false);
+  // const [selectedRoomTypes, setSelectedRoomTypes] = useState<string[]>([]);
+  // const [housingTypeModalVisible, setHousingTypesVisible] = useState(false);
+  // const [selectedHousingTypes, setSelectedHousingTypes] = useState<string[]>([]);
+  // const [commercialTypeModalVisible, setCommercialTypeModalVisible] = useState(false);
+  // const [selectedCommercialTypes, setSelectedCommercialTypes] = useState<string[]>([]);
 
+  // const toggleBhkType = (type: string) => {
+  //   let updateList = [];
+  //   if (selectedBhkTypes.includes(type)) {
+  //     updateList = selectedBhkTypes.filter((item) => item !== type);
+  //   } else {
+  //     updateList = [...selectedBhkTypes, type];
+  //   }
+  //   setSelectedBhkTypes(updateList);
+  //   handleInputChange("bhkType", updateList);
+  // };
 
-  const [commercialTypeModalVisible, setCommercialTypeModalVisible] = useState(false);
-  const [selectedCommercialTypes, setSelectedCommercialTypes] = useState<string[]>([]);
+  // const toggleHousingType = (type: string) => {
+  //   let updateList = [];
+  //   if (selectedHousingTypes.includes(type)) {
+  //     updateList = selectedHousingTypes.filter((item) => item !== type)
+  //   } else {
+  //     updateList = [...selectedHousingTypes, type]
+  //   }
+  //   handleInputChange("housingType", updateList);
+  //   setSelectedHousingTypes(updateList);
+  // };
 
-  const toggleBhkType = (type: string) => {
-    let updateList = [];
-    if (selectedBhkTypes.includes(type)) {
-      updateList = selectedBhkTypes.filter((item) => item !== type);
-    } else {
-      updateList = [...selectedBhkTypes, type];
-    }
-    setSelectedBhkTypes(updateList);
-    handleInputChange("bhkType", updateList);
-  };
+  // const toggleRoomType = (type: string) => {
+  //   let updateList = [];
+  //   if (selectedRoomTypes.includes(type)) {
+  //     updateList = selectedRoomTypes.filter((item) => item !== type)
+  //   } else {
+  //     updateList = [...selectedRoomTypes, type]
+  //   }
+  //   handleInputChange("housingType", updateList);
+  //   setSelectedRoomTypes(updateList);
+  // };
 
-  const toggleHousingType = (type: string) => {
-    let updateList = [];
-    if (selectedHousingTypes.includes(type)) {
-      updateList = selectedHousingTypes.filter((item) => item !== type)
-    } else {
-      updateList = [...selectedHousingTypes, type]
-    }
-    handleInputChange("housingType", updateList);
-    setSelectedHousingTypes(updateList);
-  };
-
-  const toggleRoomType = (type: string) => {
-    let updateList = [];
-    if (selectedRoomTypes.includes(type)) {
-      updateList = selectedRoomTypes.filter((item) => item !== type)
-    } else {
-      updateList = [...selectedRoomTypes, type]
-    }
-    handleInputChange("housingType", updateList);
-    setSelectedRoomTypes(updateList);
-  };
-
-  const toggleCommercialType = (type: string) => {
-    let updateList = [];
-    if (selectedCommercialTypes.includes(type)) {
-      updateList = selectedCommercialTypes.filter((item) => item !== type)
-    } else {
-      updateList = [...selectedCommercialTypes, type]
-    }
-    handleInputChange("commercialType", updateList);
-    setSelectedCommercialTypes(updateList);
-  };
+  // const toggleCommercialType = (type: string) => {
+  //   let updateList = [];
+  //   if (selectedCommercialTypes.includes(type)) {
+  //     updateList = selectedCommercialTypes.filter((item) => item !== type)
+  //   } else {
+  //     updateList = [...selectedCommercialTypes, type]
+  //   }
+  //   handleInputChange("commercialType", updateList);
+  //   setSelectedCommercialTypes(updateList);
+  // };
 
   const [loading, setLoading] = useState(true);
 
@@ -212,6 +271,9 @@ const Home = () => {
       pathname: '/(seeker)/search-list',
       params: {
         searchData: JSON.stringify(searchData), // Pass searchData as a string
+        nearByMe: 0,
+        meLatitude: 0,
+        meLongitude: 0
       },
     });
   };
@@ -274,16 +336,16 @@ const Home = () => {
     value: district.id,
   }));
 
-  const getKeyByValue = (value: string): string => {
-    // Find the key by value
-    const key = Object.keys(en.translation).find((k) => en.translation[k as keyof typeof en.translation] === value);
+  // const getKeyByValue = (value: string): string => {
+  //   // Find the key by value
+  //   const key = Object.keys(en.translation).find((k) => en.translation[k as keyof typeof en.translation] === value);
 
-    // Return the key or fallback to the lowercase version of the value
-    if (key) {
-      return t(key);
-    }
-    return value;
-  };
+  //   // Return the key or fallback to the lowercase version of the value
+  //   if (key) {
+  //     return t(key);
+  //   }
+  //   return value;
+  // };
 
   return (
     <SafeAreaView className="flex h-full bg-white">
@@ -389,6 +451,29 @@ const Home = () => {
                 ))}
               </View>
             </View>
+            {/* Add nearByMe option for Guest House */}
+            {searchData.propertyType === "Guest House" && (
+              <View className="flex-row items-center mt-4 mb-2">
+                <CustomCheckBox
+                  value={searchData.nearByMe}
+                  onValueChange={async (checked: boolean) => {
+                    handleInputChange("nearByMe", checked);
+                    if (checked) {
+                      await getCurrentLocation();
+                    } else {
+                      searchData.nearByMe = false;
+                      setSearchData((prev) => ({
+                        ...prev,
+                        nearByMe: false,
+                        latitude: 0,
+                        longitude: 0,
+                      }));
+                    }
+                  }}
+                />
+                <Text className="ml-2">{t("nearByMe")}</Text>
+              </View>
+            )}
             {/* {searchData.propertyType === 'Full House' && (
               <>
                 <View className="mt-4">

@@ -6,9 +6,9 @@ const CustomCheckBox = ({
     onValueChange,
 }: {
     value: boolean;
-    onValueChange: () => void;
+    onValueChange?: (checked: boolean) => void
 }) => (
-    <TouchableOpacity onPress={onValueChange}>
+    <TouchableOpacity onPress={() => onValueChange && onValueChange(!value)}>
         <Text>{value ? '☑️' : '⬜️'}</Text>
     </TouchableOpacity>
 );

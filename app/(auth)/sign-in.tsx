@@ -54,6 +54,11 @@ const SignIn = () => {
       return;
     }
     setLoading(true);
+    const isValidMobile = await checkMobile(username);
+    if (!isValidMobile) {
+      setLoading(false);
+      return;
+    }
     const otpGenerated = await generateOTP(t, username, "signin");
     console.log(otpGenerated)
     setLoading(false);
@@ -112,6 +117,72 @@ const SignIn = () => {
       setLoading(false);
     }
   };
+
+  const checkMobile = async (value: any) => {
+    if (value.length === 10) {
+      try {
+        const response = await fetchAPI(
+          `${constants.API_URL}/check_user/`, t,
+          {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(
+              {
+                "username": value
+              }
+            )
+          }
+        );
+        console.log(response);
+        if (response === null || response === undefined) {
+          return true;
+        }
+        let success = false;
+        if (response.hasOwnProperty("success")) {
+          success = response["success"];
+        }
+        setUsername(value);
+        if (success) {
+          Alert.alert(t("error"), t("mobileNumberDoesNotRegistered"),
+            [
+              {
+                text: t("ok"),
+                onPress: () => {
+                  router.push({
+                    pathname: "/sign-up",
+                    params: {
+                      mobileNumber: value.toString()
+                    },
+                  });
+                },
+              },
+            ]
+          );
+          return false;
+        }
+      } catch (error) {
+        Alert.alert(t("error"), t("mobileNumberDoesNotRegistered"),
+          [
+            {
+              text: t("ok"),
+              onPress: () => {
+                router.push({
+                  pathname: "/sign-up",
+                  params: {
+                    mobileNumber: value.toString()
+                  },
+                });
+              },
+            },
+          ]
+        );
+        return false;
+      }
+    }
+    return true;
+  }
 
   return (
     <ScrollView className="flex-1 bg-white">

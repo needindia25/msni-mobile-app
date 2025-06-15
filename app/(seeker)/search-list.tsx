@@ -43,6 +43,7 @@ const SearchList = () => {
         }
         setLoading(false);
         if (!!token) {
+            console.log("filtersData", filtersData);
             const response: any = await fetchAPI(`${constants.API_URL}/search/`, t, {
                 method: 'POST',
                 headers: {
