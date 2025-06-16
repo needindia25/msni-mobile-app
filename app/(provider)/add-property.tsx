@@ -216,12 +216,10 @@ const MultiStepForm = () => {
     }));
 
     if (field === "propertyFor" || field === "propertyType") {
-      if (value !== "Guest House") {
-        setFormData((prev) => ({
-          ...prev,
-          title: prev["propertyType"] + " for " + prev["propertyFor"],
-        }));
-      }
+      setFormData((prev) => ({
+        ...prev,
+        title: value === "Guest House" ? "" : prev["propertyType"] + " for " + prev["propertyFor"],
+      }));
       setErrors((prev) => ({
         ...prev,
         title: "",
