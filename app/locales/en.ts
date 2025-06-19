@@ -435,7 +435,7 @@ const en = {
         quadRoom: "Quad Room",
         executiveRoom: "Executive Room",
         meetingRoom: "Meeting Room",
-        longPressMarkerHint: "Long press on the red marker on the map to select the correct location",
+        longPressMarkerHint: "Long-press the red marker on the map, then drag it to the exact location of the property.",
         nearByMe: "Near By Me",
         failedToGetLocation: "Failed to get current location.",
         mobileNumberDoesNotRegistered: "Mobile number is not registered, sign up to continue.",
