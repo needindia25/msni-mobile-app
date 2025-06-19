@@ -21,6 +21,8 @@ const Home = () => {
   const router = useRouter();
   const { t } = useTranslation();
 
+  const [isFechingGEO, setIsFechingGEO] = useState(false);
+
   const staticData = getStaticData(t); // Get static data with translations
 
   const [searchData, setSearchData] = useState({
@@ -88,6 +90,7 @@ const Home = () => {
 
   const getCurrentLocation = async () => {
     try {
+      setIsFechingGEO(true);
       // Request permission on Android
       if (Platform.OS === 'android') {
         const granted = await PermissionsAndroid.request(
@@ -108,6 +111,7 @@ const Home = () => {
             latitude: 0,
             longitude: 0,
           }));
+          setIsFechingGEO(false);
           return;
         }
       }
@@ -120,6 +124,7 @@ const Home = () => {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           }));
+          setIsFechingGEO(false);
         },
         (error) => {
           Alert.alert(t("error"), t("failedToGetLocation"));
@@ -129,6 +134,7 @@ const Home = () => {
             latitude: 0,
             longitude: 0,
           }));
+          setIsFechingGEO(false);
           console.error("Error getting current location:", error);
         },
         { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 }
@@ -141,6 +147,7 @@ const Home = () => {
         latitude: 0,
         longitude: 0,
       }));
+      setIsFechingGEO(false);
       console.error("Error getting current location:", error);
     }
   };
@@ -262,7 +269,8 @@ const Home = () => {
   };
 
   const onProprtySearchPress = async () => {
-    if (!validateForm()) {
+    console.log("isFechingGEO: ", isFechingGEO);
+    if (isFechingGEO || !validateForm()) {
       return;
     }
 
@@ -453,25 +461,30 @@ const Home = () => {
             </View>
             {/* Add nearByMe option for Guest House */}
             {searchData.propertyType === "Guest House" && (
-              <View className="flex-row items-center mt-4 mb-2">
-                <CustomCheckBox
-                  value={searchData.nearByMe}
-                  onValueChange={async (checked: boolean) => {
-                    handleInputChange("nearByMe", checked);
-                    if (checked) {
-                      await getCurrentLocation();
-                    } else {
-                      searchData.nearByMe = false;
-                      setSearchData((prev) => ({
-                        ...prev,
-                        nearByMe: false,
-                        latitude: 0,
-                        longitude: 0,
-                      }));
-                    }
-                  }}
-                />
-                <Text className="ml-2">{t("nearByMe")}</Text>
+              <View className="p-4 rounded-2xl shadow-md flex-row mt-4 mb-2 bg-[#01BB23] text-white">
+                <View className="flex-row items-center ">
+                  <CustomCheckBox
+                    value={searchData.nearByMe}
+                    onValueChange={async (checked: boolean) => {
+                      handleInputChange("nearByMe", checked);
+                      if (checked) {
+                        await getCurrentLocation();
+                      } else {
+                        searchData.nearByMe = false;
+                        setSearchData((prev) => ({
+                          ...prev,
+                          nearByMe: false,
+                          latitude: 0,
+                          longitude: 0,
+                        }));
+                      }
+                    }}
+                  />
+                  <Text className="ml-3 text-2xl text-white font-bold">{t("nearByMe")}</Text>
+                  {isFechingGEO && (
+                    <ActivityIndicator size="small" color="#fff" className="ml-2" />
+                  )}
+                </View>
               </View>
             )}
             {/* {searchData.propertyType === 'Full House' && (
@@ -696,10 +709,12 @@ const Home = () => {
                 </View>
               </View>
             </Modal> */}
-            <TouchableOpacity className="bg-teal-500 rounded-lg p-3 mt-5 mb-10 w-full"
-              onPress={() => onProprtySearchPress()}>
-              <Text className="text-white text-center text-lg">{t("search")}</Text>
-            </TouchableOpacity>
+            {!isFechingGEO && (
+              <TouchableOpacity className="bg-teal-500 rounded-lg p-3 mt-5 mb-10 w-full"
+                onPress={() => onProprtySearchPress()}>
+                <Text className="text-white text-center text-lg">{t("search")}</Text>
+              </TouchableOpacity>
+            )}
           </>
         )}
       </ScrollView >

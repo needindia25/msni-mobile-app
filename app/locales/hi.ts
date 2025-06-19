@@ -436,7 +436,7 @@ const hi = {
         quadRoom: "क्वाड रूम",
         executiveRoom: "एग्जीक्यूटिव रूम",
         meetingRoom: "मीटिंग रूम",
-        longPressMarkerHint: "सही स्थान चुनने के लिए नक्शे पर लाल मार्कर को लंबे समय तक दबाएं",
+        longPressMarkerHint: "मानचित्र पर लाल मार्कर को लंबे समय तक दबाएं, फिर उसे संपत्ति के सही स्थान पर खींचें।",
         nearByMe: "मेरे पास",
         failedToGetLocation: "वर्तमान स्थान प्राप्त करने में विफल।",
         mobileNumberDoesNotRegistered: "मोबाइल नंबर पंजीकृत नहीं है, जारी रखने के लिए साइन अप करें।",
