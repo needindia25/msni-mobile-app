@@ -24,6 +24,7 @@ const MultiStepForm = () => {
   const { passServiceId } = useLocalSearchParams();
 
   const [loading, setLoading] = useState(true);
+  const [isMapRender, setIsMapRender] = useState(true);
   const [btnLoading, setBtnLoading] = useState(false);
   const [step, setStep] = useState(1);
   const [token, setToken] = useState<string | null>(null);
@@ -360,20 +361,22 @@ const MultiStepForm = () => {
       console.log("stepIndex", stepIndex);
       console.log("step", step + stepIndex);
       if ((step + stepIndex) === 3) {
-        const response = await fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?address=${formData.stateName},${formData.districtName},${formData.zip}&key=${googlePlacesApiKey}`
-        );
-        const data = await response.json();
-        console.log("data", data);
-        if (data.results && data.results.length > 0) {
-          const location = data.results[0].formatted_address;
-          setFormData((prev) => ({
-            ...prev,
-            latitude: data.results[0].geometry.location.lat,
-            longitude: data.results[0].geometry.location.lng,
-            address: location,
-            location: location
-          }));
+        if (!formData.latitude || !formData.longitude) {
+          const response = await fetch(
+            `https://maps.googleapis.com/maps/api/geocode/json?address=${formData.stateName},${formData.districtName},${formData.zip}&key=${googlePlacesApiKey}`
+          );
+          const data = await response.json();
+          console.log("data", data);
+          if (data.results && data.results.length > 0) {
+            const location = data.results[0].formatted_address;
+            setFormData((prev) => ({
+              ...prev,
+              latitude: data.results[0].geometry.location.lat,
+              longitude: data.results[0].geometry.location.lng,
+              address: location,
+              location: location
+            }));
+          }
         }
       }
       if (method === "POST") {
@@ -697,7 +700,6 @@ const MultiStepForm = () => {
               <View className="text-base font-bold mt-3 mb-3"></View>
             </ScrollView>
           )}
-
           {step === 3 && (
             <View
               style={{
@@ -706,23 +708,37 @@ const MultiStepForm = () => {
               }}
             >
               <Text className="mt-2 text-base">{t("longPressMarkerHint")}</Text>
-              <GoogleTextInput
-                icon={icons.target}
-                initialLocation={{
-                  latitude: parseFloat(String(formData?.latitude || constants.DEFAULT_LAT)),
-                  longitude: parseFloat(String(formData?.longitude || constants.DEFAULT_LONG)),
-                  address: String(formData?.location),
-                  draggable: true
-                }}
-                handlePress={async (location) => {
-                  setFormData((prev) => ({
-                    ...prev,
-                    "latitude": location.latitude,
-                    "longitude": location.longitude,
-                    "location": location.address
-                  }));
-                }}
-              />
+              {isMapRender && (
+                <GoogleTextInput
+                  icon={icons.target}
+                  initialLocation={{
+                    latitude: parseFloat(String(formData?.latitude || constants.DEFAULT_LAT)),
+                    longitude: parseFloat(String(formData?.longitude || constants.DEFAULT_LONG)),
+                    address: String(formData?.location),
+                    draggable: true
+                  }}
+                  handlePress={async (location) => {
+                    console.log("location", location);
+                    setFormData((prev) => ({
+                      ...prev,
+                      "latitude": location.latitude,
+                      "longitude": location.longitude,
+                      "location": location.address
+                    }));
+                    setIsMapRender(false);
+                    setTimeout(() => {
+                      setIsMapRender(true);
+                      console.log("setIsMapRender", isMapRender);
+                    }, 500);
+                  }}
+                />
+              )}
+              {!isMapRender && (
+                <View className="flex-row justify-center mt-10 mb-10">
+                  <ActivityIndicator size="large" color="#00ff00" />
+                  <Text className="mt-2 text-base">{t("loading")}</Text>
+                </View>
+              )}
             </View>
           )}
 

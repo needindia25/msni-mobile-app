@@ -97,7 +97,7 @@ const hi = {
         land: "भूमि",
         enterLand: "भूमि शीर्षक दर्ज करें",
         guestHouse: "गेस्ट हाउस",
-        enterGuestHouse: "गेस्ट हाउस शीर्षक दर्ज करें",
+        enterGuestHouse: "गेस्ट हाउस का नाम दर्ज करें",
         apartment: "अपार्टमेंट",
         gatedCommunityVilla: "गेटेड कम्युनिटी विला",
         independentHouseVilla: "स्वतंत्र घर/विला",
