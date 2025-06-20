@@ -97,7 +97,7 @@ const en = {
         land: "Land",
         enterLand: "Enter Land Title",
         guestHouse: "Guest House",
-        enterGuestHouse: "Enter Guest House Title",
+        enterGuestHouse: "Enter Guest House Name",
         apartment: "Apartment",
         gatedCommunityVilla: "Gated Community Villa",
         independentHouseVilla: "Independent House/Villa",

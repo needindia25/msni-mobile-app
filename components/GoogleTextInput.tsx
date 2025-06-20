@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { View, Image, Text, PermissionsAndroid, Alert } from "react-native";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import React, { useRef, useState } from "react";
+import { View, Image, Text, Alert } from "react-native";
+import { GooglePlacesAutocomplete, GooglePlacesAutocompleteRef } from "react-native-google-places-autocomplete";
 import MapView, { Marker } from "react-native-maps";
 import { MaterialIcons } from "@expo/vector-icons"; // Import icons
 import 'react-native-get-random-values';
@@ -18,6 +18,7 @@ const GoogleTextInput = ({
   handlePress,
 }: GoogleInputProps) => {
   const { t } = useTranslation();
+  const placesRef = useRef<GooglePlacesAutocompleteRef>(null);
 
   interface LocationData {
     latitude: number;
@@ -38,43 +39,6 @@ const GoogleTextInput = ({
     latitudeDelta: 0.00275,
     longitudeDelta: 0.00275,
   });
-
-  // async function requestPermissions() {
-  //   try {
-  //     const granted = await PermissionsAndroid.requestMultiple([
-  //       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-  //       PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
-  //     ]);
-
-  //     if (
-  //       granted[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION] === PermissionsAndroid.RESULTS.GRANTED &&
-  //       granted[PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION] === PermissionsAndroid.RESULTS.GRANTED
-  //     ) {
-  //       console.log("Location permissions granted");
-  //     } else {
-  //       Alert.alert(t("error"), t("locationPermissionsDenied"),
-  //         [
-  //           {
-  //             text: t("ok"),
-  //           },
-  //         ]
-  //       );
-  //       return;
-  //     }
-  //   } catch (err) {
-  //     Alert.alert(t("error"), t("errorRequestingPermissions"),
-  //       [
-  //         {
-  //           text: t("ok"),
-  //         },
-  //       ]
-  //     );
-  //     return;
-  //   }
-  // }
-  // useEffect(() => {
-  //   requestPermissions();
-  // }, []);
 
   const getAddressFromCoordinates = async (latitude: number, longitude: number) => {
     if (selectedLocation?.draggable) {
@@ -125,6 +89,7 @@ const GoogleTextInput = ({
       {selectedLocation?.draggable && (
         <View style={{ zIndex: 10, elevation: 10, position: "absolute", top: 20, left: 20, right: 20 }}>
           <GooglePlacesAutocomplete
+            ref={placesRef}
             fetchDetails={true}
             placeholder={t("searchPlaceholder")}
             styles={{
