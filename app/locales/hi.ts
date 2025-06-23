@@ -440,6 +440,12 @@ const hi = {
         nearByMe: "मेरे पास",
         failedToGetLocation: "वर्तमान स्थान प्राप्त करने में विफल।",
         mobileNumberDoesNotRegistered: "मोबाइल नंबर पंजीकृत नहीं है, जारी रखने के लिए साइन अप करें।",
+        unknownLocation: "अज्ञात स्थान",
+        unknownPropertyType: "अज्ञात संपत्ति प्रकार",
+        unknownHousingType: "अज्ञात आवास प्रकार",
+        unknownState: "अज्ञात राज्य",
+        unknownDistrict: "अज्ञात जिला",
+        unableToFetchLocation: "स्थान प्राप्त नहीं कर सके। कृपया जांचें कि स्थान अनुमति दी गई है और आपके डिवाइस में लोकेशन/GPS चालू है।"
     },
 };
 

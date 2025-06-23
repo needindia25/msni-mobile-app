@@ -480,7 +480,7 @@ const Home = () => {
                       }
                     }}
                   />
-                  <Text className="ml-3 text-2xl text-white font-bold">{t("nearByMe")}</Text>
+                  <Text className="ml-3 text-xl text-white font-bold">{t("nearByMe")}</Text>
                   {isFechingGEO && (
                     <ActivityIndicator size="small" color="#fff" className="ml-2" />
                   )}

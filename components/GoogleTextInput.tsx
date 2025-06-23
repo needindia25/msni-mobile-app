@@ -167,6 +167,10 @@ const GoogleTextInput = ({
         region={region}
         showsUserLocation={true}
         onRegionChangeComplete={(newRegion) => setRegion(newRegion)}
+        onPress={(e) => {
+          const { latitude, longitude } = e.nativeEvent.coordinate;
+          getAddressFromCoordinates(latitude, longitude);
+        }}
         onMarkerDragEnd={(e) => {
           const { latitude, longitude } = e.nativeEvent.coordinate;
           getAddressFromCoordinates(latitude, longitude);

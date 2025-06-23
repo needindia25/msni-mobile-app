@@ -435,10 +435,16 @@ const en = {
         quadRoom: "Quad Room",
         executiveRoom: "Executive Room",
         meetingRoom: "Meeting Room",
-        longPressMarkerHint: "Long-press the red marker on the map, then drag it to the exact location of the property.",
+        longPressMarkerHint: "Click on map or Long-press the red marker on the map, then drag it to the exact location of the property.",
         nearByMe: "Near By Me",
         failedToGetLocation: "Failed to get current location.",
         mobileNumberDoesNotRegistered: "Mobile number is not registered, sign up to continue.",
+        unknownLocation: "Unknown Location",
+        unknownPropertyType: "Unknown Property Type",
+        unknownHousingType: "Unknown Housing Type",
+        unknownState: "Unknown State",
+        unknownDistrict: "Unknown District",
+        unableToFetchLocation: "Unable to fetch location. Please check if location permission is granted and location/GPS is enabled on your device."
     },
 };
 
