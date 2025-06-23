@@ -97,8 +97,8 @@ export const icons = {
   radioUnchecked,
 };
 
-export const constants = {
-  "QA": {
+export const envConstants = {
+  QA: {
     DEFAULT_LAT: 24.787674373711102,
     DEFAULT_LONG: 84.99152133511204,
     BASE_URL: "https://msniassets.rarsolutions.com",
@@ -106,13 +106,18 @@ export const constants = {
     DEFAULT_PASSWORD: "MSNI@2025",
     EXPO_PUBLIC_PLACES_API_KEY: "AIzaSyBhSmc340OCHOV1eHAWfH7KqVsMBvFO4mE",
   },
-  "PROD":
-  {
+  PROD: {
     DEFAULT_LAT: 24.787674373711102,
     DEFAULT_LONG: 84.99152133511204,
     BASE_URL: "https://assets.multisolutionofneedindia.com",
     API_URL: "https://api.multisolutionofneedindia.com",
     DEFAULT_PASSWORD: "MSNI@2025",
     EXPO_PUBLIC_PLACES_API_KEY: "AIzaSyBhSmc340OCHOV1eHAWfH7KqVsMBvFO4mE",
-  }
-}["PROD"];
+  },
+};
+
+// Use this to select the environment:
+export const ENV = "QA";
+// export const ENV = "PROD";
+
+export const constants = envConstants[ENV];
