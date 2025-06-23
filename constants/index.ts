@@ -97,8 +97,6 @@ export const icons = {
   radioUnchecked,
 };
 
-// let ENV = "QA"
-let ENV = "PROD"
 export const constants = {
   "QA": {
     DEFAULT_LAT: 24.787674373711102,
@@ -117,4 +115,4 @@ export const constants = {
     DEFAULT_PASSWORD: "MSNI@2025",
     EXPO_PUBLIC_PLACES_API_KEY: "AIzaSyBhSmc340OCHOV1eHAWfH7KqVsMBvFO4mE",
   }
-}[ENV];
+}["PROD"];
