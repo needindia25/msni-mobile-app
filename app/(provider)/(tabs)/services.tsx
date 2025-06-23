@@ -101,7 +101,8 @@ const Services = () => {
     return sortedData.map((property) => ({
       id: property.id,
       title: property.title,
-      propertyType: property.options.propertyType || "Unknown Type",
+      propertyType: property.options.propertyType || "Unknown Property Type",
+      housingType: property.options.housingType || "Unknown Housing Type",
       location: property.options.address || "Unknown Location",
       price: property.options.rent ? '₹ ' + parseFloat(property.options.rent) : "N/A",
       requests: property.service_request_count.requests || 0,

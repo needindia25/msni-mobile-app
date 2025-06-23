@@ -70,7 +70,8 @@ const SearchList = () => {
             price: property.options.rent ? '₹ ' + parseFloat(property.options.rent) : "N/A",
             requests: 0,
             favorites: 0,
-            propertyType: property.options.propertyType || "Unknown Type",
+            propertyType: property.options.propertyType || "Unknown Property Type",
+            housingType: property.options.housingType || "Unknown Housing Type",
             stateName: property.options.stateName || "Unknown State",
             districtName: property.options.districtName || "Unknown District",
             city: property.options.city,
@@ -157,13 +158,17 @@ const SearchList = () => {
                                         </Text>
                                     </View>
 
-                                    {/* Property Type */}
+                                    {/* Property Type & Housing Type */}
                                     <View className="flex-row justify-between items-center mb-3">
-                                        <Text className="text-gray-700 text-base font-medium">
+                                        <Text className="text-gray-700 text-base font-medium flex-1">
                                             {getKeyByValue(listing.propertyType)}
                                         </Text>
+                                        {["Full House", "PG/Hostel", "Guest House", "Commercial"].includes(listing.propertyType) && (
+                                            <Text className="text-gray-700 text-base font-medium flex-1 text-right">
+                                                {getKeyByValue(listing.housingType)}
+                                            </Text>
+                                        )}
                                     </View>
-
                                     {/* View Details Button */}
                                     <TouchableOpacity
                                         className="bg-blue-500 py-2 px-5 rounded-lg mt-3"
