@@ -787,6 +787,7 @@ const MultiStepForm = () => {
               <View className="text-base font-bold mt-3 mb-3"></View>
             </ScrollView>
           )}
+
           {step === 3 && (
             <View
               style={{
@@ -996,8 +997,6 @@ const MultiStepForm = () => {
             </ScrollView>
           )}
 
-          {/* {step === totalSteps && () */}
-
           {step === totalSteps && (
             <ScrollView className="bg-gray-100 p-5"
               keyboardShouldPersistTaps="handled"
@@ -1017,6 +1016,7 @@ const MultiStepForm = () => {
               <View className="text-base font-bold mt-3 mb-3"></View>
             </ScrollView>
           )}
+
           {btnLoading ? (
             <View className="flex-row justify-center mt-5 mb-10">
               <ActivityIndicator size="large" color="#00ff00" />
