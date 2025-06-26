@@ -668,19 +668,17 @@ const PropertyDetails = () => {
                                             <MaterialIcons name="phone" size={20} color="white" />
                                             <Text className="text-white ml-2">{t("phoneNumber")}</Text>
                                         </View>
-                                        <Text className="text-white font-semibold">
-                                            {formData.contactPersonNumber ? formData.contactPersonNumber : formData.owner_contact}
-                                        </Text>
-
-                                        {/* Call */}
-                                        <TouchableOpacity onPress={handleCall} className="mr-2">
-                                            <MaterialIcons name="call" size={20} color="white" />
-                                        </TouchableOpacity>
-
-                                        {/* Copy */}
-                                        <TouchableOpacity onPress={handleCopy}>
-                                            <MaterialIcons name="copy-all" size={20} color="white" />
-                                        </TouchableOpacity>
+                                        <View className="flex-row items-center">
+                                            <TouchableOpacity onPress={handleCall} className="mr-2">
+                                                <MaterialIcons name="call" size={20} color="white" />
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={handleCopy} className="mr-2">
+                                                <MaterialIcons name="copy-all" size={20} color="white" />
+                                            </TouchableOpacity>
+                                            <Text className="text-white">
+                                                {formData.contactPersonNumber ? formData.contactPersonNumber : formData.owner_contact}
+                                            </Text>
+                                        </View>
                                     </View>
                                     {/* <View className="flex-row justify-between items-start">
                                         <View className="flex-row items-center flex-shrink-0 mr-4">
