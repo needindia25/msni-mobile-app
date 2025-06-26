@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { constants } from "@/constants";
-
+import Video from 'react-native-video';
 const screenWidth = Dimensions.get("window").width;
 
 const ImageCarousel = ({ images }: { images: string[] }) => {
@@ -69,11 +69,26 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
       >
         {images.map((image, index) => (
           <TouchableOpacity key={index} onPress={() => openImageModal(index)}>
-            <Image
-              source={{ uri: constants.BASE_URL + image }}
-              style={{ width: screenWidth - 40 }}
-              className="h-48 rounded-lg mr-2"
-            />
+            {image.includes('videos') ? (
+              <View style={{ width: screenWidth - 40 }} className="h-48 rounded-lg mb-4 bg-black justify-center items-center">
+                <Video
+                  source={{ uri: constants.BASE_URL + image }}
+                  style={{ width: screenWidth - 40, height: 192, borderRadius: 12, backgroundColor: "#000" }}
+                  resizeMode="contain"
+                  controls
+                  paused={true}
+                  repeat={false}
+                />
+              </View>
+            ) :
+              (
+                <Image
+                  source={{ uri: constants.BASE_URL + image }}
+                  style={{ width: screenWidth - 40 }}
+                  className="h-48 rounded-lg mr-2"
+                />
+              )
+            }
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -101,11 +116,22 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
       <Modal visible={modalVisible} transparent={true} animationType="fade">
         <View className="flex-1 bg-black justify-center items-center">
           {modalIndex !== null && (
-            <Image
-              source={{ uri: constants.BASE_URL + images[modalIndex] }}
-              className="w-full h-full"
-              resizeMode="contain"
-            />
+            images[modalIndex].includes('videos') ? (
+              <Video
+                source={{ uri: constants.BASE_URL + images[modalIndex] }}
+                style={{ width: "100%", height: "100%", backgroundColor: "#000" }}
+                resizeMode="contain"
+                controls
+                paused={false}
+                repeat={false}
+              />
+            ) : (
+              <Image
+                source={{ uri: constants.BASE_URL + images[modalIndex] }}
+                className="w-full h-full"
+                resizeMode="contain"
+              />
+            )
           )}
 
           {/* Close Button */}

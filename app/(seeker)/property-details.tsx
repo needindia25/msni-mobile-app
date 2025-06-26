@@ -12,6 +12,8 @@ import ImageCarousel from '@/components/ImageCarousel';
 import GoogleTextInput from '@/components/GoogleTextInput';
 import { UserInfo } from '@/types/type';
 import { getUserPlan } from '@/lib/utils';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { Linking } from 'react-native';
 
 const PropertyDetails = () => {
     const { t } = useTranslation();
@@ -62,6 +64,8 @@ const PropertyDetails = () => {
         date_created: "",
         owner_name: "",
         owner_contact: "",
+        contactPersonNumber: "",
+        contactPersonName: "",
         status: false,
     });
 
@@ -308,6 +312,17 @@ const PropertyDetails = () => {
         }
     };
 
+    const handleCopy = () => {
+        const phoneNumber = formData.contactPersonNumber || formData.owner_contact;
+        Clipboard.setString(phoneNumber);
+        Alert.alert(t("copied"), `${t("phoneNumber")} ${t("copied").toLowerCase()}`);
+    };
+
+    const handleCall = () => {
+        const phoneNumber = formData.contactPersonNumber || formData.owner_contact;
+        Linking.openURL(`tel:${phoneNumber}`);
+    };
+
     return (
         <ScrollView className="bg-gray-100 p-5">
             {loading ? (
@@ -328,7 +343,7 @@ const PropertyDetails = () => {
                         <View className="flex-row items-center mb-3">
                             <MaterialIcons name="location-on" size={20} color="gray" />
                             <Text className="text-gray-500 ml-1">
-                                {formData.city}, {formData.districtName}, {formData.stateName}
+                                {formData.address}, {formData.city}, {formData.districtName}, {formData.stateName}
                             </Text>
                         </View>
 
@@ -638,22 +653,34 @@ const PropertyDetails = () => {
                         {showContactInfo && (
                             <>
                                 <View className="bg-[#FF7F19] p-4 rounded-lg shadow-md mb-5">
-                                    <Text className="text-lg text-white font-bold mb-3">{t("ownerDetails")}</Text>
+                                    <Text className="text-lg text-white font-bold mb-3">{t("contactPerson")}</Text>
                                     <View className="flex-row justify-between mb-2">
                                         <View className="flex-row items-center">
                                             <MaterialIcons name="person" size={20} color="white" />
-                                            <Text className="text-white ml-2">{t("ownerName")}</Text>
+                                            <Text className="text-white ml-2">{t("nameLabel")}</Text>
                                         </View>
-                                        <Text className="text-white font-semibold">{formData.owner_name}</Text>
+                                        <Text className="text-white font-semibold">
+                                            {formData.contactPersonName ? formData.contactPersonName : formData.owner_name}
+                                        </Text>
                                     </View>
                                     <View className="flex-row justify-between mb-3">
                                         <View className="flex-row items-center">
                                             <MaterialIcons name="phone" size={20} color="white" />
                                             <Text className="text-white ml-2">{t("phoneNumber")}</Text>
                                         </View>
-                                        <Text className="text-white font-semibold">{formData.owner_contact}</Text>
+                                        <View className="flex-row items-center">
+                                            <TouchableOpacity onPress={handleCall} className="mr-2">
+                                                <MaterialIcons name="call" size={20} color="white" />
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={handleCopy} className="mr-2">
+                                                <MaterialIcons name="copy-all" size={20} color="white" />
+                                            </TouchableOpacity>
+                                            <Text className="text-white">
+                                                {formData.contactPersonNumber ? formData.contactPersonNumber : formData.owner_contact}
+                                            </Text>
+                                        </View>
                                     </View>
-                                    <View className="flex-row justify-between items-start">
+                                    {/* <View className="flex-row justify-between items-start">
                                         <View className="flex-row items-center flex-shrink-0 mr-4">
                                             <MaterialIcons name="location-on" size={20} color="white" />
                                             <Text className="text-white ml-2">{t("address")}</Text>
@@ -661,12 +688,13 @@ const PropertyDetails = () => {
                                         <Text className="text-white font-semibold flex-shrink text-right">
                                             {`${formData.address}, ${formData.city}, ${formData.districtName}, ${formData.stateName} - ${formData.zip}`}
                                         </Text>
-                                    </View>
+                                    </View> */}
                                 </View>
                                 {
                                     (formData?.latitude != 0 && formData?.longitude != 0) && (
                                         <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
                                             <GoogleTextInput
+                                                isDirectionEnabled={true}
                                                 icon={icons.target}
                                                 initialLocation={{
                                                     latitude: formData?.latitude,

@@ -55,6 +55,8 @@ const PropertyDetails = () => {
         date_updated: "",
         date_created: "",
         status: false,
+        contactPersonNumber: "",
+        contactPersonName: "",
     });
 
     useEffect(() => {
@@ -515,6 +517,29 @@ const PropertyDetails = () => {
                                     </View>
                                 </>
                             )}
+                        </View>
+
+                        {/* Contact Person */}
+                        <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
+                            <Text className="text-lg font-bold mb-3">{t("contactPerson")}</Text>
+                            <View className="flex-row justify-between mb-2">
+                                <View className="flex-row items-center">
+                                    <MaterialIcons name="person" size={20} color="black" />
+                                    <Text className="text-gray-500 ml-2">{t("nameLabel")}</Text>
+                                </View>
+                                <Text className="text-black font-semibold">
+                                    {formData.contactPersonName ? formData.contactPersonName : t("notAvailable")}
+                                </Text>
+                            </View>
+                            <View className="flex-row justify-between">
+                                <View className="flex-row items-center">
+                                    <MaterialIcons name="phone" size={20} color="black" />
+                                    <Text className="text-gray-500 ml-2">{t("phoneNumber")}</Text>
+                                </View>
+                                <Text className="text-black font-semibold">
+                                    {formData.contactPersonNumber ? formData.contactPersonNumber : t("notAvailable")}
+                                </Text>
+                            </View>
                         </View>
 
                         {/* Dates */}

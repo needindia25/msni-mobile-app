@@ -15,6 +15,8 @@ import CustomMultiDropdown from "@/components/CustomMultiDropdown";
 import ImagePickerComponent from "@/components/ImagePicker";
 import GoogleTextInput from "@/components/GoogleTextInput";
 import { getStaticData } from "@/constants/staticData";
+import { getUserPlan } from '@/lib/utils';
+import StepIndicator from "@/components/StepIndicator";
 
 const googlePlacesApiKey = constants.EXPO_PUBLIC_PLACES_API_KEY;
 
@@ -22,6 +24,7 @@ const MultiStepForm = () => {
   const router = useRouter();
   const { t } = useTranslation();
   const { passServiceId } = useLocalSearchParams();
+  const totalSteps = 6;
 
   const [loading, setLoading] = useState(true);
   const [isMapRender, setIsMapRender] = useState(true);
@@ -64,6 +67,8 @@ const MultiStepForm = () => {
     additionalAmenities: [] as string[],
     sourceOfWater: [] as string[],
     images: [] as string[],
+    contactPersonNumber: "",
+    contactPersonName: "",
   });
 
   const [serviceId, setServiceId] = useState<number | null>(null);
@@ -204,6 +209,8 @@ const MultiStepForm = () => {
     district: "",
     city: "",
     zip: "",
+    contactPersonName: "",
+    contactPersonNumber: "",
   });
 
   const handleInputChange = (field: string, value: any) => {
@@ -238,6 +245,8 @@ const MultiStepForm = () => {
       district: "",
       city: "",
       zip: "",
+      contactPersonName: "",
+      contactPersonNumber: "",
     };
 
     if (step === 1) {
@@ -297,6 +306,25 @@ const MultiStepForm = () => {
   const handleCancel = () => {
     router.push("/(provider)/(tabs)/home");
   };
+
+  const checkSubscription = async () => {
+      const userPlan = await getUserPlan(t);
+      console.log(userPlan)
+      let title = "active";
+      if (userPlan.length === 0) {
+        return "noActivePlan";
+      }
+      if (userPlan.length > 0) {
+        if (userPlan[0].has_subscription === false) {
+          title = "planExpired"
+        } else if (userPlan[0].credits <= userPlan[0].used) {
+          title = "creditBalanceExhausted"
+        }
+      } else {
+        title = "noActivePlan";
+      }
+      return title;
+  }
   const handleSubmit = async (formData: any, stepIndex: number = 0) => {
     if (!validateForm()) {
       Alert.alert(
@@ -325,6 +353,26 @@ const MultiStepForm = () => {
     }
     try {
       setBtnLoading(true);
+      const subscriptionStatus = await checkSubscription()
+      if (subscriptionStatus !== "active") {
+        setBtnLoading(false);
+        Alert.alert(
+          t(subscriptionStatus),
+          t("subscribeNowToAddProperty"),
+          [
+            { text: t("cancel"), style: "cancel" },
+            {
+              text: t("ok"),
+              style: "destructive",
+              onPress: async () => {
+                router.push('/choose-subscription');
+                return false;
+              },
+            },
+          ]
+        );
+        return;
+      }
       let url = `${constants.API_URL}/user-services/`;
       let method = "POST";
       if (serviceId !== null && serviceId !== undefined) {
@@ -446,13 +494,14 @@ const MultiStepForm = () => {
           <Text className="text-base font-bold text-center">
             {serviceId ? t("editProperty") : t("addProperty")}
           </Text>
-          <View className="flex-row justify-between">
+          {/* <View className="flex-row justify-between">
             {[1, 2, 3, 4, 5, 6].map((num) => (
               <Text key={num} className={`text-base font-bold ${step === num ? "text-blue-500" : "text-gray-400"}`}>
                 {t("step")} {num}
               </Text>
             ))}
-          </View>
+          </View> */}
+          <StepIndicator currentStep={step} totalSteps={totalSteps} />
 
           {step === 1 && (
             <ScrollView className="bg-gray-100 p-5"
@@ -491,7 +540,7 @@ const MultiStepForm = () => {
 
               <Text className="text-base font-bold mt-3">{t("title")}</Text>
               <TextInput
-                placeholder={t(getKey(formData.propertyType))}
+                placeholder={t(formData.propertyType ? getKey(formData.propertyType) : "enterTitle")}
                 className={`border rounded-lg p-3 bg-white ${errors.title ? "border-red-500" : "border-gray-300"
                   }`}
                 value={formData.title}
@@ -697,9 +746,48 @@ const MultiStepForm = () => {
                 />
               </View>
               {errors.address && <Text className="text-red-500">{errors.address}</Text>}
+
+              <Text className="text-base font-bold mt-3 mb-3">{t("contactPersonName")}</Text>
+              <View>
+                <TextInput
+                  placeholder={t("enterContactPersonName")}
+                  className="border rounded-lg p-3 bg-white mt-3 border-gray-300"
+                  value={formData.contactPersonName}
+                  onChangeText={(value) => handleInputChange("contactPersonName", value)}
+                  onBlur={() => {
+                    if (!formData.contactPersonName || formData.contactPersonName.length < 4) {
+                      setErrors((prev) => ({
+                        ...prev,
+                        contactPersonName: t("contactPersonNameError"),
+                      }));
+                    }
+                  }}
+                />
+              </View>
+              {errors.contactPersonName && <Text className="text-red-500">{errors.contactPersonName}</Text>}
+
+              <Text className="text-base font-bold mt-3 mb-3">{t("contactPersonNumber")}</Text>
+              <TextInput
+                placeholder={t("enterContactPersonNumber")}
+                className={`border rounded-lg p-3 bg-white ${errors.contactPersonNumber ? "border-red-500" : "border-gray-300"
+                  }`}
+                keyboardType="numeric"
+                value={formData.contactPersonNumber}
+                onChangeText={(value) => handleInputChange("contactPersonNumber", value)}
+                onBlur={(value) => {
+                  if (!formData.contactPersonNumber || !/^\d{10}$/.test(formData.contactPersonNumber)) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      contactPersonNumber: t("contactPersonNumberError"),
+                    }));
+                  }
+                }}
+              />
+              {errors.contactPersonNumber && <Text className="text-red-500">{errors.contactPersonNumber}</Text>}
               <View className="text-base font-bold mt-3 mb-3"></View>
             </ScrollView>
           )}
+
           {step === 3 && (
             <View
               style={{
@@ -909,7 +997,7 @@ const MultiStepForm = () => {
             </ScrollView>
           )}
 
-          {step === 6 && (
+          {step === totalSteps && (
             <ScrollView className="bg-gray-100 p-5"
               keyboardShouldPersistTaps="handled"
               contentContainerStyle={{ flexGrow: 1 }} >
@@ -928,6 +1016,7 @@ const MultiStepForm = () => {
               <View className="text-base font-bold mt-3 mb-3"></View>
             </ScrollView>
           )}
+
           {btnLoading ? (
             <View className="flex-row justify-center mt-5 mb-10">
               <ActivityIndicator size="large" color="#00ff00" />
@@ -941,7 +1030,7 @@ const MultiStepForm = () => {
               <TouchableOpacity onPress={() => handleCancel()} className="bg-gray-500 py-3 px-5 mx-3 rounded-lg">
                 <Text className="text-white text-base font-bold">{t("cancel")}</Text>
               </TouchableOpacity>
-              {step < 6 ? (
+              {step < totalSteps ? (
                 <TouchableOpacity onPress={() => { handleSubmit(formData, 1); }} className="bg-blue-500 py-3 px-5 rounded-lg">
                   <Text className="text-white text-base font-bold">{t("saveNext")}</Text>
                 </TouchableOpacity>

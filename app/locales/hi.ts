@@ -416,7 +416,7 @@ const hi = {
         creditBalanceExhaustedTitle: "क्रेडिट बैलेंस समाप्त हो गया है!",
         subscribeNowToAddProperty: "नई संपत्ति विवरण जोड़ने के लिए अभी सदस्यता लें।",
         subscribeNowToViewDetails: "विवरण देखने के लिए अभी सदस्यता लें।",
-        transactionUpdatedToSuccess: "आपका पिछला लेन-देन लंबित था, अब इसे सफल के रूप में अपडेट कर दिया गया है।",        
+        transactionUpdatedToSuccess: "आपका पिछला लेन-देन लंबित था, अब इसे सफल के रूप में अपडेट कर दिया गया है।",
         noActivityFound: "कोई गतिविधि नहीं मिली",
         noActivityMessage: "आपकी पोस्ट की गई सेवाओं पर किसी भी उपयोगकर्ता ने कोई गतिविधि नहीं की है",
         double: "डबल",
@@ -445,7 +445,23 @@ const hi = {
         unknownHousingType: "अज्ञात आवास प्रकार",
         unknownState: "अज्ञात राज्य",
         unknownDistrict: "अज्ञात जिला",
-        unableToFetchLocation: "स्थान प्राप्त नहीं कर सके। कृपया जांचें कि स्थान अनुमति दी गई है और आपके डिवाइस में लोकेशन/GPS चालू है।"
+        unableToFetchLocation: "स्थान प्राप्त नहीं कर सके। कृपया जांचें कि स्थान अनुमति दी गई है और आपके डिवाइस में लोकेशन/GPS चालू है।",
+        openInGoogleMaps: "गूगल मैप्स में दिशा-निर्देश खोलें",
+        uploadVideo: "वीडियो अपलोड करें",
+        videoUploadError: "वीडियो अपलोड करने में विफल।",
+        videoSizeLimit: "वीडियो आकार सीमा 50 एमबी है।",
+        deleteVideo: "वीडियो हटाएं",
+        deleteVideoConfirmation: "क्या आप वाकई इस वीडियो को हटाना चाहते हैं?",
+        contactPerson: "संपर्क व्यक्ति",
+        contactPersonName: "संपर्क व्यक्ति का नाम",
+        enterContactPersonName: "संपर्क व्यक्ति का नाम दर्ज करें",
+        contactPersonRequired: "संपर्क व्यक्ति का नाम आवश्यक है",
+        contactPersonNameMin: "संपर्क व्यक्ति का नाम कम से कम 3 अक्षरों का होना चाहिए",
+        contactPersonNameMax: "संपर्क व्यक्ति का नाम 30 अक्षरों से अधिक नहीं होना चाहिए",
+        contactPersonNumber: "संपर्क व्यक्ति का नंबर",
+        enterContactPersonNumber: "संपर्क व्यक्ति का नंबर दर्ज करें",
+        contactPersonNumberRequired: "संपर्क व्यक्ति का नंबर आवश्यक है",
+        contactPersonNumberError: "संपर्क व्यक्ति का नंबर 10 अंकों का होना चाहिए"
     },
 };
 
