@@ -12,6 +12,8 @@ import ImageCarousel from '@/components/ImageCarousel';
 import GoogleTextInput from '@/components/GoogleTextInput';
 import { UserInfo } from '@/types/type';
 import { getUserPlan } from '@/lib/utils';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { Linking } from 'react-native';
 
 const PropertyDetails = () => {
     const { t } = useTranslation();
@@ -62,6 +64,8 @@ const PropertyDetails = () => {
         date_created: "",
         owner_name: "",
         owner_contact: "",
+        contactPersonNumber: "",
+        contactPersonName: "",
         status: false,
     });
 
@@ -306,6 +310,17 @@ const PropertyDetails = () => {
                 return;
             }
         }
+    };
+
+    const handleCopy = () => {
+        const phoneNumber = formData.contactPersonNumber || formData.owner_contact;
+        Clipboard.setString(phoneNumber);
+        Alert.alert(t("copied"), `${t("phoneNumber")} ${t("copied").toLowerCase()}`);
+    };
+
+    const handleCall = () => {
+        const phoneNumber = formData.contactPersonNumber || formData.owner_contact;
+        Linking.openURL(`tel:${phoneNumber}`);
     };
 
     return (
@@ -638,20 +653,34 @@ const PropertyDetails = () => {
                         {showContactInfo && (
                             <>
                                 <View className="bg-[#FF7F19] p-4 rounded-lg shadow-md mb-5">
-                                    <Text className="text-lg text-white font-bold mb-3">{t("ownerDetails")}</Text>
+                                    <Text className="text-lg text-white font-bold mb-3">{t("contactPerson")}</Text>
                                     <View className="flex-row justify-between mb-2">
                                         <View className="flex-row items-center">
                                             <MaterialIcons name="person" size={20} color="white" />
-                                            <Text className="text-white ml-2">{t("ownerName")}</Text>
+                                            <Text className="text-white ml-2">{t("nameLabel")}</Text>
                                         </View>
-                                        <Text className="text-white font-semibold">{formData.owner_name}</Text>
+                                        <Text className="text-white font-semibold">
+                                            {formData.contactPersonName ? formData.contactPersonName : formData.owner_name}
+                                        </Text>
                                     </View>
                                     <View className="flex-row justify-between mb-3">
                                         <View className="flex-row items-center">
                                             <MaterialIcons name="phone" size={20} color="white" />
                                             <Text className="text-white ml-2">{t("phoneNumber")}</Text>
                                         </View>
-                                        <Text className="text-white font-semibold">{formData.owner_contact}</Text>
+                                        <Text className="text-white font-semibold">
+                                            {formData.contactPersonNumber ? formData.contactPersonNumber : formData.owner_contact}
+                                        </Text>
+
+                                        {/* Call */}
+                                        <TouchableOpacity onPress={handleCall} className="mr-2">
+                                            <MaterialIcons name="call" size={20} color="white" />
+                                        </TouchableOpacity>
+
+                                        {/* Copy */}
+                                        <TouchableOpacity onPress={handleCopy}>
+                                            <MaterialIcons name="copy-all" size={20} color="white" />
+                                        </TouchableOpacity>
                                     </View>
                                     {/* <View className="flex-row justify-between items-start">
                                         <View className="flex-row items-center flex-shrink-0 mr-4">

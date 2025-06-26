@@ -451,6 +451,16 @@ const en = {
         videoSizeLimit: "Video size should be less than 50 MB.",
         deleteVideo: "Delete Video",
         deleteVideoConfirmation: "Are you sure you want to delete this video?",
+        contactPerson: "Contact Person",
+        contactPersonName: "Contact Person Name",
+        enterContactPersonName: "Enter Contact Person Name",
+        contactPersonRequired: "Contact Person Name is required",
+        contactPersonNameMin: "Contact Person Name must be at least 3 characters long",
+        contactPersonNameMax: "Contact Person Name should not be more than 30 characters",
+        contactPersonNumber: "Contact Person Number",
+        enterContactPersonNumber: "Enter Contact Person Number",
+        contactPersonNumberRequired: "Contact Person Number is required",
+        contactPersonNumberError: "Contact Person Number must be of 10 digits",
     },
 };
 

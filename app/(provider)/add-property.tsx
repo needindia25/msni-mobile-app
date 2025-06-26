@@ -67,6 +67,8 @@ const MultiStepForm = () => {
     additionalAmenities: [] as string[],
     sourceOfWater: [] as string[],
     images: [] as string[],
+    contactPersonNumber: "",
+    contactPersonName: "",
   });
 
   const [serviceId, setServiceId] = useState<number | null>(null);
@@ -207,6 +209,8 @@ const MultiStepForm = () => {
     district: "",
     city: "",
     zip: "",
+    contactPersonName: "",
+    contactPersonNumber: "",
   });
 
   const handleInputChange = (field: string, value: any) => {
@@ -241,6 +245,8 @@ const MultiStepForm = () => {
       district: "",
       city: "",
       zip: "",
+      contactPersonName: "",
+      contactPersonNumber: "",
     };
 
     if (step === 1) {
@@ -740,6 +746,44 @@ const MultiStepForm = () => {
                 />
               </View>
               {errors.address && <Text className="text-red-500">{errors.address}</Text>}
+
+              <Text className="text-base font-bold mt-3 mb-3">{t("contactPersonName")}</Text>
+              <View>
+                <TextInput
+                  placeholder={t("enterContactPersonName")}
+                  className="border rounded-lg p-3 bg-white mt-3 border-gray-300"
+                  value={formData.contactPersonName}
+                  onChangeText={(value) => handleInputChange("contactPersonName", value)}
+                  onBlur={() => {
+                    if (!formData.contactPersonName || formData.contactPersonName.length < 4) {
+                      setErrors((prev) => ({
+                        ...prev,
+                        contactPersonName: t("contactPersonNameError"),
+                      }));
+                    }
+                  }}
+                />
+              </View>
+              {errors.contactPersonName && <Text className="text-red-500">{errors.contactPersonName}</Text>}
+
+              <Text className="text-base font-bold mt-3 mb-3">{t("contactPersonNumber")}</Text>
+              <TextInput
+                placeholder={t("enterContactPersonNumber")}
+                className={`border rounded-lg p-3 bg-white ${errors.contactPersonNumber ? "border-red-500" : "border-gray-300"
+                  }`}
+                keyboardType="numeric"
+                value={formData.contactPersonNumber}
+                onChangeText={(value) => handleInputChange("contactPersonNumber", value)}
+                onBlur={(value) => {
+                  if (!formData.contactPersonNumber || !/^\d{10}$/.test(formData.contactPersonNumber)) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      contactPersonNumber: t("contactPersonNumberError"),
+                    }));
+                  }
+                }}
+              />
+              {errors.contactPersonNumber && <Text className="text-red-500">{errors.contactPersonNumber}</Text>}
               <View className="text-base font-bold mt-3 mb-3"></View>
             </ScrollView>
           )}
