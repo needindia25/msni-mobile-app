@@ -1,10 +1,12 @@
 import React from 'react';
 import { Stack } from 'expo-router';
-import { View, Image, TouchableOpacity } from 'react-native';
+import { View, Image, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from "react-i18next";
 import { images, icons } from "@/constants"; // Adjust the import path according to your project structure
 
 const Layout = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   return (
     <>
@@ -18,13 +20,13 @@ const Layout = () => {
               router.replace("/welcome-page");
             }
           }}
-          className="p-5"
+          className="p-5 flex-row items-center"
         >
           <Image
             source={icons.backArrow}
             resizeMode="contain"
-            className={`w-6 h-6`}
-          />
+            className={`w-6 h-6 mr-1`}
+          /> <Text >{t("back")}</Text>
         </TouchableOpacity>
       </View>
       <Stack>

@@ -24,7 +24,7 @@ const ChooseSubscription = () => {
                 const userInfo: UserInfo | null = userInfoString ? JSON.parse(userInfoString) : null;
                 const token = await AsyncStorage.getItem('token');
                 const userPlan = await getUserPlan(t);
-                let user_type_id = userInfo?.user_type_id;                
+                let user_type_id = userInfo?.user_type_id;
                 const userTypeList = {
                     "S": 1,
                     "P": 2,
@@ -91,13 +91,13 @@ const ChooseSubscription = () => {
                         <View className="flex-row items-center mb-5">
                             <TouchableOpacity
                                 onPress={() => router.back()}
-                                className="p-5"
+                                className="p-5 flex-row items-center"
                             >
                                 <Image
                                     source={icons.backArrow}
                                     resizeMode="contain"
-                                    className={`w-6 h-6`}
-                                />
+                                    className={`w-6 h-6 mr-1`}
+                                /> <Text >{t("back")}</Text>
                             </TouchableOpacity>
                             <Text className="text-2xl font-bold text-center flex-1">
                                 {t("choosePlan")}

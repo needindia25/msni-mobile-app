@@ -41,7 +41,6 @@ const SearchList = () => {
             );
             return;
         }
-        setLoading(false);
         if (!!token) {
             console.log("filtersData", filtersData);
             const response: any = await fetchAPI(`${constants.API_URL}/search/`, t, {
@@ -147,7 +146,7 @@ const SearchList = () => {
                                     <View className="flex-row items-center mb-3">
                                         <MaterialIcons name="location-on" size={20} color="#4CAF50" />
                                         <Text className="text-gray-600 ml-2">
-                                            {listing.city}, {listing.districtName}, {listing.stateName}
+                                            {listing.location}, {listing.city}, {listing.districtName}, {listing.stateName}
                                         </Text>
                                     </View>
 

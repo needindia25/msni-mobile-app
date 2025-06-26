@@ -83,6 +83,16 @@ const ProfilePage = () => {
         let isUpgradePlan = true
         if (userPlan.length > 0) {
             isUpgradePlan = userPlan[0].user_type_code !== "B"
+        } else {
+            let userInfo = await AsyncStorage.getItem('user_info');
+            const parsedUserInfo = userInfo ? JSON.parse(userInfo) : null;
+            if (parsedUserInfo) {
+                parsedUserInfo.user_type_id = role;
+                await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
+                router.push('/welcome-page');
+                setUserInfo(parsedUserInfo);
+            }
+            return;
         }
         console.log(userPlan, isUpgradePlan)
         Alert.alert(
@@ -224,7 +234,6 @@ const ProfilePage = () => {
                     {/* Profile Title */}
                     <View className="w-full flex-row justify-between items-center mt-2 px-5 bg-white pt-2 mb-5">
                         <Text className="text-2xl font-extrabold text-gray-800">
-                            {/* {userInfo?.user_type_id === 1 ? t("seekerProfile") : t("providerProfile")} */}
                             {t("profile")}
                         </Text>
 
@@ -237,7 +246,7 @@ const ProfilePage = () => {
                                 resizeMode="contain"
                                 className="w-5 h-5"
                             />
-                            <Text className="text-lg text-gray-500 ml-2">{t("logout")}</Text>
+                            <Text className="text-lg text-red-500 ml-2">{t("logout")}</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -260,33 +269,34 @@ const ProfilePage = () => {
                         </View>
                     </View>
 
+                    <View className="items-center flex justify-center mt-1 mb-5 bg-gray-100 border border-gray-500 rounded-2xl p-5 shadow-sm">
+                        {/* Switch Role Title */}
+                        <Text className="text-xl font-bold text-center text-gray-800 mb-4">
+                            {t("switchUser")}
+                        </Text>
+
+                        {/* Switch Role Options */}
+                        <View className="flex-row justify-center mb-6">
+                            {[
+                                { code: 1, name: t("seeker") },
+                                { code: 2, name: t("provider") },
+                            ].map((role) => (
+                                <TouchableOpacity
+                                    key={role.code}
+                                    className={`rounded-full px-3 py-3 mx-1 shadow-md ${selectedRole === role.code
+                                        ? "bg-green-500"
+                                        : "bg-gray-400"
+                                        }`}
+                                    onPress={() => handleSelectedRole(role.code)}
+                                >
+                                    <Text className="text-white font-bold px-2">{role.name}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </View>
+
                     {plans.length === 1 && (
                         <>
-                            <View className="items-center flex justify-center mt-1 mb-5 bg-gray-100 border border-gray-500 rounded-2xl p-5 shadow-sm">
-                                {/* Switch Role Title */}
-                                <Text className="text-xl font-bold text-center text-gray-800 mb-4">
-                                    {t("switchUser")}
-                                </Text>
-
-                                {/* Switch Role Options */}
-                                <View className="flex-row justify-center mb-6">
-                                    {[
-                                        { code: 1, name: t("seeker") },
-                                        { code: 2, name: t("provider") },
-                                    ].map((role) => (
-                                        <TouchableOpacity
-                                            key={role.code}
-                                            className={`rounded-full px-3 py-3 mx-1 shadow-md ${selectedRole === role.code
-                                                ? "bg-green-500"
-                                                : "bg-gray-400"
-                                                }`}
-                                            onPress={() => handleSelectedRole(role.code)}
-                                        >
-                                            <Text className="text-white font-bold px-2">{role.name}</Text>
-                                        </TouchableOpacity>
-                                    ))}
-                                </View>
-                            </View>
                             {/* <View className="flex-row justify-end mb-4">
                                 <TouchableOpacity
                                     className="bg-transparent"

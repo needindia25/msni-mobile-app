@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Image, TouchableOpacity, Text, Alert, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import Video from 'react-native-video';
 import { router } from "expo-router";
 import { constants } from '@/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
-import { set } from 'date-fns';
+import { MaterialIcons } from '@expo/vector-icons';
 
 interface ImagePickerProps {
   images: string[];
@@ -19,6 +20,8 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
   const [selectedImages, setSelectedImages] = useState<string[]>(images);
   const [uploading, setUploading] = useState(false); // Add this
   const [imageLoading, setImageLoading] = useState<{ [key: number]: boolean }>({});
+  const [isVideoUploaed, setisVideoUploaed] = useState(false);
+  
 
   const getMimeType = (uri: string) => {
     const extension = uri.split(".").pop()?.toLowerCase() ?? "";
@@ -31,7 +34,7 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
     return mimeTypes[extension] || "image/jpeg"; // Default to JPEG
   };
 
-  const handleImagePick = async (mode: 'camera' | 'gallery') => {
+  const handleImagePick = async (mode: 'camera' | 'gallery' | 'video') => {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
@@ -149,9 +152,15 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
   };
 
   const handleDeleteImage = (imageUri: string) => {
+    let title = t("deleteImage"); // Use translation key
+    let message = t("deleteImageConfirmation"); // Use translation key
+    if (imageUri.includes('videos')) {
+      title = t("deleteVideo"); // Use translation key
+      message = t("deleteVideoConfirmation"); // Use translation key
+    }
     Alert.alert(
-      t("deleteImage"), // Use translation key
-      t("deleteImageConfirmation"), // Use translation key
+      title, // Use translation key
+      message, // Use translation key
       [
         { text: t("cancel"), style: 'cancel' }, // Use translation key
         {
@@ -166,6 +175,77 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
     );
   };
 
+  const uploadVideoToDjangoAPI = async (videoUri: string, token: string): Promise<string | null> => {
+    try {
+      // Prepare form data
+      const formData = new FormData();
+      formData.append('video', {
+        uri: videoUri,
+        name: 'video.mp4',
+        type: 'video/mp4',
+      } as any);
+      if (serviceId) {
+        formData.append('id', String(serviceId));
+      }
+
+      const response = await fetch(`${constants.API_URL}/video-upload/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+          // Do NOT set 'Content-Type', let fetch set it automatically for FormData
+        },
+        body: formData,
+      });
+      console.log("Video Upload Response", response);
+      if (response.status === 401) {
+        Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"), [
+          {
+            text: t("ok"),
+            onPress: () => router.push(`/(auth)/sign-in`),
+          },
+        ]);
+        return null;
+      }
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.filePath; // Adjust according to your backend response
+      } else {
+        Alert.alert(
+          t('error'),
+          t("videoUploadError"),
+          [
+            {
+              text: t("ok"),
+            },
+          ]
+        );
+        return null;
+      }
+    } catch (error) {
+      Alert.alert(
+        t('error'),
+        t("videoUploadError"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      );
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    if (selectedImages.length > 0) {
+      selectedImages.forEach((image, index) => {
+        if (image.includes('videos')) {
+          setisVideoUploaed(true);
+        }
+      });
+    }
+  }, [selectedImages]);
   return (
     <>
       <View className="p-4 items-center">
@@ -173,16 +253,50 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
           <View className="flex-row flex-wrap gap-2">
             {selectedImages.map((image, index) => (
               <View key={index} className="relative">
-                <Image
-                  source={{ uri: constants.BASE_URL + image }}
-                  className="w-40 h-40 rounded-lg mb-4"
-                  onLoadStart={() =>
-                    setImageLoading((prev) => ({ ...prev, [index]: true }))
-                  }
-                  onLoadEnd={() =>
-                    setImageLoading((prev) => ({ ...prev, [index]: false }))
-                  }
-                />
+                {image.includes('videos')
+                  ? (
+                    <View className="w-80 h-40 rounded-lg mb-4 bg-black justify-center items-center">
+                      <Video
+                        source={{ uri: constants.BASE_URL + image }}
+                        style={{ width: 280, height: 140, borderRadius: 12, backgroundColor: "#000" }}
+                        resizeMode="contain"
+                        controls
+                        paused={true}
+                        repeat={false}
+                        onLoadStart={() =>
+                          setImageLoading((prev) => ({ ...prev, [index]: true }))
+                        }
+                        onLoad={() =>
+                          setImageLoading((prev) => ({ ...prev, [index]: false }))
+                        }
+                        onTouchStart={() => {
+                          console.log("Video touched");
+                        }}
+                      />
+                      {/* Play Icon Overlay */}
+                      <View className="absolute inset-0 justify-center items-center pointer-events-none">
+                        <View className="bg-black/50 rounded-full p-3">
+                          <Text style={{ fontSize: 36, color: "#fff", fontWeight: "bold" }}>
+                            {/* ▶ */}
+                            <MaterialIcons name="play-circle-outline" size={48} color="#fff" />
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  )
+                  : (
+                    <Image
+                      source={{ uri: constants.BASE_URL + image }}
+                      className="w-40 h-40 rounded-lg mb-4"
+                      onLoadStart={() =>
+                        setImageLoading((prev) => ({ ...prev, [index]: true }))
+                      }
+                      onLoadEnd={() =>
+                        setImageLoading((prev) => ({ ...prev, [index]: false }))
+                      }
+                    />
+                  )
+                }
                 {imageLoading[index] && (
                   <View className="absolute inset-0 justify-center items-center bg-white/60 rounded-lg">
                     <ActivityIndicator size="large" color="#00ff00" />
@@ -211,7 +325,7 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
 
         <View className="flex-row justify-center space-x-4">
           <TouchableOpacity
-            className="bg-blue-500 p-3 rounded-lg mr-3"
+            className={`p-3 rounded-lg mr-3 ${uploading ? 'bg-gray-400' : 'bg-green-500'}`}
             onPress={() => handleImagePick('camera')}
             disabled={uploading}
           >
@@ -219,11 +333,71 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="bg-green-500 p-3 rounded-lg"
+            className={`p-3 rounded-lg mr-3 ${uploading ? 'bg-gray-400' : 'bg-green-500'}`}
             onPress={() => handleImagePick('gallery')}
             disabled={uploading}
           >
-            <Text className="text-white font-bold">{t("selectFromGallery")}</Text>
+            <Text className="text-white font-bold">{t("uploadImage")}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className={`p-3 rounded-lg mr-3 ${(uploading || isVideoUploaed) ? 'bg-gray-400' : 'bg-green-500'}`}
+            onPress={async () => {
+              try {
+                const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                if (status !== 'granted') {
+                  Alert.alert(t("permissionDenied"), t("allowGalleryAccess"));
+                  return;
+                }
+                // Pick video only
+                const result = await ImagePicker.launchImageLibraryAsync({
+                  mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+                  allowsEditing: false,
+                  quality: 1,
+                });
+
+                if (!result.canceled && result.assets && result.assets.length > 0) {
+                  const video = result.assets[0];
+                  // Check file size (in bytes), e.g., 50MB = 50 * 1024 * 1024
+                  const MAX_SIZE = 100 * 1024 * 1024;
+                  if (video.fileSize !== undefined) {
+                    console.log((video.fileSize / 1024 / 1024), MAX_SIZE);
+                  } else {
+                    console.log('video.fileSize is undefined', MAX_SIZE);
+                  }
+                  if (video.fileSize && video.fileSize > MAX_SIZE) {
+                    Alert.alert(
+                      t("error"),
+                      t("videoSizeLimit") || "Video size should not exceed 50MB."
+                    );
+                    return;
+                  }
+                  setUploading(true);
+                  const token = await AsyncStorage.getItem('token');
+                  if (!token) {
+                    Alert.alert(t("error"), t("noTokenError"), [{ text: t("ok") }]);
+                    setUploading(false);
+                    return;
+                  }
+                  // Upload video to API (implement your own upload logic)
+                  console.log("Uploading video to API", video.uri);
+                  console.log("token", token);
+                  const savedPath = await uploadVideoToDjangoAPI(video.uri, token);
+                  console.log("savedPath", savedPath);
+                  if (savedPath) {
+                    setSelectedImages((prev) => [...prev, savedPath]);
+                    onImageSelect(savedPath);
+                  }
+                  setUploading(false);
+                }
+              } catch (error) {
+                setUploading(false);
+                Alert.alert(t("error"), t("videoUploadError") || "Failed to upload the video.");
+              }
+            }}
+            disabled={uploading || isVideoUploaed}
+          >
+            <Text className="text-white font-bold">{t("uploadVideo")}</Text>
           </TouchableOpacity>
         </View>
       </View>

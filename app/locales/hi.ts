@@ -445,7 +445,13 @@ const hi = {
         unknownHousingType: "अज्ञात आवास प्रकार",
         unknownState: "अज्ञात राज्य",
         unknownDistrict: "अज्ञात जिला",
-        unableToFetchLocation: "स्थान प्राप्त नहीं कर सके। कृपया जांचें कि स्थान अनुमति दी गई है और आपके डिवाइस में लोकेशन/GPS चालू है।"
+        unableToFetchLocation: "स्थान प्राप्त नहीं कर सके। कृपया जांचें कि स्थान अनुमति दी गई है और आपके डिवाइस में लोकेशन/GPS चालू है।",
+        openInGoogleMaps: "गूगल मैप्स में दिशा-निर्देश खोलें",
+        uploadVideo: "वीडियो अपलोड करें",
+        videoUploadError: "वीडियो अपलोड करने में विफल।",
+        videoSizeLimit: "वीडियो आकार सीमा 50 एमबी है।",
+        deleteVideo: "वीडियो हटाएं",
+        deleteVideoConfirmation: "क्या आप वाकई इस वीडियो को हटाना चाहते हैं?",
     },
 };
 

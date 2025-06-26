@@ -328,7 +328,7 @@ const PropertyDetails = () => {
                         <View className="flex-row items-center mb-3">
                             <MaterialIcons name="location-on" size={20} color="gray" />
                             <Text className="text-gray-500 ml-1">
-                                {formData.city}, {formData.districtName}, {formData.stateName}
+                                {formData.address}, {formData.city}, {formData.districtName}, {formData.stateName}
                             </Text>
                         </View>
 
@@ -653,7 +653,7 @@ const PropertyDetails = () => {
                                         </View>
                                         <Text className="text-white font-semibold">{formData.owner_contact}</Text>
                                     </View>
-                                    <View className="flex-row justify-between items-start">
+                                    {/* <View className="flex-row justify-between items-start">
                                         <View className="flex-row items-center flex-shrink-0 mr-4">
                                             <MaterialIcons name="location-on" size={20} color="white" />
                                             <Text className="text-white ml-2">{t("address")}</Text>
@@ -661,12 +661,13 @@ const PropertyDetails = () => {
                                         <Text className="text-white font-semibold flex-shrink text-right">
                                             {`${formData.address}, ${formData.city}, ${formData.districtName}, ${formData.stateName} - ${formData.zip}`}
                                         </Text>
-                                    </View>
+                                    </View> */}
                                 </View>
                                 {
                                     (formData?.latitude != 0 && formData?.longitude != 0) && (
                                         <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
                                             <GoogleTextInput
+                                                isDirectionEnabled={true}
                                                 icon={icons.target}
                                                 initialLocation={{
                                                     latitude: formData?.latitude,

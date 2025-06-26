@@ -116,36 +116,36 @@ const Services = () => {
   };
 
   const handleAddPropert = async () => {
-    const userPlan = await getUserPlan(t);
-    console.log(userPlan)
-    let title = "";
-    if (userPlan.length > 0) {
-      if (userPlan[0].has_subscription === false) {
-        title = "planExpired"
-      } else if (userPlan[0].credits <= userPlan[0].used) {
-        title = "creditBalanceExhausted"
-      }
-    } else {
-      title = "noActivePlan";
-    }
-    if (title) {
-      Alert.alert(
-        t(title),
-        t("subscribeNowToAddProperty"),
-        [
-          { text: t("cancel"), style: "cancel" },
-          {
-            text: t("ok"),
-            style: "destructive",
-            onPress: async () => {
-              router.push('/choose-subscription');
-              return;
-            },
-          },
-        ]
-      );
-      return;
-    }
+    // const userPlan = await getUserPlan(t);
+    // console.log(userPlan)
+    // let title = "";
+    // if (userPlan.length > 0) {
+    //   if (userPlan[0].has_subscription === false) {
+    //     title = "planExpired"
+    //   } else if (userPlan[0].credits <= userPlan[0].used) {
+    //     title = "creditBalanceExhausted"
+    //   }
+    // } else {
+    //   title = "noActivePlan";
+    // }
+    // if (title) {
+    //   Alert.alert(
+    //     t(title),
+    //     t("subscribeNowToAddProperty"),
+    //     [
+    //       { text: t("cancel"), style: "cancel" },
+    //       {
+    //         text: t("ok"),
+    //         style: "destructive",
+    //         onPress: async () => {
+    //           router.push('/choose-subscription');
+    //           return;
+    //         },
+    //       },
+    //     ]
+    //   );
+    //   return;
+    // }
     await AsyncStorage.setItem("passServiceId", "");
     router.push('/add-property')
   }

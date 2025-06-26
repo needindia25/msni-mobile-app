@@ -1,8 +1,9 @@
 import React, { useRef, useState } from "react";
-import { View, Image, Text, Alert } from "react-native";
+import { View, Image, Text, Alert, TouchableOpacity, Linking, Platform, PermissionsAndroid } from "react-native";
 import { GooglePlacesAutocomplete, GooglePlacesAutocompleteRef } from "react-native-google-places-autocomplete";
 import MapView, { Marker } from "react-native-maps";
 import { MaterialIcons } from "@expo/vector-icons"; // Import icons
+import Geolocation from '@react-native-community/geolocation';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import { useTranslation } from "react-i18next";
@@ -13,6 +14,7 @@ import { GoogleInputProps } from "@/types/type";
 const googlePlacesApiKey = constants.EXPO_PUBLIC_PLACES_API_KEY;
 
 const GoogleTextInput = ({
+  isDirectionEnabled,
   icon,
   initialLocation,
   handlePress,
@@ -26,6 +28,12 @@ const GoogleTextInput = ({
     address: string;
     draggable: boolean;
   }
+
+
+  const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number } | null>({
+    latitude: 0,
+    longitude: 0,
+  });
 
   const [selectedLocation, setSelectedLocation] = useState<LocationData | null>({
     latitude: parseFloat(String(initialLocation?.latitude || "0")),
@@ -82,6 +90,76 @@ const GoogleTextInput = ({
       );
       return;
     }
+  };
+
+  const getCurrentLocation = async () => {
+    try {
+      // Request permission on Android
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: t("locationPermissionTitle") || "Location Permission",
+            message: t("locationPermissionMessage") || "This app needs access to your location.",
+            buttonNeutral: t("askMeLater") || "Ask Me Later",
+            buttonNegative: t("cancel") || "Cancel",
+            buttonPositive: t("ok") || "OK",
+          }
+        );
+        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+          Alert.alert(t("error"), t("locationPermissionsDenied"));
+          setCurrentLocation((prev) => ({
+            ...prev,
+            latitude: 0,
+            longitude: 0,
+          }));
+          return;
+        }
+      }
+      Geolocation.getCurrentPosition(
+        (position) => {
+          console.log("Current position:", position);
+          setCurrentLocation((prev) => ({
+            ...prev,
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          }));
+        },
+        (error) => {
+          Alert.alert(t("error"), t("failedToGetLocation"));
+          setCurrentLocation((prev) => ({
+            ...prev,
+            latitude: 0,
+            longitude: 0,
+          }));
+          console.error("Error getting current location:", error);
+        },
+        { enableHighAccuracy: false, timeout: 20000, maximumAge: 1000 }
+      );
+    } catch (error) {
+      Alert.alert(t("error"), t("failedToGetLocation"));
+      setCurrentLocation((prev) => ({
+        ...prev,
+        latitude: 0,
+        longitude: 0,
+      }));
+      console.error("Error getting current location:", error);
+    }
+  };
+
+  // Open Google Maps with directions from current location to marker
+  const openDirections = async () => {
+    if (!selectedLocation) return;
+    await getCurrentLocation();
+    setTimeout(() => {
+      let url = "";
+      if (currentLocation) {
+        url = `https://www.google.com/maps/dir/?api=1&origin=${currentLocation.latitude},${currentLocation.longitude}&destination=${selectedLocation.latitude},${selectedLocation.longitude}&travelmode=driving`;
+      } else {
+        url = `https://www.google.com/maps/dir/?api=1&destination=${selectedLocation.latitude},${selectedLocation.longitude}&travelmode=driving`;
+      }
+      Linking.openURL(url);
+    }, 1000);
   };
 
   return (
@@ -208,6 +286,22 @@ const GoogleTextInput = ({
             </Text>
           </View>
         </View>
+      )}
+      {(!selectedLocation?.draggable && isDirectionEnabled) && (
+        <TouchableOpacity
+          style={{
+            backgroundColor: "#01BB23",
+            paddingVertical: 10,
+            borderRadius: 8,
+            alignItems: "center",
+            marginTop: 8,
+          }}
+          onPress={openDirections}
+        >
+          <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>
+            {t("openInGoogleMaps") || "Open Directions in Google Maps"}
+          </Text>
+        </TouchableOpacity>
       )}
     </View>
   );

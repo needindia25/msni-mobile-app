@@ -444,7 +444,13 @@ const en = {
         unknownHousingType: "Unknown Housing Type",
         unknownState: "Unknown State",
         unknownDistrict: "Unknown District",
-        unableToFetchLocation: "Unable to fetch location. Please check if location permission is granted and location/GPS is enabled on your device."
+        unableToFetchLocation: "Unable to fetch location. Please check if location permission is granted and location/GPS is enabled on your device.",
+        openInGoogleMaps: "Get Direction in Google Map",
+        uploadVideo: "Upload Video",
+        videoUploadError: "Failed to upload the video.",
+        videoSizeLimit: "Video size should be less than 50 MB.",
+        deleteVideo: "Delete Video",
+        deleteVideoConfirmation: "Are you sure you want to delete this video?",
     },
 };
 
