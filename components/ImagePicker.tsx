@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ScrollView } from 'react-native';
 import { View, Image, TouchableOpacity, Text, Alert, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Video from 'react-native-video';
@@ -21,7 +22,7 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
   const [uploading, setUploading] = useState(false); // Add this
   const [imageLoading, setImageLoading] = useState<{ [key: number]: boolean }>({});
   const [isVideoUploaed, setisVideoUploaed] = useState(false);
-  
+
 
   const getMimeType = (uri: string) => {
     const extension = uri.split(".").pop()?.toLowerCase() ?? "";
@@ -50,14 +51,14 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
           return;
         }
         result = await ImagePicker.launchCameraAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          mediaTypes: "images",
           allowsEditing: true,
           quality: 1,
           base64: true,
         });
       } else {
         result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          mediaTypes: "images",
           allowsEditing: true,
           quality: 1,
           base64: true,
@@ -250,157 +251,161 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
     <>
       <View className="p-4 items-center">
         {selectedImages.length > 0 && (
-          <View className="flex-row flex-wrap gap-2">
-            {selectedImages.map((image, index) => (
-              <View key={index} className="relative">
-                {image.includes('videos')
-                  ? (
-                    <View className="w-80 h-40 rounded-lg mb-4 bg-black justify-center items-center">
-                      <Video
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="w-full mb-4">
+            <View className="flex-row flex-wrap gap-2">
+              {selectedImages.map((image, index) => (
+                <View key={index} className="relative">
+                  {image.includes('videos')
+                    ? (
+                      <View className="w-80 h-40 rounded-lg mb-4 bg-black justify-center items-center">
+                        <Video
+                          source={{ uri: constants.BASE_URL + image }}
+                          style={{ width: 280, height: 140, borderRadius: 12, backgroundColor: "#000" }}
+                          resizeMode="contain"
+                          controls
+                          paused={true}
+                          repeat={false}
+                          onLoadStart={() =>
+                            setImageLoading((prev) => ({ ...prev, [index]: true }))
+                          }
+                          onLoad={() =>
+                            setImageLoading((prev) => ({ ...prev, [index]: false }))
+                          }
+                          onTouchStart={() => {
+                            console.log("Video touched");
+                          }}
+                          onError={e => console.log('Video error:', e.error)}
+                        />
+                        {/* Play Icon Overlay */}
+                        <View className="absolute inset-0 justify-center items-center pointer-events-none">
+                          <View className="bg-black/50 rounded-full p-3">
+                            <Text style={{ fontSize: 36, color: "#fff", fontWeight: "bold" }}>
+                              {/* ▶ */}
+                              <MaterialIcons name="play-circle-outline" size={48} color="#fff" />
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                    )
+                    : (
+                      <Image
                         source={{ uri: constants.BASE_URL + image }}
-                        style={{ width: 280, height: 140, borderRadius: 12, backgroundColor: "#000" }}
-                        resizeMode="contain"
-                        controls
-                        paused={true}
-                        repeat={false}
+                        className="w-40 h-40 rounded-lg mb-4"
                         onLoadStart={() =>
                           setImageLoading((prev) => ({ ...prev, [index]: true }))
                         }
-                        onLoad={() =>
+                        onLoadEnd={() =>
                           setImageLoading((prev) => ({ ...prev, [index]: false }))
                         }
-                        onTouchStart={() => {
-                          console.log("Video touched");
-                        }}
                       />
-                      {/* Play Icon Overlay */}
-                      <View className="absolute inset-0 justify-center items-center pointer-events-none">
-                        <View className="bg-black/50 rounded-full p-3">
-                          <Text style={{ fontSize: 36, color: "#fff", fontWeight: "bold" }}>
-                            {/* ▶ */}
-                            <MaterialIcons name="play-circle-outline" size={48} color="#fff" />
-                          </Text>
-                        </View>
-                      </View>
+                    )
+                  }
+                  {imageLoading[index] && (
+                    <View className="absolute inset-0 justify-center items-center bg-white/60 rounded-lg">
+                      <ActivityIndicator size="large" color="#00ff00" />
                     </View>
-                  )
-                  : (
-                    <Image
-                      source={{ uri: constants.BASE_URL + image }}
-                      className="w-40 h-40 rounded-lg mb-4"
-                      onLoadStart={() =>
-                        setImageLoading((prev) => ({ ...prev, [index]: true }))
-                      }
-                      onLoadEnd={() =>
-                        setImageLoading((prev) => ({ ...prev, [index]: false }))
-                      }
-                    />
-                  )
+                  )}
+                  <TouchableOpacity
+                    className="absolute top-0 right-0 bg-red-500 p-1 rounded-full"
+                    onPress={() => handleDeleteImage(image)}
+                  >
+                    <Text className="text-white font-bold">X</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+              {uploading && (
+                <View className="w-40 h-40 rounded-lg mb-4 justify-center items-center bg-gray-200">
+                  <ActivityIndicator size="large" color="#00ff00" />
+                </View>
+              )}
+            </View>
+          </ScrollView>
+        )}
+      {!selectedImages.length && uploading && (
+        <View className="w-40 h-40 rounded-lg mb-4 justify-center items-center bg-gray-200">
+          <ActivityIndicator size="large" color="#00ff00" />
+        </View>
+      )}
+
+      <View className="flex-row justify-center space-x-4">
+        <TouchableOpacity
+          className={`p-3 rounded-lg mr-3 ${uploading ? 'bg-gray-400' : 'bg-green-500'}`}
+          onPress={() => handleImagePick('camera')}
+          disabled={uploading}
+        >
+          <Text className="text-white font-bold">{t("useCamera")}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className={`p-3 rounded-lg mr-3 ${uploading ? 'bg-gray-400' : 'bg-green-500'}`}
+          onPress={() => handleImagePick('gallery')}
+          disabled={uploading}
+        >
+          <Text className="text-white font-bold">{t("uploadImage")}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className={`p-3 rounded-lg mr-3 ${(uploading || isVideoUploaed) ? 'bg-gray-400' : 'bg-green-500'}`}
+          onPress={async () => {
+            try {
+              const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+              if (status !== 'granted') {
+                Alert.alert(t("permissionDenied"), t("allowGalleryAccess"));
+                return;
+              }
+              // Pick video only
+              const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: "videos",
+                videoMaxDuration: 60, // Limit to 60 seconds
+                allowsEditing: false,
+                quality: 1,
+              });
+
+              if (!result.canceled && result.assets && result.assets.length > 0) {
+                const video = result.assets[0];
+                // Check file size (in bytes), e.g., 50MB = 50 * 1024 * 1024
+                const MAX_SIZE = 100 * 1024 * 1024;
+                if (video.fileSize !== undefined) {
+                  console.log((video.fileSize / 1024 / 1024), MAX_SIZE);
+                } else {
+                  console.log('video.fileSize is undefined', MAX_SIZE);
                 }
-                {imageLoading[index] && (
-                  <View className="absolute inset-0 justify-center items-center bg-white/60 rounded-lg">
-                    <ActivityIndicator size="large" color="#00ff00" />
-                  </View>
-                )}
-                <TouchableOpacity
-                  className="absolute top-0 right-0 bg-red-500 p-1 rounded-full"
-                  onPress={() => handleDeleteImage(image)}
-                >
-                  <Text className="text-white font-bold">X</Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-            {uploading && (
-              <View className="w-40 h-40 rounded-lg mb-4 justify-center items-center bg-gray-200">
-                <ActivityIndicator size="large" color="#00ff00" />
-              </View>
-            )}
-          </View>
-        )}
-        {!selectedImages.length && uploading && (
-          <View className="w-40 h-40 rounded-lg mb-4 justify-center items-center bg-gray-200">
-            <ActivityIndicator size="large" color="#00ff00" />
-          </View>
-        )}
-
-        <View className="flex-row justify-center space-x-4">
-          <TouchableOpacity
-            className={`p-3 rounded-lg mr-3 ${uploading ? 'bg-gray-400' : 'bg-green-500'}`}
-            onPress={() => handleImagePick('camera')}
-            disabled={uploading}
-          >
-            <Text className="text-white font-bold">{t("useCamera")}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className={`p-3 rounded-lg mr-3 ${uploading ? 'bg-gray-400' : 'bg-green-500'}`}
-            onPress={() => handleImagePick('gallery')}
-            disabled={uploading}
-          >
-            <Text className="text-white font-bold">{t("uploadImage")}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className={`p-3 rounded-lg mr-3 ${(uploading || isVideoUploaed) ? 'bg-gray-400' : 'bg-green-500'}`}
-            onPress={async () => {
-              try {
-                const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-                if (status !== 'granted') {
-                  Alert.alert(t("permissionDenied"), t("allowGalleryAccess"));
+                if (video.fileSize && video.fileSize > MAX_SIZE) {
+                  Alert.alert(
+                    t("error"),
+                    t("videoSizeLimit") || "Video size should not exceed 50MB."
+                  );
                   return;
                 }
-                // Pick video only
-                const result = await ImagePicker.launchImageLibraryAsync({
-                  mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-                  allowsEditing: false,
-                  quality: 1,
-                });
-
-                if (!result.canceled && result.assets && result.assets.length > 0) {
-                  const video = result.assets[0];
-                  // Check file size (in bytes), e.g., 50MB = 50 * 1024 * 1024
-                  const MAX_SIZE = 100 * 1024 * 1024;
-                  if (video.fileSize !== undefined) {
-                    console.log((video.fileSize / 1024 / 1024), MAX_SIZE);
-                  } else {
-                    console.log('video.fileSize is undefined', MAX_SIZE);
-                  }
-                  if (video.fileSize && video.fileSize > MAX_SIZE) {
-                    Alert.alert(
-                      t("error"),
-                      t("videoSizeLimit") || "Video size should not exceed 50MB."
-                    );
-                    return;
-                  }
-                  setUploading(true);
-                  const token = await AsyncStorage.getItem('token');
-                  if (!token) {
-                    Alert.alert(t("error"), t("noTokenError"), [{ text: t("ok") }]);
-                    setUploading(false);
-                    return;
-                  }
-                  // Upload video to API (implement your own upload logic)
-                  console.log("Uploading video to API", video.uri);
-                  console.log("token", token);
-                  const savedPath = await uploadVideoToDjangoAPI(video.uri, token);
-                  console.log("savedPath", savedPath);
-                  if (savedPath) {
-                    setSelectedImages((prev) => [...prev, savedPath]);
-                    onImageSelect(savedPath);
-                  }
+                setUploading(true);
+                const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                  Alert.alert(t("error"), t("noTokenError"), [{ text: t("ok") }]);
                   setUploading(false);
+                  return;
                 }
-              } catch (error) {
+                // Upload video to API (implement your own upload logic)
+                console.log("Uploading video to API", video.uri);
+                console.log("token", token);
+                const savedPath = await uploadVideoToDjangoAPI(video.uri, token);
+                console.log("savedPath", savedPath);
+                if (savedPath) {
+                  setSelectedImages((prev) => [...prev, savedPath]);
+                  onImageSelect(savedPath);
+                }
                 setUploading(false);
-                Alert.alert(t("error"), t("videoUploadError") || "Failed to upload the video.");
               }
-            }}
-            disabled={uploading || isVideoUploaed}
-          >
-            <Text className="text-white font-bold">{t("uploadVideo")}</Text>
-          </TouchableOpacity>
-        </View>
+            } catch (error) {
+              setUploading(false);
+              Alert.alert(t("error"), t("videoUploadError") || "Failed to upload the video.");
+            }
+          }}
+          disabled={uploading || isVideoUploaed}
+        >
+          <Text className="text-white font-bold">{t("uploadVideo")}</Text>
+        </TouchableOpacity>
       </View>
+    </View >
     </>
   )
 }

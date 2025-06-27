@@ -78,6 +78,7 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
                   controls
                   paused={true}
                   repeat={false}
+                  onError={e => console.log('Video error:', e.error)}
                 />
               </View>
             ) :
@@ -122,8 +123,9 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
                 style={{ width: "100%", height: "100%", backgroundColor: "#000" }}
                 resizeMode="contain"
                 controls
-                paused={false}
-                repeat={false}
+                paused={true}
+                repeat={false}                
+                onError={e => console.log('Video error:', e.error)}
               />
             ) : (
               <Image

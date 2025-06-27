@@ -1,10 +1,11 @@
-import { DropdownProps } from "@/types/type";
 import React, { useState } from "react";
-import { View, Text } from "react-native";
-import MultiSelect from "react-native-multiple-select";
-import { LogBox } from "react-native";
+import { View, Text, TouchableOpacity, Modal, FlatList, ScrollView } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 
-LogBox.ignoreLogs(["Text strings must be rendered within a <Text> component"]);
+interface DropdownProps {
+    label: string;
+    value: string | number;
+}
 
 interface CustomMultiDropdownProps {
     label: string;
@@ -14,45 +15,125 @@ interface CustomMultiDropdownProps {
     placeholder: string;
 }
 
-const CustomMultiDropdown: React.FC<CustomMultiDropdownProps> = ({ label, data, value, onChange, placeholder }) => {
-    const [selectedValues, setSelectedValues] = useState(value);
+const CustomMultiDropdown: React.FC<CustomMultiDropdownProps> = ({
+    label,
+    data,
+    value,
+    onChange,
+    placeholder,
+}) => {
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedValues, setSelectedValues] = useState<Array<string | number>>(value);
 
-    const handleChange = (selectedItems: Array<string | number>) => {
-        setSelectedValues(selectedItems);
-        const selectedData = data.filter(item => selectedItems.includes(item.value));
+    const toggleSelect = (itemValue: string | number) => {
+        let newSelected;
+        if (selectedValues.includes(itemValue)) {
+            newSelected = selectedValues.filter((v) => v !== itemValue);
+        } else {
+            newSelected = [...selectedValues, itemValue];
+        }
+        setSelectedValues(newSelected);
+    };
+
+    const handleConfirm = () => {
+        setModalVisible(false);
+        const selectedData = data.filter((item) => selectedValues.includes(item.value));
         onChange(selectedData);
     };
+
+    const selectedLabels = data
+        .filter((item) => selectedValues.includes(item.value))
+        .map((item) => item.label)
+        .join(", ");
 
     return (
         <View className="mt-5">
             <Text className="text-lg font-bold mb-3">{label}</Text>
-            <MultiSelect
-                items={data}
-                uniqueKey="value"
-                onSelectedItemsChange={handleChange}
-                selectedItems={selectedValues}
-                selectText={placeholder}
-                searchInputPlaceholderText="Search..."
-                tagRemoveIconColor="#3B82F6"
-                tagBorderColor="#3B82F6"
-                tagTextColor="#3B82F6"
-                selectedItemTextColor="#3B82F6"
-                selectedItemIconColor="#3B82F6"
-                itemTextColor="#000"
-                displayKey="label"
-                submitButtonText="Confirm"
-                styleDropdownMenu={{
-                    paddingLeft: 10,
-                    paddingRight: 5,
+            <TouchableOpacity
+                style={{
                     borderWidth: 1,
                     borderColor: "#D1D5DB",
                     borderRadius: 8,
-                    backgroundColor: "#FFFFFF",
-                }}
-                styleDropdownMenuSubsection={{
                     padding: 12,
+                    backgroundColor: "#FFFFFF",
+                    minHeight: 48,
                 }}
-            />
+                onPress={() => setModalVisible(true)}
+            >
+                <Text style={{ color: selectedLabels ? "#000" : "#888" }}>
+                    {selectedLabels || placeholder}
+                </Text>
+            </TouchableOpacity>
+            <Modal
+                visible={modalVisible}
+                transparent
+                animationType="slide"
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={{
+                    flex: 1,
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    justifyContent: "center",
+                    alignItems: "center"
+                }}>
+                    <View style={{
+                        backgroundColor: "#fff",
+                        borderRadius: 12,
+                        width: "85%",
+                        maxHeight: "70%",
+                        padding: 16,
+                    }}>
+                        <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 12 }}>{label}</Text>
+                        <ScrollView style={{ maxHeight: 300 }}>
+                            {data.map((item) => (
+                                <TouchableOpacity
+                                    key={item.value}
+                                    style={{
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        paddingVertical: 10,
+                                        borderBottomWidth: 1,
+                                        borderBottomColor: "#eee",
+                                    }}
+                                    onPress={() => toggleSelect(item.value)}
+                                >
+                                    <MaterialIcons
+                                        name={selectedValues.includes(item.value) ? "check-box" : "check-box-outline-blank"}
+                                        size={24}
+                                        color={selectedValues.includes(item.value) ? "#3B82F6" : "#aaa"}
+                                    />
+                                    <Text style={{ marginLeft: 12, fontSize: 16 }}>{item.label}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                        <View style={{ flexDirection: "row", justifyContent: "flex-end", marginTop: 16 }}>
+                            <TouchableOpacity
+                                style={{
+                                    paddingVertical: 8,
+                                    paddingHorizontal: 16,
+                                    backgroundColor: "#3B82F6",
+                                    borderRadius: 6,
+                                    marginRight: 8,
+                                }}
+                                onPress={handleConfirm}
+                            >
+                                <Text style={{ color: "#fff", fontWeight: "bold" }}>Confirm</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={{
+                                    paddingVertical: 8,
+                                    paddingHorizontal: 16,
+                                    backgroundColor: "#eee",
+                                    borderRadius: 6,
+                                }}
+                                onPress={() => setModalVisible(false)}
+                            >
+                                <Text style={{ color: "#333" }}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };

@@ -415,6 +415,7 @@ const hi = {
         planExpired: "योजना समाप्त हो गई है!",
         creditBalanceExhaustedTitle: "क्रेडिट बैलेंस समाप्त हो गया है!",
         subscribeNowToAddProperty: "नई संपत्ति विवरण जोड़ने के लिए अभी सदस्यता लें।",
+        subscribeNowToEditProperty: "संपत्ति विवरण संपादित करने के लिए अभी सदस्यता लें।",
         subscribeNowToViewDetails: "विवरण देखने के लिए अभी सदस्यता लें।",
         transactionUpdatedToSuccess: "आपका पिछला लेन-देन लंबित था, अब इसे सफल के रूप में अपडेट कर दिया गया है।",
         noActivityFound: "कोई गतिविधि नहीं मिली",
@@ -436,6 +437,7 @@ const hi = {
         quadRoom: "क्वाड रूम",
         executiveRoom: "एग्जीक्यूटिव रूम",
         meetingRoom: "मीटिंग रूम",
+        weddingHall: "शादी हॉल",
         longPressMarkerHint: "मानचित्र पर क्लिक करें या लाल मार्कर को लंबे समय तक दबाकर रखें, फिर उसे संपत्ति के सही स्थान पर खींचें।",
         nearByMe: "मेरे पास",
         failedToGetLocation: "वर्तमान स्थान प्राप्त करने में विफल।",
@@ -461,7 +463,11 @@ const hi = {
         contactPersonNumber: "संपर्क व्यक्ति का नंबर",
         enterContactPersonNumber: "संपर्क व्यक्ति का नंबर दर्ज करें",
         contactPersonNumberRequired: "संपर्क व्यक्ति का नंबर आवश्यक है",
-        contactPersonNumberError: "संपर्क व्यक्ति का नंबर 10 अंकों का होना चाहिए"
+        contactPersonNumberError: "संपर्क व्यक्ति का नंबर 10 अंकों का होना चाहिए",
+        copy: "कॉपी करें",
+        call: "कॉल करें",
+        expireOn: "समाप्ति तिथि",
+        expiredOn: "समाप्ति तिथि",
     },
 };
 
