@@ -55,6 +55,7 @@ export const getStaticData = (t: TFunction) => ({
         { label: t("quadRoom"), value: "Quad Room"},
         { label: t("executiveRoom"), value: "Executive Room"},
         { label: t("meetingRoom"), value: "Meeting Room"},
+        { label: t("weddingHall"), value: "Wedding Hall"},
     ],
     genderPreferenceOptions: [
         { label: t("male"), value: "Male" },

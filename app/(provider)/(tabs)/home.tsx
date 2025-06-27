@@ -150,7 +150,45 @@ const Home = () => {
         );
     };
 
+    const checkSubscription = async () => {
+        const userPlan = await getUserPlan(t);
+        console.log(userPlan)
+        let title = "active";
+        if (userPlan.length === 0) {
+            return "noActivePlan";
+        }
+        if (userPlan.length > 0) {
+            if (userPlan[0].has_subscription === false) {
+                title = "planExpired"
+            } else if (userPlan[0].credits <= userPlan[0].used) {
+                title = "creditBalanceExhausted"
+            }
+        } else {
+            title = "noActivePlan";
+        }
+        return title;
+    }
+
     const handleEdit = async (id: number) => {
+        const subscriptionStatus = await checkSubscription()
+        if (subscriptionStatus !== "active") {
+            Alert.alert(
+                t(subscriptionStatus),
+                t("subscribeNowToEditProperty"),
+                [
+                    { text: t("cancel"), style: "cancel" },
+                    {
+                        text: t("ok"),
+                        style: "destructive",
+                        onPress: async () => {
+                            router.push('/choose-subscription');
+                            return false;
+                        },
+                    },
+                ]
+            );
+            return;
+        }
         try {
             router.push({
                 pathname: '/add-property',
@@ -171,7 +209,28 @@ const Home = () => {
         }
     };
 
-    const handleChangeStatus = (id: number) => {
+    const handleChangeStatus = async (id: number, status: boolean) => {
+        if (status === false) {
+            const subscriptionStatus = await checkSubscription()
+            if (subscriptionStatus === "planExpired" || subscriptionStatus === "noActivePlan") {
+                Alert.alert(
+                    t(subscriptionStatus),
+                    t("subscribeNowToEditProperty"),
+                    [
+                        { text: t("cancel"), style: "cancel" },
+                        {
+                            text: t("ok"),
+                            style: "destructive",
+                            onPress: async () => {
+                                router.push('/choose-subscription');
+                                return false;
+                            },
+                        },
+                    ]
+                );
+                return;
+            }
+        }
         Alert.alert(
             t("changeStatus"), // Use translation key
             t("changeStatusConfirmation"), // Use translation key
@@ -324,7 +383,7 @@ const Home = () => {
 
                                         <TouchableOpacity
                                             className="bg-green-500 py-2 px-4 rounded-lg"
-                                            onPress={() => handleChangeStatus(listing.id)}
+                                            onPress={() => handleChangeStatus(listing.id, listing.status)}
                                         >
                                             <Text className="text-white font-bold">
                                                 {listing.status ? t("deactivate") : t("activate")}

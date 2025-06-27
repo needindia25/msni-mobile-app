@@ -11,7 +11,7 @@ import { getUserPlan } from '@/lib/utils';
 
 
 const ChooseSubscription = () => {
-    const { t } = useTranslation(); // Initialize translation hook
+    const { t, i18n } = useTranslation(); // Initialize translation hook
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [subscriptions, setSubscription] = useState<Subscription[]>([]);
@@ -69,7 +69,7 @@ const ChooseSubscription = () => {
         id: subscription.id,
         planName: subscription.title,
         price: subscription.amount,
-        descriptions: subscription.descriptions,
+        descriptions: JSON.parse(subscription.descriptions)[i18n.language],
         period: subscription.period,
         credits: subscription.credits,
         isPremium: subscription.title.indexOf("Basic") === -1,

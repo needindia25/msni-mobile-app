@@ -657,27 +657,36 @@ const PropertyDetails = () => {
                                     <View className="flex-row justify-between mb-2">
                                         <View className="flex-row items-center">
                                             <MaterialIcons name="person" size={20} color="white" />
-                                            <Text className="text-white ml-2">{t("nameLabel")}</Text>
+                                            {/* <Text className="text-white ml-2">{t("nameLabel")}</Text> */}
+                                            <Text className="text-white font-semibold ml-2">
+                                                {formData.contactPersonName ? formData.contactPersonName : formData.owner_name}
+                                            </Text>
                                         </View>
-                                        <Text className="text-white font-semibold">
+                                        {/* <Text className="text-white font-semibold">
                                             {formData.contactPersonName ? formData.contactPersonName : formData.owner_name}
-                                        </Text>
+                                        </Text> */}
                                     </View>
                                     <View className="flex-row justify-between mb-3">
                                         <View className="flex-row items-center">
-                                            <MaterialIcons name="phone" size={20} color="white" />
-                                            <Text className="text-white ml-2">{t("phoneNumber")}</Text>
-                                        </View>
-                                        <View className="flex-row items-center">
-                                            <TouchableOpacity onPress={handleCall} className="mr-2">
-                                                <MaterialIcons name="call" size={20} color="white" />
-                                            </TouchableOpacity>
-                                            <TouchableOpacity onPress={handleCopy} className="mr-2">
-                                                <MaterialIcons name="copy-all" size={20} color="white" />
-                                            </TouchableOpacity>
-                                            <Text className="text-white">
+                                            <MaterialIcons name="smartphone" size={20} color="white" />
+                                            {/* <Text className="text-white ml-2">{t("phoneNumber")}</Text> */}
+                                            <Text className="text-white mr-2 ml-2">
                                                 {formData.contactPersonNumber ? formData.contactPersonNumber : formData.owner_contact}
                                             </Text>
+                                        </View>
+                                        <View className="flex-row items-center">
+                                            <TouchableOpacity onPress={handleCopy} className="mr-4">
+                                                <View className="flex-row items-center">
+                                                    <MaterialIcons name="copy-all" size={20} color="white" />
+                                                    <Text className="text-white ml-2">{t("copy")}</Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={handleCall} >
+                                                <View className="flex-row items-center">
+                                                    <MaterialIcons name="call" size={20} color="white" />
+                                                    <Text className="text-white ml-2">{t("call")}</Text>
+                                                </View>
+                                            </TouchableOpacity>
                                         </View>
                                     </View>
                                     {/* <View className="flex-row justify-between items-start">

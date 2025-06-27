@@ -17,6 +17,7 @@ const ProfilePage = () => {
     const [plans, setPlan] = useState<any[]>([]);
     const [selectedLanguage, setSelectedLanguage] = useState<string>(i18n.language);
     const [selectedRole, setSelectedRole] = useState(1);
+    console.log(selectedLanguage, "selectedLanguage")
 
     useFocusEffect(
         React.useCallback(() => {
@@ -51,7 +52,7 @@ const ProfilePage = () => {
                 subscription_id: item.subscription_id,
                 planName: item.title,
                 price: item.amount,
-                description: item.descriptions,
+                description: JSON.parse(item.descriptions),
                 period: item.period,
                 credits: item.credits,
                 isPremium: false,
@@ -325,9 +326,9 @@ const ProfilePage = () => {
                                         </View>
                                     )}
                                 </View>
-                                <Text className={`mb-5 text-gray-600}`}>{plans[0].description}</Text>
+                                <Text className={`mb-5 text-gray-600}`}>{plans[0].description[selectedLanguage]}</Text>
                                 <View className="border border-blue-500 rounded-lg p-3 mt-5">
-                                    <Text className="text-center text-blue-500">Expire{plans[0].has_subscription ? '' : 'd'} on : {plans[0].expiryDate}</Text>
+                                    <Text className="text-center text-blue-500">{plans[0].has_subscription ? t("expireOn") : t("expiredOn")} : {plans[0].expiryDate}</Text>
                                 </View>
                             </View>
                             {/* {(plans[0].has_subscription === false || (plans[0].credits !== -1 && plans[0].used >= plans[0].credits)) && (

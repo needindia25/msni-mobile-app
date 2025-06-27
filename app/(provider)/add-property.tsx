@@ -296,6 +296,14 @@ const MultiStepForm = () => {
       if (!formData.zip || !/^\d{6}$/.test(formData.zip)) {
         newErrors.zip = t("zipError");
       }
+
+      if (!formData.contactPersonName || formData.contactPersonName.length > 30 || formData.contactPersonName.length < 3) {
+        newErrors.contactPersonName = t(!formData.contactPersonName ? "contactPersonRequired" : (formData.contactPersonName.length > 30 ? "contactPersonNameMax" : "contactPersonNameMin"));
+      }
+
+      if (!formData.contactPersonNumber || !/^\d{10}$/.test(formData.contactPersonNumber)) {
+        newErrors.contactPersonNumber = t(!formData.contactPersonNumber ? "contactPersonNumberRequired" : "contactPersonNumberError");
+      }
     }
 
     setErrors(newErrors);
@@ -308,22 +316,22 @@ const MultiStepForm = () => {
   };
 
   const checkSubscription = async () => {
-      const userPlan = await getUserPlan(t);
-      console.log(userPlan)
-      let title = "active";
-      if (userPlan.length === 0) {
-        return "noActivePlan";
+    const userPlan = await getUserPlan(t);
+    console.log(userPlan)
+    let title = "active";
+    if (userPlan.length === 0) {
+      return "noActivePlan";
+    }
+    if (userPlan.length > 0) {
+      if (userPlan[0].has_subscription === false) {
+        title = "planExpired"
+      } else if (userPlan[0].credits <= userPlan[0].used) {
+        title = "creditBalanceExhausted"
       }
-      if (userPlan.length > 0) {
-        if (userPlan[0].has_subscription === false) {
-          title = "planExpired"
-        } else if (userPlan[0].credits <= userPlan[0].used) {
-          title = "creditBalanceExhausted"
-        }
-      } else {
-        title = "noActivePlan";
-      }
-      return title;
+    } else {
+      title = "noActivePlan";
+    }
+    return title;
   }
   const handleSubmit = async (formData: any, stepIndex: number = 0) => {
     if (!validateForm()) {
@@ -353,36 +361,44 @@ const MultiStepForm = () => {
     }
     try {
       setBtnLoading(true);
-      const subscriptionStatus = await checkSubscription()
-      if (subscriptionStatus !== "active") {
-        setBtnLoading(false);
-        Alert.alert(
-          t(subscriptionStatus),
-          t("subscribeNowToAddProperty"),
-          [
-            { text: t("cancel"), style: "cancel" },
-            {
-              text: t("ok"),
-              style: "destructive",
-              onPress: async () => {
-                router.push('/choose-subscription');
-                return false;
-              },
-            },
-          ]
-        );
-        return;
-      }
       let url = `${constants.API_URL}/user-services/`;
       let method = "POST";
       if (serviceId !== null && serviceId !== undefined) {
         method = "PATCH"
         url = `${constants.API_URL}/user-services/${serviceId}/update_option/`;
+      } else {
+        const subscriptionStatus = await checkSubscription()
+        if (subscriptionStatus !== "active") {
+          setBtnLoading(false);
+          Alert.alert(
+            t(subscriptionStatus),
+            t("subscribeNowToAddProperty"),
+            [
+              { text: t("cancel"), style: "cancel" },
+              {
+                text: t("ok"),
+                style: "destructive",
+                onPress: async () => {
+                  router.push('/choose-subscription');
+                  return false;
+                },
+              },
+            ]
+          );
+          return;
+        }
       }
 
       formData.rent = formData.rent ? parseFloat(formData.rent) : 0;
       formData.areaInSize = formData.areaInSize ? parseFloat(formData.areaInSize) : 0;
       formData.advance = formData.rent ? parseFloat(formData.rent) : 0;
+      // formData.images.sort((a: string, b: string) => {
+      //   const isVideoA = a.endsWith('.mp4');
+      //   const isVideoB = b.endsWith('.mp4');
+      //   if (isVideoA && !isVideoB) return -1;
+      //   if (!isVideoA && isVideoB) return 1;
+      //   return 0;
+      // });
       const response = await fetchAPI(url, t, {
         method: method,
         headers: {
@@ -755,10 +771,10 @@ const MultiStepForm = () => {
                   value={formData.contactPersonName}
                   onChangeText={(value) => handleInputChange("contactPersonName", value)}
                   onBlur={() => {
-                    if (!formData.contactPersonName || formData.contactPersonName.length < 4) {
+                    if (!formData.contactPersonName || formData.contactPersonName.length < 4 || formData.contactPersonName.length > 30) {
                       setErrors((prev) => ({
                         ...prev,
-                        contactPersonName: t("contactPersonNameError"),
+                        contactPersonName: t(!formData.contactPersonName ? "contactPersonRequired" : (formData.contactPersonName.length > 30 ? "contactPersonNameMax" : "contactPersonNameMin")),
                       }));
                     }
                   }}
@@ -778,7 +794,7 @@ const MultiStepForm = () => {
                   if (!formData.contactPersonNumber || !/^\d{10}$/.test(formData.contactPersonNumber)) {
                     setErrors((prev) => ({
                       ...prev,
-                      contactPersonNumber: t("contactPersonNumberError"),
+                      contactPersonNumber: t(!formData.contactPersonNumber ? "contactPersonNumberRequired" : "contactPersonNumberError"),
                     }));
                   }
                 }}

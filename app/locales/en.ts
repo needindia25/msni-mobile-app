@@ -414,6 +414,7 @@ const en = {
         planExpired: "Plan Expired!",
         creditBalanceExhaustedTitle: "Credit Balance Exhausted!",
         subscribeNowToAddProperty: "Subscribe now to add new property details.",
+        subscribeNowToEditProperty: "Subscribe now to edit property details.",
         subscribeNowToViewDetails: "Subscribe now to view details.",
         transactionUpdatedToSuccess: "Your last transaction was pending, now it is updated as successful.",
         noActivityFound: "No Activity Found",
@@ -435,6 +436,7 @@ const en = {
         quadRoom: "Quad Room",
         executiveRoom: "Executive Room",
         meetingRoom: "Meeting Room",
+        weddingHall: "Wedding Hall",
         longPressMarkerHint: "Click on map or Long-press the red marker on the map, then drag it to the exact location of the property.",
         nearByMe: "Near By Me",
         failedToGetLocation: "Failed to get current location.",
@@ -461,6 +463,10 @@ const en = {
         enterContactPersonNumber: "Enter Contact Person Number",
         contactPersonNumberRequired: "Contact Person Number is required",
         contactPersonNumberError: "Contact Person Number must be of 10 digits",
+        copy: "Copy",
+        call: "Call",
+        expireOn: "Expire On",
+        expiredOn: "Expired On",
     },
 };
 
