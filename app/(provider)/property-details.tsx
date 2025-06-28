@@ -51,6 +51,7 @@ const PropertyDetails = () => {
         basicAmenities: [] as string[],
         additionalAmenities: [] as string[],
         sourceOfWater: [] as string[],
+        video: [] as string[],
         images: [] as string[],
         date_updated: "",
         date_created: "",
@@ -195,7 +196,7 @@ const PropertyDetails = () => {
 
                     <View className="bg-white rounded-lg shadow-md mb-5 p-5">
                         {/* Image Carousel */}
-                        <ImageCarousel images={formData.images} />
+                        <ImageCarousel images={formData.images} video={formData.video} />
 
                         {/* Title and Address */}
                         <Text className="text-2xl font-bold mb-2">{formData.title}</Text>

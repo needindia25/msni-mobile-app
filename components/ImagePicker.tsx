@@ -10,17 +10,22 @@ import { useTranslation } from 'react-i18next'; // Import useTranslation
 import { MaterialIcons } from '@expo/vector-icons';
 
 interface ImagePickerProps {
-  images: string[];
   serviceId: number | null;
+  images: string[];
   onImageSelect: (imagePath: string) => void;
   onImageDelete: (imagePath: string) => void;
+  video: string[];
+  onVideoSelect: (videoPath: string) => void;
+  onVideoDelete: (videoPath: string) => void;
 }
 
-const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], serviceId, onImageSelect, onImageDelete }) => {
+const ImagePickerComponent: React.FC<ImagePickerProps> = ({ serviceId, images = [], onImageSelect, onImageDelete, video = [], onVideoSelect, onVideoDelete }) => {
   const { t } = useTranslation(); // Initialize translation hook
   const [selectedImages, setSelectedImages] = useState<string[]>(images);
+  const [selectedVideo, setSelectedVideo] = useState<string[]>(video);
   const [uploading, setUploading] = useState(false); // Add this
   const [imageLoading, setImageLoading] = useState<{ [key: number]: boolean }>({});
+  const [videoLoading, setVideoLoading] = useState<{ [key: number]: boolean }>({});
   const [isVideoUploaed, setisVideoUploaed] = useState(false);
 
 
@@ -155,10 +160,6 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
   const handleDeleteImage = (imageUri: string) => {
     let title = t("deleteImage"); // Use translation key
     let message = t("deleteImageConfirmation"); // Use translation key
-    if (imageUri.includes('videos')) {
-      title = t("deleteVideo"); // Use translation key
-      message = t("deleteVideoConfirmation"); // Use translation key
-    }
     Alert.alert(
       title, // Use translation key
       message, // Use translation key
@@ -170,6 +171,26 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
           onPress: () => {
             setSelectedImages((prev) => prev.filter((img) => img !== imageUri));
             onImageDelete(imageUri);
+          },
+        },
+      ]
+    );
+  };
+
+  const handleDeleteVideo = (videoUri: string) => {
+    let title = t("deleteVideo"); // Use translation key
+    let message = t("deleteVideoConfirmation"); // Use translation key
+    Alert.alert(
+      title, // Use translation key
+      message, // Use translation key
+      [
+        { text: t("cancel"), style: 'cancel' }, // Use translation key
+        {
+          text: t("delete"), // Use translation key
+          style: 'destructive',
+          onPress: () => {
+            setSelectedVideo((prev) => prev.filter((video) => video !== videoUri));
+            onVideoDelete(videoUri);
           },
         },
       ]
@@ -239,173 +260,175 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ images = [], service
   };
 
   useEffect(() => {
-    if (selectedImages.length > 0) {
-      selectedImages.forEach((image, index) => {
-        if (image.includes('videos')) {
-          setisVideoUploaed(true);
-        }
-      });
+    setisVideoUploaed(false);
+    if (selectedVideo.length > 0) {
+      setisVideoUploaed(true);
     }
-  }, [selectedImages]);
+  }, [selectedVideo]);
   return (
     <>
       <View className="p-4 items-center">
-        {selectedImages.length > 0 && (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="w-full mb-4">
-            <View className="flex-row flex-wrap gap-2">
-              {selectedImages.map((image, index) => (
-                <View key={index} className="relative">
-                  {image.includes('videos')
-                    ? (
-                      <View className="w-80 h-40 rounded-lg mb-4 bg-black justify-center items-center">
-                        <Video
-                          source={{ uri: constants.BASE_URL + image }}
-                          style={{ width: 280, height: 140, borderRadius: 12, backgroundColor: "#000" }}
-                          resizeMode="contain"
-                          controls
-                          paused={true}
-                          repeat={false}
-                          onLoadStart={() =>
-                            setImageLoading((prev) => ({ ...prev, [index]: true }))
-                          }
-                          onLoad={() =>
-                            setImageLoading((prev) => ({ ...prev, [index]: false }))
-                          }
-                          onTouchStart={() => {
-                            console.log("Video touched");
-                          }}
-                          onError={e => console.log('Video error:', e.error)}
-                        />
-                        {/* Play Icon Overlay */}
-                        <View className="absolute inset-0 justify-center items-center pointer-events-none">
-                          <View className="bg-black/50 rounded-full p-3">
-                            <Text style={{ fontSize: 36, color: "#fff", fontWeight: "bold" }}>
-                              {/* ▶ */}
-                              <MaterialIcons name="play-circle-outline" size={48} color="#fff" />
-                            </Text>
-                          </View>
+        {(selectedImages.length || selectedVideo.length) > 0 && (
+          <View className="w-full mb-4 items-center">
+            {/* Video Row */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
+              <View className="flex-row items-center gap-2">
+                {selectedVideo.map((video, index) => (
+                  <View key={index} className="relative">
+                    <View className="w-80 h-40 rounded-lg bg-black justify-center items-center">
+                      <Video
+                        source={{ uri: constants.BASE_URL + video }}
+                        style={{ width: 280, height: 140, borderRadius: 12, backgroundColor: "#000" }}
+                        resizeMode="contain"
+                        controls
+                        paused={true}
+                        repeat={false}
+                        onLoadStart={() => setVideoLoading((prev) => ({ ...prev, [index]: true }))}
+                        onLoad={() => setVideoLoading((prev) => ({ ...prev, [index]: false }))}
+                        onTouchStart={() => console.log("Video touched")}
+                        onError={(e) => console.log("Video error:", e.error)}
+                      />
+                      {/* Play Icon Overlay */}
+                      <View className="absolute inset-0 justify-center items-center pointer-events-none">
+                        <View className="bg-black/50 rounded-full p-3">
+                          <MaterialIcons name="play-circle-outline" size={48} color="#fff" />
                         </View>
                       </View>
-                    )
-                    : (
-                      <Image
-                        source={{ uri: constants.BASE_URL + image }}
-                        className="w-40 h-40 rounded-lg mb-4"
-                        onLoadStart={() =>
-                          setImageLoading((prev) => ({ ...prev, [index]: true }))
-                        }
-                        onLoadEnd={() =>
-                          setImageLoading((prev) => ({ ...prev, [index]: false }))
-                        }
-                      />
-                    )
-                  }
-                  {imageLoading[index] && (
-                    <View className="absolute inset-0 justify-center items-center bg-white/60 rounded-lg">
-                      <ActivityIndicator size="large" color="#00ff00" />
                     </View>
-                  )}
-                  <TouchableOpacity
-                    className="absolute top-0 right-0 bg-red-500 p-1 rounded-full"
-                    onPress={() => handleDeleteImage(image)}
-                  >
-                    <Text className="text-white font-bold">X</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-              {uploading && (
-                <View className="w-40 h-40 rounded-lg mb-4 justify-center items-center bg-gray-200">
-                  <ActivityIndicator size="large" color="#00ff00" />
-                </View>
-              )}
-            </View>
-          </ScrollView>
+                    {videoLoading[index] && (
+                      <View className="absolute inset-0 justify-center items-center bg-white/60 rounded-lg">
+                        <ActivityIndicator size="large" color="#00ff00" />
+                      </View>
+                    )}
+                    <TouchableOpacity
+                      className="absolute top-0 right-0 bg-red-500 p-1 rounded-full"
+                      onPress={() => handleDeleteVideo(video)}
+                    >
+                      <Text className="text-white font-bold">X</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+            </ScrollView>
+
+            {/* Image Row */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <View className="flex-row gap-2">
+                {selectedImages.map((image, index) => (
+                  <View key={index} className="relative">
+                    <Image
+                      source={{ uri: constants.BASE_URL + image }}
+                      className="w-40 h-40 rounded-lg"
+                      onLoadStart={() => setImageLoading((prev) => ({ ...prev, [index]: true }))}
+                      onLoadEnd={() => setImageLoading((prev) => ({ ...prev, [index]: false }))}
+                    />
+                    {imageLoading[index] && (
+                      <View className="absolute inset-0 justify-center items-center bg-white/60 rounded-lg">
+                        <ActivityIndicator size="large" color="#00ff00" />
+                      </View>
+                    )}
+                    <TouchableOpacity
+                      className="absolute top-0 right-0 bg-red-500 p-1 rounded-full"
+                      onPress={() => handleDeleteImage(image)}
+                    >
+                      <Text className="text-white font-bold">X</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+            </ScrollView>
+            {uploading && (
+              <View className="w-20 h-20 rounded-lg justify-center items-center">
+                <ActivityIndicator size="large" color="#00ff00" />
+              </View>
+            )}
+          </View>
         )}
-      {!selectedImages.length && uploading && (
-        <View className="w-40 h-40 rounded-lg mb-4 justify-center items-center bg-gray-200">
-          <ActivityIndicator size="large" color="#00ff00" />
-        </View>
-      )}
+        {/* {(!selectedImages.length || !selectedVideo.length) && uploading && (
+          <View className="w-40 h-40 rounded-lg mb-4 justify-center items-center bg-gray-200">
+            <ActivityIndicator size="large" color="#00ff00" />
+          </View>
+        )} */}
 
-      <View className="flex-row justify-center space-x-4">
-        <TouchableOpacity
-          className={`p-3 rounded-lg mr-3 ${uploading ? 'bg-gray-400' : 'bg-green-500'}`}
-          onPress={() => handleImagePick('camera')}
-          disabled={uploading}
-        >
-          <Text className="text-white font-bold">{t("useCamera")}</Text>
-        </TouchableOpacity>
+        <View className="flex-row justify-center space-x-4">
+          <TouchableOpacity
+            className={`p-3 rounded-lg mr-3 ${uploading ? 'bg-gray-400' : 'bg-green-500'}`}
+            onPress={() => handleImagePick('camera')}
+            disabled={uploading}
+          >
+            <Text className="text-white font-bold">{t("useCamera")}</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          className={`p-3 rounded-lg mr-3 ${uploading ? 'bg-gray-400' : 'bg-green-500'}`}
-          onPress={() => handleImagePick('gallery')}
-          disabled={uploading}
-        >
-          <Text className="text-white font-bold">{t("uploadImage")}</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            className={`p-3 rounded-lg mr-3 ${uploading ? 'bg-gray-400' : 'bg-green-500'}`}
+            onPress={() => handleImagePick('gallery')}
+            disabled={uploading}
+          >
+            <Text className="text-white font-bold">{t("uploadImage")}</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          className={`p-3 rounded-lg mr-3 ${(uploading || isVideoUploaed) ? 'bg-gray-400' : 'bg-green-500'}`}
-          onPress={async () => {
-            try {
-              const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-              if (status !== 'granted') {
-                Alert.alert(t("permissionDenied"), t("allowGalleryAccess"));
-                return;
-              }
-              // Pick video only
-              const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: "videos",
-                videoMaxDuration: 60, // Limit to 60 seconds
-                allowsEditing: false,
-                quality: 1,
-              });
-
-              if (!result.canceled && result.assets && result.assets.length > 0) {
-                const video = result.assets[0];
-                // Check file size (in bytes), e.g., 50MB = 50 * 1024 * 1024
-                const MAX_SIZE = 100 * 1024 * 1024;
-                if (video.fileSize !== undefined) {
-                  console.log((video.fileSize / 1024 / 1024), MAX_SIZE);
-                } else {
-                  console.log('video.fileSize is undefined', MAX_SIZE);
-                }
-                if (video.fileSize && video.fileSize > MAX_SIZE) {
-                  Alert.alert(
-                    t("error"),
-                    t("videoSizeLimit") || "Video size should not exceed 50MB."
-                  );
+          <TouchableOpacity
+            className={`p-3 rounded-lg mr-3 ${(uploading || isVideoUploaed) ? 'bg-gray-400' : 'bg-green-500'}`}
+            onPress={async () => {
+              try {
+                const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                if (status !== 'granted') {
+                  Alert.alert(t("permissionDenied"), t("allowGalleryAccess"));
                   return;
                 }
-                setUploading(true);
-                const token = await AsyncStorage.getItem('token');
-                if (!token) {
-                  Alert.alert(t("error"), t("noTokenError"), [{ text: t("ok") }]);
+                // Pick video only
+                const result = await ImagePicker.launchImageLibraryAsync({
+                  mediaTypes: "videos",
+                  videoMaxDuration: 60, // Limit to 60 seconds
+                  allowsEditing: false,
+                  quality: 1,
+                });
+
+                if (!result.canceled && result.assets && result.assets.length > 0) {
+                  const video = result.assets[0];
+                  // Check file size (in bytes), e.g., 50MB = 50 * 1024 * 1024
+                  const MAX_SIZE = 100 * 1024 * 1024;
+                  if (video.fileSize !== undefined) {
+                    console.log((video.fileSize / 1024 / 1024), MAX_SIZE);
+                  } else {
+                    console.log('video.fileSize is undefined', MAX_SIZE);
+                  }
+                  if (video.fileSize && video.fileSize > MAX_SIZE) {
+                    Alert.alert(
+                      t("error"),
+                      t("videoSizeLimit") || "Video size should not exceed 50MB."
+                    );
+                    return;
+                  }
+                  setUploading(true);
+                  const token = await AsyncStorage.getItem('token');
+                  if (!token) {
+                    Alert.alert(t("error"), t("noTokenError"), [{ text: t("ok") }]);
+                    setUploading(false);
+                    return;
+                  }
+                  // Upload video to API (implement your own upload logic)
+                  console.log("Uploading video to API", video.uri);
+                  console.log("token", token);
+                  const savedPath = await uploadVideoToDjangoAPI(video.uri, token);
+                  console.log("savedPath", savedPath);
+                  if (savedPath) {
+                    setSelectedVideo((prev) => [savedPath]);
+                    onVideoSelect(savedPath);
+                  }
                   setUploading(false);
-                  return;
                 }
-                // Upload video to API (implement your own upload logic)
-                console.log("Uploading video to API", video.uri);
-                console.log("token", token);
-                const savedPath = await uploadVideoToDjangoAPI(video.uri, token);
-                console.log("savedPath", savedPath);
-                if (savedPath) {
-                  setSelectedImages((prev) => [...prev, savedPath]);
-                  onImageSelect(savedPath);
-                }
+              } catch (error) {
                 setUploading(false);
+                Alert.alert(t("error"), t("videoUploadError") || "Failed to upload the video.");
               }
-            } catch (error) {
-              setUploading(false);
-              Alert.alert(t("error"), t("videoUploadError") || "Failed to upload the video.");
-            }
-          }}
-          disabled={uploading || isVideoUploaed}
-        >
-          <Text className="text-white font-bold">{t("uploadVideo")}</Text>
-        </TouchableOpacity>
-      </View>
-    </View >
+            }}
+            disabled={uploading || isVideoUploaed}
+          >
+            <Text className="text-white font-bold">{t("uploadVideo")}</Text>
+          </TouchableOpacity>
+        </View>
+      </View >
     </>
   )
 }
