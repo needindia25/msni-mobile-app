@@ -66,6 +66,7 @@ const MultiStepForm = () => {
     basicAmenities: [] as string[],
     additionalAmenities: [] as string[],
     sourceOfWater: [] as string[],
+    video: [] as string[],
     images: [] as string[],
     contactPersonNumber: "",
     contactPersonName: "",
@@ -392,13 +393,6 @@ const MultiStepForm = () => {
       formData.rent = formData.rent ? parseFloat(formData.rent) : 0;
       formData.areaInSize = formData.areaInSize ? parseFloat(formData.areaInSize) : 0;
       formData.advance = formData.rent ? parseFloat(formData.rent) : 0;
-      // formData.images.sort((a: string, b: string) => {
-      //   const isVideoA = a.endsWith('.mp4');
-      //   const isVideoB = b.endsWith('.mp4');
-      //   if (isVideoA && !isVideoB) return -1;
-      //   if (!isVideoA && isVideoB) return 1;
-      //   return 0;
-      // });
       const response = await fetchAPI(url, t, {
         method: method,
         headers: {
@@ -510,13 +504,6 @@ const MultiStepForm = () => {
           <Text className="text-base font-bold text-center">
             {serviceId ? t("editProperty") : t("addProperty")}
           </Text>
-          {/* <View className="flex-row justify-between">
-            {[1, 2, 3, 4, 5, 6].map((num) => (
-              <Text key={num} className={`text-base font-bold ${step === num ? "text-blue-500" : "text-gray-400"}`}>
-                {t("step")} {num}
-              </Text>
-            ))}
-          </View> */}
           <StepIndicator currentStep={step} totalSteps={totalSteps} />
 
           {step === 1 && (
@@ -1019,14 +1006,22 @@ const MultiStepForm = () => {
               contentContainerStyle={{ flexGrow: 1 }} >
               <Text className="text-base font-bold mb-4">{t("uploadImage")}</Text>
               <ImagePickerComponent
-                images={formData.images}
                 serviceId={serviceId}
+                images={formData.images}
                 onImageDelete={(imagePath: string) => {
                   const updatedImages = formData.images.filter((img: string) => img !== imagePath);
                   handleInputChange("images", updatedImages);
                 }}
                 onImageSelect={(imagePath: string) => {
                   handleInputChange("images", [...formData.images, imagePath]);
+                }}
+                video={formData.video}
+                onVideoDelete={(videoPath: string) => {
+                  const updatedVideo = formData.video.filter((video: string) => video !== videoPath);
+                  handleInputChange("video", updatedVideo);
+                }}
+                onVideoSelect={(videoPath: string) => {
+                  handleInputChange("video", [videoPath]);
                 }}
               />
               <View className="text-base font-bold mt-3 mb-3"></View>

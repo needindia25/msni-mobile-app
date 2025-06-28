@@ -13,11 +13,22 @@ import { constants } from "@/constants";
 import Video from 'react-native-video';
 const screenWidth = Dimensions.get("window").width;
 
-const ImageCarousel = ({ images }: { images: string[] }) => {
+type MediaItem = { uri: string; type: "image" | "video" };
+
+const ImageCarousel = ({
+  images,
+  video,
+}: { images: string[]; video?: string[] }) => {
   const scrollRef = useRef<ScrollView>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalIndex, setModalIndex] = useState<number | null>(null);
+
+  // Combine images and videos into a single array
+  const media: MediaItem[] = [
+    ...(video ? video.map((vid) => ({ uri: vid, type: "video" as const })) : []),
+    ...images.map((img) => ({ uri: img, type: "image" as const })),
+  ];
 
   const scrollToIndex = (index: number) => {
     scrollRef.current?.scrollTo({
@@ -44,7 +55,7 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
   };
 
   const showNext = () => {
-    if (modalIndex !== null && modalIndex < images.length - 1) {
+    if (modalIndex !== null && modalIndex < media.length - 1) {
       setModalIndex(modalIndex + 1);
     }
   };
@@ -67,35 +78,45 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
         scrollEventThrottle={16}
         className="flex-row"
       >
-        {images.map((image, index) => (
+        {media.map((item, index) => (
           <TouchableOpacity key={index} onPress={() => openImageModal(index)}>
-            {image.includes('videos') ? (
-              <View style={{ width: screenWidth - 40 }} className="h-48 rounded-lg mb-4 bg-black justify-center items-center">
+            {item.type === "video" ? (
+              <View
+                style={{ width: screenWidth - 40 }}
+                className="h-48 rounded-lg mb-4 bg-black justify-center items-center"
+              >
                 <Video
-                  source={{ uri: constants.BASE_URL + image }}
-                  style={{ width: screenWidth - 40, height: 192, borderRadius: 12, backgroundColor: "#000" }}
+                  source={{ uri: constants.BASE_URL + item.uri }}
+                  style={{
+                    width: screenWidth - 40,
+                    height: 192,
+                    borderRadius: 12,
+                    backgroundColor: "#000",
+                  }}
                   resizeMode="contain"
                   controls
                   paused={true}
                   repeat={false}
-                  onError={e => console.log('Video error:', e.error)}
+                  onError={(e) => console.log("Video error:", e.error)}
                 />
+                {/* Play icon overlay */}
+                <View className="absolute inset-0 justify-center items-center pointer-events-none">
+                  <MaterialIcons name="play-circle-outline" size={48} color="#fff" />
+                </View>
               </View>
-            ) :
-              (
-                <Image
-                  source={{ uri: constants.BASE_URL + image }}
-                  style={{ width: screenWidth - 40 }}
-                  className="h-48 rounded-lg mr-2"
-                />
-              )
-            }
+            ) : (
+              <Image
+                source={{ uri: constants.BASE_URL + item.uri }}
+                style={{ width: screenWidth - 40 }}
+                className="h-48 rounded-lg mr-2"
+              />
+            )}
           </TouchableOpacity>
         ))}
       </ScrollView>
 
       {/* Left/Right Arrows in Carousel */}
-      {images.length > 1 && currentIndex > 0 && (
+      {media.length > 1 && currentIndex > 0 && (
         <TouchableOpacity
           onPress={() => scrollToIndex(currentIndex - 1)}
           className="absolute left-2 top-[40%] bg-white/70 p-2 rounded-full"
@@ -104,7 +125,7 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
         </TouchableOpacity>
       )}
 
-      {images.length > 1 && currentIndex < images.length - 1 && (
+      {media.length > 1 && currentIndex < media.length - 1 && (
         <TouchableOpacity
           onPress={() => scrollToIndex(currentIndex + 1)}
           className="absolute right-2 top-[40%] bg-white/70 p-2 rounded-full"
@@ -117,19 +138,19 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
       <Modal visible={modalVisible} transparent={true} animationType="fade">
         <View className="flex-1 bg-black justify-center items-center">
           {modalIndex !== null && (
-            images[modalIndex].includes('videos') ? (
+            media[modalIndex].type === "video" ? (
               <Video
-                source={{ uri: constants.BASE_URL + images[modalIndex] }}
+                source={{ uri: constants.BASE_URL + media[modalIndex].uri }}
                 style={{ width: "100%", height: "100%", backgroundColor: "#000" }}
                 resizeMode="contain"
                 controls
                 paused={true}
-                repeat={false}                
-                onError={e => console.log('Video error:', e.error)}
+                repeat={false}
+                onError={(e) => console.log("Video error:", e.error)}
               />
             ) : (
               <Image
-                source={{ uri: constants.BASE_URL + images[modalIndex] }}
+                source={{ uri: constants.BASE_URL + media[modalIndex].uri }}
                 className="w-full h-full"
                 resizeMode="contain"
               />
@@ -155,7 +176,7 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
           )}
 
           {/* Modal Right Arrow */}
-          {modalIndex !== null && modalIndex < images.length - 1 && (
+          {modalIndex !== null && modalIndex < media.length - 1 && (
             <TouchableOpacity
               onPress={showNext}
               className="absolute right-4 top-[50%] bg-white/70 p-2 rounded-full"

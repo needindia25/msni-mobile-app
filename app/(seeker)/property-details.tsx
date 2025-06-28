@@ -60,6 +60,7 @@ const PropertyDetails = () => {
         additionalAmenities: [] as string[],
         sourceOfWater: [] as string[],
         images: [] as string[],
+        video: [] as string[],
         date_updated: "",
         date_created: "",
         owner_name: "",
@@ -337,7 +338,7 @@ const PropertyDetails = () => {
                     </TouchableOpacity> */}
 
                     <View className="bg-white rounded-lg shadow-md mb-5 p-5">
-                        <ImageCarousel images={formData.images} />
+                        <ImageCarousel images={formData.images} video={formData.video} />
 
                         <Text className="text-2xl font-bold mb-2">{formData.title}</Text>
                         <View className="flex-row items-center mb-3">
