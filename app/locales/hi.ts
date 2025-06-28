@@ -316,7 +316,7 @@ const hi = {
         switchUser: "उपयोगकर्ता बदलें",
         switchConfirmation: "आपकी वर्तमान योजना इस सुविधा का समर्थन नहीं करती है। क्या आप अपनी योजना को उन्नत करना चाहते हैं?",
         providerSwitchConfirmation: "क्या आप वाकई प्रदाता में बदलना चाहते हैं?",
-        seekerSwitchonfirmation: "क्या आप वाकई खोजकर्ता में बदलना चाहते हैं?",
+        seekerSwitchConfirmation: "क्या आप वाकई खोजकर्ता में बदलना चाहते हैं?",
         switchUserConfirmation: "क्या आप वाकई उपयोगकर्ता बदलना चाहते हैं?",
         providerProfile: "प्रदाता प्रोफ़ाइल",
         seekerProfile: "खोजकर्ता प्रोफ़ाइल",
