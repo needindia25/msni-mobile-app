@@ -98,7 +98,7 @@ export const icons = {
 };
 
 export const envConstants = {
-  QA: {
+  UAT: {
     DEFAULT_LAT: 24.787674373711102,
     DEFAULT_LONG: 84.99152133511204,
     BASE_URL: "https://msniassets.rarsolutions.com",
@@ -117,7 +117,7 @@ export const envConstants = {
 };
 
 // Use this to select the environment:
-export const ENV = "QA";
+export const ENV = "UAT";
 // export const ENV = "PROD";
 
 export const constants = envConstants[ENV];
