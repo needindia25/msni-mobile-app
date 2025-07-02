@@ -25,14 +25,15 @@ const ChooseSubscription = () => {
                 const token = await AsyncStorage.getItem('token');
                 const userPlan = await getUserPlan(t);
                 let user_type_id = userInfo?.user_type_id;
-                const userTypeList = {
-                    "S": 1,
-                    "P": 2,
-                    "B": 3,
-                }
-                if (userPlan.length > 0) {
-                    user_type_id = userTypeList[userPlan[0].user_type_code as keyof typeof userTypeList];
-                }
+                console.log("user_type_id", user_type_id);
+                // const userTypeList = {
+                //     "S": 1,
+                //     "P": 2,
+                //     "B": 3,
+                // }
+                // if (userPlan.length > 0) {
+                //     user_type_id = userTypeList[userPlan[0].user_type_code as keyof typeof userTypeList];
+                // }
                 if (userType == "3") {
                     user_type_id = 3;
                 }

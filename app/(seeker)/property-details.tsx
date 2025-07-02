@@ -217,6 +217,8 @@ const PropertyDetails = () => {
         if (userPlan.length > 0) {
             if (userPlan[0].has_subscription === false) {
                 title = "planExpired"
+            } else if (userPlan[0].user_type_code === "P") {
+                title = "invalidPlan";
             }
         } else {
             title = "noActivePlan";
