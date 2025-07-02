@@ -80,56 +80,65 @@ const ProfilePage = () => {
     
     const handleSelectedRole = async (role: number) => {
         if (role === selectedRole) return;
-        const userPlan = await getUserPlan(t);
-        let isUpgradePlan = true
-        if (userPlan.length > 0) {
-            isUpgradePlan = userPlan[0].user_type_code !== "B"
-        } else {
-            let userInfo = await AsyncStorage.getItem('user_info');
-            const parsedUserInfo = userInfo ? JSON.parse(userInfo) : null;
-            if (parsedUserInfo) {
-                parsedUserInfo.user_type_id = role;
-                await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
-                router.push('/welcome-page');
-                setUserInfo(parsedUserInfo);
-            }
-            return;
+        let userInfo = await AsyncStorage.getItem('user_info');
+        const parsedUserInfo = userInfo ? JSON.parse(userInfo) : null;
+        if (parsedUserInfo) {
+            parsedUserInfo.user_type_id = role;
+            await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
+            router.push('/welcome-page');
+            setUserInfo(parsedUserInfo);
         }
-        console.log(userPlan, isUpgradePlan)
-        Alert.alert(
-            t("switchUser"),
-            (
-                !isUpgradePlan
-                    ? (role == 1 ? t("seekerSwitchConfirmation") : t("providerSwitchConfirmation"))
-                    : t("switchConfirmation")
-            ),
-            [
-                { text: (!isUpgradePlan ? t("cancel") : t("no")), style: "cancel" },
-                {
-                    text: (!isUpgradePlan ? t("ok") : t("yes")),
-                    style: "destructive",
-                    onPress: async () => {
-                        if (isUpgradePlan) {
-                            router.push({
-                                pathname: '/choose-subscription',
-                                params: {
-                                    userType: 3
-                                },
-                            });
-                            return;
-                        }
-                        let userInfo = await AsyncStorage.getItem('user_info');
-                        const parsedUserInfo = userInfo ? JSON.parse(userInfo) : null;
-                        if (parsedUserInfo) {
-                            parsedUserInfo.user_type_id = role;
-                            await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
-                            router.push('/welcome-page');
-                            setUserInfo(parsedUserInfo);
-                        }
-                    },
-                },
-            ]
-        );
+        return;
+        // const userPlan = await getUserPlan(t);
+        // let isUpgradePlan = true
+        // if (userPlan.length > 0) {
+        //     isUpgradePlan = userPlan[0].user_type_code !== "B"
+        // } else {
+        //     let userInfo = await AsyncStorage.getItem('user_info');
+        //     const parsedUserInfo = userInfo ? JSON.parse(userInfo) : null;
+        //     if (parsedUserInfo) {
+        //         parsedUserInfo.user_type_id = role;
+        //         await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
+        //         router.push('/welcome-page');
+        //         setUserInfo(parsedUserInfo);
+        //     }
+        //     return;
+        // }
+        // console.log(userPlan, isUpgradePlan)
+        // Alert.alert(
+        //     t("switchUser"),
+        //     (
+        //         !isUpgradePlan
+        //             ? (role == 1 ? t("seekerSwitchConfirmation") : t("providerSwitchConfirmation"))
+        //             : t("switchConfirmation")
+        //     ),
+        //     [
+        //         { text: (!isUpgradePlan ? t("cancel") : t("no")), style: "cancel" },
+        //         {
+        //             text: (!isUpgradePlan ? t("ok") : t("yes")),
+        //             style: "destructive",
+        //             onPress: async () => {
+        //                 if (isUpgradePlan) {
+        //                     router.push({
+        //                         pathname: '/choose-subscription',
+        //                         params: {
+        //                             userType: 3
+        //                         },
+        //                     });
+        //                     return;
+        //                 }
+        //                 let userInfo = await AsyncStorage.getItem('user_info');
+        //                 const parsedUserInfo = userInfo ? JSON.parse(userInfo) : null;
+        //                 if (parsedUserInfo) {
+        //                     parsedUserInfo.user_type_id = role;
+        //                     await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
+        //                     router.push('/welcome-page');
+        //                     setUserInfo(parsedUserInfo);
+        //                 }
+        //             },
+        //         },
+        //     ]
+        // );
     }
 
     const getInitialURL = (name: string) => {

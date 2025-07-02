@@ -369,6 +369,7 @@ const en = {
         errorFetchingAddressDetails: "Error fetching Address details. Please contact support.",
         invalidPlanToCreateService: "You do not have a valid plan to create a service.",
         invalidPlanToAccessInfo: "You do not have a valid plan to access this information.",
+        invalidPlan: "Invalid Plan",
         locationPermissionsDenied: "Location permissions denied.",
         errorRequestingPermissions: "Error requesting permissions. Please contact support.",
         noActiveSubscriptionToViewOwner: "No Active subscription, Subscribe now to view owner details.",

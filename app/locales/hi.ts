@@ -368,6 +368,7 @@ const hi = {
         errorFetchingAddressDetails: "पता विवरण प्राप्त करने में त्रुटि। कृपया सहायता से संपर्क करें।",
         invalidPlanToCreateService: "सेवा बनाने के लिए आपके पास एक मान्य योजना नहीं है।",
         invalidPlanToAccessInfo: "इस जानकारी तक पहुंचने के लिए आपके पास एक मान्य योजना नहीं है।",
+        invalidPlan: "अमान्य योजना",
         locationPermissionsDenied: "स्थान अनुमतियां अस्वीकृत।",
         errorRequestingPermissions: "अनुमतियों का अनुरोध करने में त्रुटि। कृपया सहायता से संपर्क करें।",
         noActiveSubscriptionToViewOwner: "कोई सक्रिय सदस्यता नहीं है, मालिक का विवरण देखने के लिए अभी सदस्यता लें।",
