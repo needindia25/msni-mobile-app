@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchAPI } from '@/lib/fetch';
 import { constants, icons, images } from "@/constants";
 import { useTranslation } from 'react-i18next'; // Import useTranslation
-import { getUserPlan } from '@/lib/utils';
+import { formatDescription } from '@/lib/utils';
 
 
 const ChooseSubscription = () => {
@@ -23,17 +23,8 @@ const ChooseSubscription = () => {
                 const userInfoString = await AsyncStorage.getItem('user_info');
                 const userInfo: UserInfo | null = userInfoString ? JSON.parse(userInfoString) : null;
                 const token = await AsyncStorage.getItem('token');
-                const userPlan = await getUserPlan(t);
                 let user_type_id = userInfo?.user_type_id;
                 console.log("user_type_id", user_type_id);
-                // const userTypeList = {
-                //     "S": 1,
-                //     "P": 2,
-                //     "B": 3,
-                // }
-                // if (userPlan.length > 0) {
-                //     user_type_id = userTypeList[userPlan[0].user_type_code as keyof typeof userTypeList];
-                // }
                 if (userType == "3") {
                     user_type_id = 3;
                 }
@@ -66,15 +57,30 @@ const ChooseSubscription = () => {
         fetchSubscriptions();
     }, []);
 
-    const subscriptionPlans = subscriptions.map(subscription => ({
-        id: subscription.id,
-        planName: subscription.title,
-        price: subscription.amount,
-        descriptions: JSON.parse(subscription.descriptions)[i18n.language],
-        period: subscription.period,
-        credits: subscription.credits,
-        isPremium: subscription.title.indexOf("Basic") === -1,
-    })) || [];
+    const [subscriptionPlans, setSubscriptionPlans] = useState<any[]>([]);
+
+    useEffect(() => {
+        const prepareSubscriptionPlans = async () => {
+            const plans = await Promise.all(
+                subscriptions.map(async (subscription) => {
+                    const descObj = await formatDescription(subscription);
+                    return {
+                        id: subscription.id,
+                        planName: subscription.title,
+                        price: subscription.amount,
+                        descriptions: descObj[i18n.language],
+                        period: subscription.period,
+                        credits: subscription.credits,
+                        isPremium: subscription.title.indexOf("Basic") === -1,
+                    };
+                })
+            );
+            setSubscriptionPlans(plans);
+        };
+        if (subscriptions.length > 0) {
+            prepareSubscriptionPlans();
+        }
+    }, [subscriptions, i18n.language]);
 
     return (
         <View className="flex-1 bg-white">

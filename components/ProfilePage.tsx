@@ -7,7 +7,7 @@ import { constants, icons } from '@/constants';
 import { fetchAPI } from '@/lib/fetch';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { getUserPlan } from '@/lib/utils';
+import { formatDescription, getUserPlan } from '@/lib/utils';
 
 const ProfilePage = () => {
     const { t, i18n } = useTranslation();
@@ -47,12 +47,13 @@ const ProfilePage = () => {
             if (response === null) {
                 return;
             }
+            
             const plans = response?.map((item: any) => ({
                 id: item.id,
                 subscription_id: item.subscription_id,
                 planName: item.title,
                 price: item.amount,
-                description: JSON.parse(item.descriptions),
+                description: formatDescription(item),
                 period: item.period,
                 credits: item.credits,
                 isPremium: false,

@@ -31,6 +31,18 @@ export async function getUserPlan(t: any) {
   );
 }
 
+export async function formatDescription(item: any)  {
+    let descriptions: { [key: string]: any } = {
+        "en": item.descriptions
+    };
+    try {
+        descriptions = JSON.parse(item.descriptions);
+    } catch (error) {
+        // If parsing fails, just ignore it
+    }
+    return descriptions;
+};
+
 export async function generateOTP(t: any, number: string, optFor: string, type: string = "generate") {
   return await fetchAPI(
     `${constants.API_URL}/otp/${type}/`, t,
