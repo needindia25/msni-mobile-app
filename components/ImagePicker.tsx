@@ -366,7 +366,8 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ serviceId, images = 
           >
             <Text className="text-white font-bold">{t("uploadImage")}</Text>
           </TouchableOpacity>
-
+        </View>
+        <View className="flex-row justify-center space-x-4 mt-3">
           <TouchableOpacity
             className={`p-3 rounded-lg mr-3 ${(uploading || isVideoUploaed) ? 'bg-gray-400' : 'bg-green-500'}`}
             onPress={async () => {
