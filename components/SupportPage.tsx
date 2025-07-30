@@ -19,7 +19,7 @@ const SupportPage = () => {
   );
 
   return (
-    <SafeAreaView className="flex h-full bg-white">
+    // <SafeAreaView className="flex h-full bg-white">
       <View className="flex bg-white p-5">
         <Text className="text-2xl font-bold text-center mb-5">{t("support")}</Text>
         <View className="flex items-start border-gray-500 border rounded-[5px] mb-5 p-5">
@@ -27,7 +27,7 @@ const SupportPage = () => {
           <View className="flex-row justify-center mb-2">
             <Image source={icons.email} className="w-6 h-6 ml-4" />
             <Text className="text-base font-semibold text-center ml-2">
-              customercare@multisolutionofneedindia.com
+              support@needindia.net
             </Text>
           </View>
           <View className="flex-row justify-center mb-2">
@@ -36,7 +36,7 @@ const SupportPage = () => {
           </View>
         </View>
       </View>
-    </SafeAreaView>
+    // </SafeAreaView>
   );
 };
 

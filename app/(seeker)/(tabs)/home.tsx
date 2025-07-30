@@ -356,7 +356,7 @@ const Home = () => {
   // };
 
   return (
-    <SafeAreaView className="flex h-full bg-white">
+    // <SafeAreaView className="flex h-full bg-white">
       <ScrollView className="flex-1 bg-white p-5">
         {loading ? (
           <View className="flex-1 justify-center mt-[5%] items-center">
@@ -460,33 +460,33 @@ const Home = () => {
               </View>
             </View>
             {/* Add nearByMe option for Guest House */}
-            {searchData.propertyType === "Guest House" && (
-              <View className="p-4 rounded-2xl shadow-md flex-row mt-4 mb-2 bg-[#01BB23] text-white">
-                <View className="flex-row items-center ">
-                  <CustomCheckBox
-                    value={searchData.nearByMe}
-                    onValueChange={async (checked: boolean) => {
-                      handleInputChange("nearByMe", checked);
-                      if (checked) {
-                        await getCurrentLocation();
-                      } else {
-                        searchData.nearByMe = false;
-                        setSearchData((prev) => ({
-                          ...prev,
-                          nearByMe: false,
-                          latitude: 0,
-                          longitude: 0,
-                        }));
-                      }
-                    }}
-                  />
-                  <Text className="ml-3 text-base text-white font-bold">{t("nearByMe")}</Text>
-                  {isFechingGEO && (
-                    <ActivityIndicator size="small" color="#fff" className="ml-2" />
-                  )}
-                </View>
+            {/* {searchData.propertyType === "Guest House" && ( */}
+            <View className="p-4 rounded-2xl shadow-md flex-row mt-4 mb-2 bg-[#01BB23] text-white">
+              <View className="flex-row items-center ">
+                <CustomCheckBox
+                  value={searchData.nearByMe}
+                  onValueChange={async (checked: boolean) => {
+                    handleInputChange("nearByMe", checked);
+                    if (checked) {
+                      await getCurrentLocation();
+                    } else {
+                      searchData.nearByMe = false;
+                      setSearchData((prev) => ({
+                        ...prev,
+                        nearByMe: false,
+                        latitude: 0,
+                        longitude: 0,
+                      }));
+                    }
+                  }}
+                />
+                <Text className="ml-3 text-base text-white font-bold">{t("nearByMe")}</Text>
+                {isFechingGEO && (
+                  <ActivityIndicator size="small" color="#fff" className="ml-2" />
+                )}
               </View>
-            )}
+            </View>
+            {/* )}  */}
             {/* {searchData.propertyType === 'Full House' && (
               <>
                 <View className="mt-4">
@@ -718,7 +718,7 @@ const Home = () => {
           </>
         )}
       </ScrollView >
-    </SafeAreaView>
+    // </SafeAreaView>
   );
 };
 

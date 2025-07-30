@@ -17,6 +17,7 @@ SplashScreen.preventAutoHideAsync();
 
 // Import your global CSS file
 import "../global.css";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -40,15 +41,17 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      <Stack.Screen name="(provider)" options={{ headerShown: false }} />
-      <Stack.Screen name="(seeker)" options={{ headerShown: false }} />
-      <Stack.Screen name="welcome-page" options={{ headerShown: false }} />
-      <Stack.Screen name="choose-subscription" options={{ headerShown: false }} />
-      <Stack.Screen name="no-subscription" options={{ headerShown: false }} />
-      <Stack.Screen name="+not-found" />
-    </Stack>
+    <SafeAreaView className="flex h-full bg-white">
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(provider)" options={{ headerShown: false }} />
+        <Stack.Screen name="(seeker)" options={{ headerShown: false }} />
+        <Stack.Screen name="welcome-page" options={{ headerShown: false }} />
+        <Stack.Screen name="choose-subscription" options={{ headerShown: false }} />
+        <Stack.Screen name="no-subscription" options={{ headerShown: false }} />
+        <Stack.Screen name="+not-found" />
+      </Stack>
+    </SafeAreaView>
   );
 }
