@@ -488,7 +488,8 @@ const MultiStepForm = () => {
   };
 
   return (
-    <SafeAreaView className="flex h-full bg-white">
+    // <SafeAreaView className="flex h-full bg-white">
+    <>
       {loading ? (
         <View className="flex-1 justify-center mt-[5%] items-center">
           <ActivityIndicator size="large" color="#00ff00" />
@@ -1058,7 +1059,8 @@ const MultiStepForm = () => {
         </KeyboardAvoidingView>
       )
       }
-    </SafeAreaView >
+    </>
+    // </SafeAreaView >
   );
 };
 

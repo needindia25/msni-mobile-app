@@ -470,6 +470,7 @@ const en = {
         call: "Call",
         expireOn: "Expire On",
         expiredOn: "Expired On",
+        maxImagesUploaded: "You have uploaded the maximum number of allowed images.",
     },
 };
 

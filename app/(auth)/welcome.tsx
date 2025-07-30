@@ -31,7 +31,8 @@ const Home = () => {
     const isLastSlide = activeIndex === onboarding.length - 1;
 
     return (
-        <SafeAreaView className="flex h-full items-center justify-between bg-white">
+        // <SafeAreaView className="flex h-full items-center justify-between bg-white">
+        <>
             <View className="flex-1 bg-white">
                 <View className="w-full flex-row justify-between items-center mt-5 px-5">
                     <Image source={images.HorizontalLogo} className="w-[120px] h-[45px]" />
@@ -84,7 +85,8 @@ const Home = () => {
                 }
                 className="w-11/12 mt-10 mb-5"
             />
-        </SafeAreaView>
+        </>
+        // </SafeAreaView>
     );
 };
 

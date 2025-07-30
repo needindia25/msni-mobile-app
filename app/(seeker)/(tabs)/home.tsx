@@ -356,7 +356,7 @@ const Home = () => {
   // };
 
   return (
-    <SafeAreaView className="flex h-full bg-white">
+    // <SafeAreaView className="flex h-full bg-white">
       <ScrollView className="flex-1 bg-white p-5">
         {loading ? (
           <View className="flex-1 justify-center mt-[5%] items-center">
@@ -718,7 +718,7 @@ const Home = () => {
           </>
         )}
       </ScrollView >
-    </SafeAreaView>
+    // </SafeAreaView>
   );
 };
 

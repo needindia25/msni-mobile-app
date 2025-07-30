@@ -354,7 +354,7 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ serviceId, images = 
           <TouchableOpacity
             className={`p-3 rounded-lg mr-3 ${uploading ? 'bg-gray-400' : 'bg-green-500'}`}
             onPress={() => handleImagePick('camera')}
-            disabled={uploading}
+            disabled={uploading || selectedImages.length >= 15}
           >
             <Text className="text-white font-bold">{t("useCamera")}</Text>
           </TouchableOpacity>
@@ -362,11 +362,18 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ serviceId, images = 
           <TouchableOpacity
             className={`p-3 rounded-lg mr-3 ${uploading ? 'bg-gray-400' : 'bg-green-500'}`}
             onPress={() => handleImagePick('gallery')}
-            disabled={uploading}
+            disabled={uploading || selectedImages.length >= 15}
           >
             <Text className="text-white font-bold">{t("uploadImage")}</Text>
           </TouchableOpacity>
         </View>
+        {selectedImages.length >= 15 && (
+          <View className="flex-row justify-center space-x-4 mt-3">
+            <Text className="text-gray-500 text-sm">
+              {t("maxImagesUploaded")}
+            </Text>
+          </View>
+        )}
         <View className="flex-row justify-center space-x-4 mt-3">
           <TouchableOpacity
             className={`p-3 rounded-lg mr-3 ${(uploading || isVideoUploaed) ? 'bg-gray-400' : 'bg-green-500'}`}

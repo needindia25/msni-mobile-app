@@ -89,7 +89,8 @@ const ServiceRequests = () => {
   };
 
   return (
-    <SafeAreaView className="flex h-full bg-gray-100">
+    // <SafeAreaView className="flex h-full bg-gray-100">
+      <>
       {/* Header */}
       <View className="bg-blue-500 py-4 px-10 shadow-md">
         {/* <TouchableOpacity onPress={() => router.back()} className="absolute left-5 top-5">
@@ -155,7 +156,8 @@ const ServiceRequests = () => {
           </>
         )}
       </ScrollView>
-    </SafeAreaView>
+      </>
+    // </SafeAreaView>
   );
 };
 

@@ -234,7 +234,8 @@ const ProfilePage = () => {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-white px-4 pt-6">
+        // <SafeAreaView className="flex-1 bg-white px-4 pt-6">
+        <>
             {loading ? (
                 <View className="flex-1 items-center justify-center">
                     <ActivityIndicator size="large" color="#10b981" />
@@ -476,7 +477,8 @@ const ProfilePage = () => {
                     </View>
                 </ScrollView>
             )}
-        </SafeAreaView>
+        </>
+        // </SafeAreaView>
 
     );
 };
