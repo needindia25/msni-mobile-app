@@ -33,7 +33,8 @@ export async function getUserPlan(t: any) {
 
 export async function formatDescription(item: any)  {
     let descriptions: { [key: string]: any } = {
-        "en": item.descriptions
+        "en": item.descriptions,
+        "hi": item.descriptions
     };
     try {
         descriptions = JSON.parse(item.descriptions);
