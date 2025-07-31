@@ -87,7 +87,7 @@ const Requests = () => {
             price: property.options.rent ? '₹ ' + parseFloat(property.options.rent) : "N/A",
             requests: 0,
             favorites: 0,
-            propertyFor: property.propertyFor,
+            propertyFor: property.options.propertyFor,
             propertyType: property.options.propertyType || "Unknown Property Type",
             housingType: property.options.housingType || "Unknown Housing Type",
             stateName: property.options.stateName || "Unknown State",

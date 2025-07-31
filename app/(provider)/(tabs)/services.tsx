@@ -90,8 +90,9 @@ const Services = () => {
       if (response === null || response === undefined) {
         return;
       }
-      console.log("Data:", response); // Log the parsed data
+      // console.log("Data:", response); // Log the parsed data
       setTotalActiveServices(response.length);
+      console.log("Total Active Services:", transformData(response));
       setListings(transformData(response));
     }
   };
@@ -102,7 +103,7 @@ const Services = () => {
     return sortedData.map((property) => ({
       id: property.id,
       title: property.title,
-      propertyFor: property.propertyFor,
+      propertyFor: property.options.propertyFor,
       propertyType: property.options.propertyType || "Unknown Property Type",
       housingType: property.options.housingType || "Unknown Housing Type",
       location: property.options.address || "Unknown Location",

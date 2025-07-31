@@ -62,7 +62,7 @@ const Home = () => {
         return sortedData.map((property) => ({
             id: property.id,
             title: property.title,
-            propertyFor: property.propertyFor,
+            propertyFor: property.options.propertyFor,
             location: property.options.address || "Unknown Location",
             rating: "New",
             price: property.options.rent ? '₹ ' + parseFloat(property.options.rent) : "N/A",
