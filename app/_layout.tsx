@@ -5,7 +5,8 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
-import { AppRegistry, SafeAreaView } from 'react-native';
+import { AppRegistry } from 'react-native';
+import { SafeAreaView } from "react-native-safe-area-context";
 import App from '../app';
 import appConfig from "../app.json";
 import './i18n'; // Import i18n configuration

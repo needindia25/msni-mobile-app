@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, SafeAreaView, ScrollView, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
 import ImageCarousel from "@/components/ImageCarousel";
 
 const ServiceRequests = () => {
@@ -89,8 +89,7 @@ const ServiceRequests = () => {
   };
 
   return (
-    // <SafeAreaView className="flex h-full bg-gray-100">
-      <>
+    <>
       {/* Header */}
       <View className="bg-blue-500 py-4 px-10 shadow-md">
         {/* <TouchableOpacity onPress={() => router.back()} className="absolute left-5 top-5">
@@ -156,8 +155,7 @@ const ServiceRequests = () => {
           </>
         )}
       </ScrollView>
-      </>
-    // </SafeAreaView>
+    </>
   );
 };
 

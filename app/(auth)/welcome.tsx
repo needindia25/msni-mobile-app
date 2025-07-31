@@ -1,7 +1,6 @@
 import { router } from "expo-router";
 import { useRef, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import Swiper from "react-native-swiper";
 import { useTranslation } from "react-i18next"; // Import useTranslation
 
@@ -31,7 +30,6 @@ const Home = () => {
     const isLastSlide = activeIndex === onboarding.length - 1;
 
     return (
-        // <SafeAreaView className="flex h-full items-center justify-between bg-white">
         <>
             <View className="flex-1 bg-white">
                 <View className="w-full flex-row justify-between items-center mt-5 px-5">
@@ -86,7 +84,6 @@ const Home = () => {
                 className="w-11/12 mt-10 mb-5"
             />
         </>
-        // </SafeAreaView>
     );
 };
 

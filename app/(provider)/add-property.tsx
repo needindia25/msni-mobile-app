@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, SafeAreaView, ActivityIndicator, Alert, KeyboardAvoidingView, FlatList, Platform, Image, ScrollView } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, KeyboardAvoidingView, FlatList, Platform, Image, ScrollView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -488,7 +488,6 @@ const MultiStepForm = () => {
   };
 
   return (
-    // <SafeAreaView className="flex h-full bg-white">
     <>
       {loading ? (
         <View className="flex-1 justify-center mt-[5%] items-center">
@@ -1060,7 +1059,6 @@ const MultiStepForm = () => {
       )
       }
     </>
-    // </SafeAreaView >
   );
 };
 

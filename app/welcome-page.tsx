@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, Alert, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { images } from "@/constants";
 import { UserInfo } from '@/types/type';
@@ -53,7 +53,6 @@ const WelcomePage = () => {
     }
 
     return (
-        // <SafeAreaView className="flex h-full bg-white">
         <>
             <View className="flex-1">
                 {/* Scrollable Content */}
@@ -110,7 +109,6 @@ const WelcomePage = () => {
                 </View> */}
             </View>
         </>
-        // </SafeAreaView>
     );
 };
 
