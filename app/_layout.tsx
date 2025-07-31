@@ -5,7 +5,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
-import { AppRegistry } from 'react-native';
+import { AppRegistry, SafeAreaView } from 'react-native';
 import App from '../app';
 import appConfig from "../app.json";
 import './i18n'; // Import i18n configuration
@@ -17,7 +17,6 @@ SplashScreen.preventAutoHideAsync();
 
 // Import your global CSS file
 import "../global.css";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RootLayout() {
   const [loaded] = useFonts({
