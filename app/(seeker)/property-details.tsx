@@ -381,22 +381,24 @@ const PropertyDetails = () => {
                             <View className="flex-row justify-between mb-3">
                                 <View className="flex-row items-center">
                                     <FontAwesome5 name="rupee-sign" size={16} color="black" />
-                                    <Text className="text-gray-500 ml-2">{t("rent")}</Text>
+                                    <Text className="text-gray-500 ml-2">{formData.propertyFor === "Sale" ? t("buyAmount") : t("rent")}</Text>
                                 </View>
                                 <Text className="text-black font-semibold">
                                     {formData.rent || t("notAvailable")}
-                                    {formData.rent ? t(formData.propertyType !== "Guest House" ? "pricePerMonth" : "priceDayNight") : ""}
+                                    {formData.rent ? (formData.propertyFor === "Sale" ? "" : t(formData.propertyType !== "Guest House" ? "pricePerMonth" : "priceDayNight")) : ""}
                                 </Text>
                             </View>
                             {formData.propertyType !== "Guest House" && (
                                 <>
-                                    <View className="flex-row justify-between mb-3">
-                                        <View className="flex-row items-center">
-                                            <FontAwesome5 name="rupee-sign" size={16} color="black" />
-                                            <Text className="text-gray-500 ml-2">{t("deposit")}</Text>
+                                    {formData.propertyFor !== "Sale" && (
+                                        <View className="flex-row justify-between mb-3">
+                                            <View className="flex-row items-center">
+                                                <FontAwesome5 name="rupee-sign" size={16} color="black" />
+                                                <Text className="text-gray-500 ml-2">{t("deposit")}</Text>
+                                            </View>
+                                            <Text className="text-black font-semibold">{formData.advance || t("notAvailable")}</Text>
                                         </View>
-                                        <Text className="text-black font-semibold">{formData.advance || t("notAvailable")}</Text>
-                                    </View>
+                                    )}
                                     <View className="flex-row justify-between">
                                         <View className="flex-row items-center">
                                             <FontAwesome5 name="rupee-sign" size={16} color="black" />

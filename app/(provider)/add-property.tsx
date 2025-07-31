@@ -854,22 +854,26 @@ const MultiStepForm = () => {
               )}
               {formData.propertyType !== "Guest House" && (
                 <>
-                  <Text className="text-base font-bold mt-3 mb-3">{t("rentAmount")}</Text>
+                  <Text className="text-base font-bold mt-3 mb-3">{formData.propertyFor !== "Sale" ? t("rentAmount") : t("saleAmount")}</Text>
                   <TextInput
-                    placeholder={t("enterRentAmount")}
+                    placeholder={formData.propertyFor !== "Sale" ? t("enterRentAmount") : t("enterSaleAmount")}
                     className="border border-gray-300 rounded-lg p-3 bg-white"
                     keyboardType="numeric"
                     value={String(formData.rent)}
                     onChangeText={(value) => handleInputChange("rent", value)}
                   />
-                  <Text className="text-base font-bold mt-3 mb-3">{t("advanceAmount")}</Text>
-                  <TextInput
-                    placeholder={t("enterAdvanceAmount")}
-                    className="border border-gray-300 rounded-lg p-3 bg-white"
-                    keyboardType="numeric"
-                    value={String(formData.advance)}
-                    onChangeText={(value) => handleInputChange("advance", value)}
-                  />
+                  {formData.propertyFor !== "Sale" && (
+                    <>
+                      <Text className="text-base font-bold mt-3 mb-3">{t("advanceAmount")}</Text>
+                      <TextInput
+                        placeholder={t("enterAdvanceAmount")}
+                        className="border border-gray-300 rounded-lg p-3 bg-white"
+                        keyboardType="numeric"
+                        value={String(formData.advance)}
+                        onChangeText={(value) => handleInputChange("advance", value)}
+                      />
+                    </>
+                  )}
                   <Text className="text-base font-bold mb-3 mt-3">{t("isRentNegotiable")}</Text>
                   <View className="flex-row flex-wrap justify-between">
                     {['Yes', 'No'].map((pref) => (
