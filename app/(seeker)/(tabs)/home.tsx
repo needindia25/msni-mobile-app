@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, View, Text, TouchableOpacity, SafeAreaView, ScrollView, TextInput, Image, ActivityIndicator } from 'react-native';
+import { Alert, View, Text, TouchableOpacity, ScrollView, TextInput, Image, ActivityIndicator } from 'react-native';
 // import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import CustomCheckBox from '@/components/CustomCheckBox';
 // import CustomRadioGroup from '@/components/CustomRadioGroup';
@@ -356,138 +356,137 @@ const Home = () => {
   // };
 
   return (
-    // <SafeAreaView className="flex h-full bg-white">
-      <ScrollView className="flex-1 bg-white p-5">
-        {loading ? (
-          <View className="flex-1 justify-center mt-[5%] items-center">
-            <ActivityIndicator size="large" color="#00ff00" />
-            <Text className="mt-2 text-base">{t("loading")}</Text>
-          </View>
-        ) : (
-          <>
-            <Text className="text-2xl font-bold text-center mt-4">{t("searchProperties")}</Text>
-            <View className="mt-4">
-              <View>
-                <View className="flex-row flex-wrap justify-between mt-5">
-                  {staticData.propertyForOptions.map((pref) => (
-                    <TouchableOpacity
-                      key={pref.value}
-                      className={`rounded-lg p-3 flex-1 mr-2 ${searchData.propertyFor === pref.value ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-                      onPress={() => handleInputChange("propertyFor", pref.value)}
-                    >
-                      <View className="flex-row items-center justify-center">
-                        <Image
-                          source={searchData.propertyFor === pref.value ? icons.radioChecked : icons.radioUnchecked}
-                          className="w-6 h-6 mr-2"
-                          style={{ tintColor: "white" }} // Apply white tint color
-                        />
-                        <Text className="text-center text-base font-bold text-white">
-                          {pref.label === "Sale" ? t("buy") : t(pref.label)}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
-            </View>
-            <View className="mt-4">
-              <CustomDropdown
-                label={t("state")}
-                data={stateOptions}
-                value={searchData.state}
-                placeholder={t("selectState")}
-                onChange={(selectedItem: DropdownProps) => {
-                  handleInputChange("state", selectedItem.value);
-                  handleInputChange("district", 0);
-                  fetchDistricts(selectedItem.value as number)
-                }}
-              />
-            </View>
-            <View className="mt-4">
-              <CustomDropdown
-                label={t("district")}
-                data={districtOptions}
-                value={searchData.district}
-                placeholder={t("selectDistrict")}
-                onChange={(selectedItem: DropdownProps) => {
-                  handleInputChange("district", selectedItem.value);
-                }}
-              />
-            </View>
-            <View className="mt-4">
-              <Text className="text-base font-bold mt-3 mb-3">{t("city")}</Text>
-              <TextInput
-                placeholder={t("enterCity")}
-                className={`border rounded-lg p-3 bg-white "border-gray-300}`}
-                value={searchData.city}
-                onChangeText={(value) => handleInputChange("city", value)}
-              />
-            </View>
-            <View className="mt-4">
-              <Text className="text-base font-bold mt-3 mb-3">{t("address")}</Text>
-              <View>
-                <TextInput
-                  placeholder={t("enterAddressManually")}
-                  className={`border rounded-lg p-3 bg-white mt-3 border-gray-300}`}
-                  value={searchData.address}
-                  onChangeText={(value) => handleInputChange("address", value)}
-                />
-              </View>
-            </View>
-            <View className="mt-4">
-              <Text className="text-lg font-bold mb-3">{t("propertyType")}</Text>
-              <View className="flex-row flex-wrap justify-between">
-                {staticData.propertyTypeOptionsForSearch[searchData.propertyFor as keyof typeof staticData.propertyTypeOptionsForSearch].map((propertyType, index) => (
+    <ScrollView className="flex-1 bg-white p-5">
+      {loading ? (
+        <View className="flex-1 justify-center mt-[5%] items-center">
+          <ActivityIndicator size="large" color="#00ff00" />
+          <Text className="mt-2 text-base">{t("loading")}</Text>
+        </View>
+      ) : (
+        <>
+          <Text className="text-2xl font-bold text-center mt-4">{t("searchProperties")}</Text>
+          <View className="mt-4">
+            <View>
+              <View className="flex-row flex-wrap justify-between mt-5">
+                {staticData.propertyForOptions.map((pref) => (
                   <TouchableOpacity
-                    key={index}
-                    className={`rounded-lg p-3 mb-3 ${searchData.propertyType === propertyType.value ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
-                    style={{
-                      width: '48%', // Ensures two items fit per row
-                      // marginRight: searchData.propertyType.indexOf(propertyType.value) % 2 === 0 ? '2%' : 0, // Adds margin to the right for the first item in the row
-                    }}
-                    onPress={() => handleInputChange("propertyType", propertyType.value)}
+                    key={pref.value}
+                    className={`rounded-lg p-3 flex-1 mr-2 ${searchData.propertyFor === pref.value ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
+                    onPress={() => handleInputChange("propertyFor", pref.value)}
                   >
                     <View className="flex-row items-center justify-center">
                       <Image
-                        source={searchData.propertyType === propertyType.value ? icons.radioChecked : icons.radioUnchecked}
+                        source={searchData.propertyFor === pref.value ? icons.radioChecked : icons.radioUnchecked}
                         className="w-6 h-6 mr-2"
                         style={{ tintColor: "white" }} // Apply white tint color
                       />
-                      <Text className="text-center text-base font-bold text-white">{propertyType.label}</Text>
+                      <Text className="text-center text-base font-bold text-white">
+                        {t(pref.label)}
+                      </Text>
                     </View>
                   </TouchableOpacity>
                 ))}
               </View>
             </View>
-            {/* Add nearByMe option for Guest House */}
-            {/* {searchData.propertyType === "Guest House" && ( */}
-            <View className="p-4 rounded-2xl shadow-md flex-row mt-4 mb-2 bg-[#01BB23] text-white">
-              <View className="flex-row items-center ">
-                <CustomCheckBox
-                  value={searchData.nearByMe}
-                  onValueChange={async (checked: boolean) => {
-                    handleInputChange("nearByMe", checked);
-                    if (checked) {
-                      await getCurrentLocation();
-                    } else {
-                      searchData.nearByMe = false;
-                      setSearchData((prev) => ({
-                        ...prev,
-                        nearByMe: false,
-                        latitude: 0,
-                        longitude: 0,
-                      }));
-                    }
-                  }}
-                />
-                <Text className="ml-3 text-base text-white font-bold">{t("nearByMe")}</Text>
-                {isFechingGEO && (
-                  <ActivityIndicator size="small" color="#fff" className="ml-2" />
-                )}
-              </View>
+          </View>
+          <View className="mt-4">
+            <CustomDropdown
+              label={t("state")}
+              data={stateOptions}
+              value={searchData.state}
+              placeholder={t("selectState")}
+              onChange={(selectedItem: DropdownProps) => {
+                handleInputChange("state", selectedItem.value);
+                handleInputChange("district", 0);
+                fetchDistricts(selectedItem.value as number)
+              }}
+            />
+          </View>
+          <View className="mt-4">
+            <CustomDropdown
+              label={t("district")}
+              data={districtOptions}
+              value={searchData.district}
+              placeholder={t("selectDistrict")}
+              onChange={(selectedItem: DropdownProps) => {
+                handleInputChange("district", selectedItem.value);
+              }}
+            />
+          </View>
+          <View className="mt-4">
+            <Text className="text-base font-bold mt-3 mb-3">{t("city")}</Text>
+            <TextInput
+              placeholder={t("enterCity")}
+              className={`border rounded-lg p-3 bg-white "border-gray-300}`}
+              value={searchData.city}
+              onChangeText={(value) => handleInputChange("city", value)}
+            />
+          </View>
+          <View className="mt-4">
+            <Text className="text-base font-bold mt-3 mb-3">{t("address")}</Text>
+            <View>
+              <TextInput
+                placeholder={t("enterAddressManually")}
+                className={`border rounded-lg p-3 bg-white mt-3 border-gray-300}`}
+                value={searchData.address}
+                onChangeText={(value) => handleInputChange("address", value)}
+              />
             </View>
-            {/* )}  */}
-            {/* {searchData.propertyType === 'Full House' && (
+          </View>
+          <View className="mt-4">
+            <Text className="text-lg font-bold mb-3">{t("propertyType")}</Text>
+            <View className="flex-row flex-wrap justify-between">
+              {staticData.propertyTypeOptionsForSearch[searchData.propertyFor as keyof typeof staticData.propertyTypeOptionsForSearch].map((propertyType, index) => (
+                <TouchableOpacity
+                  key={index}
+                  className={`rounded-lg p-3 mb-3 ${searchData.propertyType === propertyType.value ? 'bg-[#01BB23]' : 'bg-[#FF7F19]'}`}
+                  style={{
+                    width: '48%', // Ensures two items fit per row
+                    // marginRight: searchData.propertyType.indexOf(propertyType.value) % 2 === 0 ? '2%' : 0, // Adds margin to the right for the first item in the row
+                  }}
+                  onPress={() => handleInputChange("propertyType", propertyType.value)}
+                >
+                  <View className="flex-row items-center justify-center">
+                    <Image
+                      source={searchData.propertyType === propertyType.value ? icons.radioChecked : icons.radioUnchecked}
+                      className="w-6 h-6 mr-2"
+                      style={{ tintColor: "white" }} // Apply white tint color
+                    />
+                    <Text className="text-center text-base font-bold text-white">{propertyType.label}</Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+          {/* Add nearByMe option for Guest House */}
+          {/* {searchData.propertyType === "Guest House" && ( */}
+          <View className="p-4 rounded-2xl shadow-md flex-row mt-4 mb-2 bg-[#01BB23] text-white">
+            <View className="flex-row items-center ">
+              <CustomCheckBox
+                value={searchData.nearByMe}
+                onValueChange={async (checked: boolean) => {
+                  handleInputChange("nearByMe", checked);
+                  if (checked) {
+                    await getCurrentLocation();
+                  } else {
+                    searchData.nearByMe = false;
+                    setSearchData((prev) => ({
+                      ...prev,
+                      nearByMe: false,
+                      latitude: 0,
+                      longitude: 0,
+                    }));
+                  }
+                }}
+              />
+              <Text className="ml-3 text-base text-white font-bold">{t("nearByMe")}</Text>
+              {isFechingGEO && (
+                <ActivityIndicator size="small" color="#fff" className="ml-2" />
+              )}
+            </View>
+          </View>
+          {/* )}  */}
+          {/* {searchData.propertyType === 'Full House' && (
               <>
                 <View className="mt-4">
                   <Text className="text-lg font-bold mb-3">{t("housingType")}</Text>
@@ -556,7 +555,7 @@ const Home = () => {
                 </View>
               </>
             )} */}
-            {/* {(searchData.propertyType === 'PG/Hostel') && (
+          {/* {(searchData.propertyType === 'PG/Hostel') && (
               <>
                 <View className="mt-4">
                   <Text className="text-lg font-bold mb-3">{t("roomType")}</Text>
@@ -601,7 +600,7 @@ const Home = () => {
                 </TouchableOpacity>
               </View>
             )} */}
-            {/* <Modal
+          {/* <Modal
               visible={housingTypeModalVisible}
               transparent={true}
               animationType="slide"
@@ -709,16 +708,15 @@ const Home = () => {
                 </View>
               </View>
             </Modal> */}
-            {!isFechingGEO && (
-              <TouchableOpacity className="bg-teal-500 rounded-lg p-3 mt-5 mb-10 w-full"
-                onPress={() => onProprtySearchPress()}>
-                <Text className="text-white text-center text-lg">{t("search")}</Text>
-              </TouchableOpacity>
-            )}
-          </>
-        )}
-      </ScrollView >
-    // </SafeAreaView>
+          {!isFechingGEO && (
+            <TouchableOpacity className="bg-teal-500 rounded-lg p-3 mt-5 mb-10 w-full"
+              onPress={() => onProprtySearchPress()}>
+              <Text className="text-white text-center text-lg">{t("search")}</Text>
+            </TouchableOpacity>
+          )}
+        </>
+      )}
+    </ScrollView >
   );
 };
 
