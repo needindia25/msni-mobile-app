@@ -861,18 +861,14 @@ const MultiStepForm = () => {
                     value={String(formData.rent)}
                     onChangeText={(value) => handleInputChange("rent", value)}
                   />
-                  {formData.propertyFor !== "Sale" && (
-                    <>
-                      <Text className="text-base font-bold mt-3 mb-3">{t("advanceAmount")}</Text>
-                      <TextInput
-                        placeholder={t("enterAdvanceAmount")}
-                        className="border border-gray-300 rounded-lg p-3 bg-white"
-                        keyboardType="numeric"
-                        value={String(formData.advance)}
-                        onChangeText={(value) => handleInputChange("advance", value)}
-                      />
-                    </>
-                  )}
+                  <Text className="text-base font-bold mt-3 mb-3">{t("advanceAmount")}</Text>
+                  <TextInput
+                    placeholder={t("enterAdvanceAmount")}
+                    className="border border-gray-300 rounded-lg p-3 bg-white"
+                    keyboardType="numeric"
+                    value={String(formData.advance)}
+                    onChangeText={(value) => handleInputChange("advance", value)}
+                  />
                   <Text className="text-base font-bold mb-3 mt-3">{t("isRentNegotiable")}</Text>
                   <View className="flex-row flex-wrap justify-between">
                     {['Yes', 'No'].map((pref) => (
@@ -974,24 +970,24 @@ const MultiStepForm = () => {
                     placeholder={t("selectParkingType")}
                     onChange={(selectedItem: DropdownProps) => handleInputChange("parking", selectedItem.value)}
                   />
+
+                  <CustomMultiDropdown
+                    label={t("basicAmenities")}
+                    data={staticData.basicAmenitiesOptions}
+                    value={formData.basicAmenities}
+                    placeholder={t("selectBasicAmenities")}
+                    onChange={(selectedItems: DropdownProps[]) => handleInputChange("basicAmenities", selectedItems.map(item => item.value))}
+                  />
+
+                  <CustomMultiDropdown
+                    label={t("additionalAmenities")}
+                    data={staticData.additionalAmenitiesOptions}
+                    value={formData.additionalAmenities}
+                    placeholder={t("selectAdditionalAmenities")}
+                    onChange={(selectedItems: DropdownProps[]) => handleInputChange("additionalAmenities", selectedItems.map(item => item.value))}
+                  />
                 </>
               )}
-
-              <CustomMultiDropdown
-                label={t("basicAmenities")}
-                data={staticData.basicAmenitiesOptions}
-                value={formData.basicAmenities}
-                placeholder={t("selectBasicAmenities")}
-                onChange={(selectedItems: DropdownProps[]) => handleInputChange("basicAmenities", selectedItems.map(item => item.value))}
-              />
-
-              <CustomMultiDropdown
-                label={t("additionalAmenities")}
-                data={staticData.additionalAmenitiesOptions}
-                value={formData.additionalAmenities}
-                placeholder={t("selectAdditionalAmenities")}
-                onChange={(selectedItems: DropdownProps[]) => handleInputChange("additionalAmenities", selectedItems.map(item => item.value))}
-              />
 
               {formData.propertyType !== "Guest House" && (
                 <CustomMultiDropdown

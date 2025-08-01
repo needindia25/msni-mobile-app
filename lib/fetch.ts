@@ -3,6 +3,18 @@ import { router } from "expo-router";
 
 export const fetchAPI = async (url: string, t: (key: string) => string, options?: RequestInit) => {
   try {
+    if (options) {
+      options.headers = {
+        ...options.headers,
+        "X-Mobile-App": "true",
+      };
+    } else {
+      options = {
+        headers: {
+          "X-Mobile-App": "true",
+        },
+      };
+    }
     const response = await fetch(url, options);
     if (response.ok) {
       const response_json = await response.json();

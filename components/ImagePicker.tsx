@@ -112,6 +112,7 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ serviceId, images = 
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
+          "X-Mobile-App": "true",
         },
         body: JSON.stringify({
           image: base64Image,
@@ -215,6 +216,7 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ serviceId, images = 
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json',
+          "X-Mobile-App": "true",
           // Do NOT set 'Content-Type', let fetch set it automatically for FormData
         },
         body: formData,
