@@ -64,6 +64,7 @@ const SearchList = () => {
         return sortedData.map((property) => ({
             id: property.id,
             title: property.title,
+            propertyFor: property.options.propertyFor,
             location: property.options.address || "Unknown Location",
             rating: "New",
             price: property.options.rent ? '₹ ' + parseFloat(property.options.rent) : "N/A",
@@ -153,7 +154,7 @@ const SearchList = () => {
                                     {/* Price */}
                                     <View className="flex-row justify-between items-center mb-3">
                                         <Text className="text-blue-600 text-lg font-bold">
-                                            {listing.price} <Text className="text-sm text-gray-500">{t(listing.propertyType !== "Guest House" ? "pricePerMonth" : "priceDayNight")}</Text>
+                                            {listing.price} <Text className="text-sm text-gray-500">{listing.propertyFor === "Sale" ? "" : t(listing.propertyType !== "Guest House" ? "pricePerMonth" : "priceDayNight")}</Text>
                                         </Text>
                                     </View>
 

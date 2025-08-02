@@ -174,7 +174,7 @@ const en = {
         enterRentAmount: "Enter Rent Amount",
         advanceAmount: "Advance Amount",
         enterAdvanceAmount: "Enter Advance Amount",
-        isRentNegotiable: "Is Rent Negotiable?",
+        isRentNegotiable: "Is Negotiable?",
         yes: "Yes",
         no: "No",
         areaInSize: "Area in size (sqft)",
@@ -471,6 +471,11 @@ const en = {
         expireOn: "Expire On",
         expiredOn: "Expired On",
         maxImagesUploaded: "You have uploaded the maximum number of allowed images.",
+        sale: "Sale",
+        enterSaleAmount: "Enter Sale Amount",
+        saleAmount: "Sale Amount",
+        buy: "Buy",
+        buyAmount: "Buy Amount",
     },
 };
 

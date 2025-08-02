@@ -3,7 +3,8 @@ import { TFunction } from "i18next";
 export const getStaticData = (t: TFunction) => ({
     propertyForOptions: [
         { label: t("rent"), value: "Rent" },
-        { label: t("lease"), value: "Lease" }
+        { label: t("lease"), value: "Lease" },
+        { label: t("sale"), value: "Sale" }
     ],    
     propertyTypeOptionsForSearch: {
         "Lease": [
@@ -19,6 +20,12 @@ export const getStaticData = (t: TFunction) => ({
             { label: t("commercial"), value: "Commercial" },
             { label: t("land"), value: "Land" },
             { label: t("guestHouse"), value: "Guest House" },
+        ],        
+        "Sale": [
+            { label: t("any"), value: "Any" },
+            { label: t("fullHouse"), value: "Full House" },
+            { label: t("commercial"), value: "Commercial" },
+            { label: t("land"), value: "Land" },
         ],
     },
     propertyTypeOptions: {
@@ -33,6 +40,11 @@ export const getStaticData = (t: TFunction) => ({
             { label: t("commercial"), value: "Commercial" },
             { label: t("land"), value: "Land" },
             { label: t("guestHouse"), value: "Guest House" },
+        ],
+        "Sale": [
+            { label: t("fullHouse"), value: "Full House" },
+            { label: t("commercial"), value: "Commercial" },
+            { label: t("land"), value: "Land" },
         ],
     },
     roomTypeOptions: [

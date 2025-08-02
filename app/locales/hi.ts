@@ -174,7 +174,7 @@ const hi = {
         enterRentAmount: "किराये की राशि दर्ज करें",
         advanceAmount: "अग्रिम राशि",
         enterAdvanceAmount: "अग्रिम राशि दर्ज करें",
-        isRentNegotiable: "क्या किराया बातचीत योग्य है?",
+        isRentNegotiable: "क्या बातचीत योग्य है?",
         yes: "हाँ",
         no: "नहीं",
         areaInSize: "क्षेत्रफल (वर्ग फीट)",
@@ -470,6 +470,11 @@ const hi = {
         expireOn: "समाप्ति तिथि",
         expiredOn: "समाप्ति तिथि",
         maxImagesUploaded: "आप अधिकतम अनुमत तस्वीरें अपलोड कर चुके हैं।",
+        sale: "बिक्री",
+        enterSaleAmount: "बिक्री राशि दर्ज करें",
+        saleAmount: "बिक्री राशि",
+        buy: "खरीदें",
+        buyAmount: "खरीद राशि",
     },
 };
 

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, Image, ScrollView, Alert, Linking, Platform, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { images } from "@/constants";
 import { UserInfo } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import CustomButton from '@/components/CustomButton';
+import VersionCheck from 'react-native-version-check';
 
 const WelcomePage = () => {
     const { t } = useTranslation();
@@ -19,7 +20,35 @@ const WelcomePage = () => {
             console.log("parsedUserInfo ", parsedUserInfo)
             setUserInfo(parsedUserInfo);
         };
+        const checkAppVersion = async () => {
+            try {
+                const res = await VersionCheck.needUpdate();
+                console.log('Version Check Result:', res);
+
+                if (res && res.isNeeded) {
+                    // This means a new version is available in the store
+                    Alert.alert(
+                        'Update Required',
+                        'A new version of the app is available. Please update to continue.',
+                        [
+                            {
+                                text: 'Update Now',
+                                onPress: () => {
+                                    Linking.openURL(res.storeUrl);
+                                },
+                            },
+                        ],
+                        { cancelable: false }
+                    );
+                } else {
+                    console.log('App is up to date!');
+                }
+            } catch (error) {
+                console.error('Error checking for app updates:', error);
+            }
+        };
         getUserInfo();
+        checkAppVersion();
     }, []);
 
     const handleNext = async (role = 1) => {
