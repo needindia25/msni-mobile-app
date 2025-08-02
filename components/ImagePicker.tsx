@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, Platform } from 'react-native';
 import { View, Image, TouchableOpacity, Text, Alert, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Video from 'react-native-video';
@@ -8,6 +8,7 @@ import { constants } from '@/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 import { MaterialIcons } from '@expo/vector-icons';
+import DeviceInfo from "react-native-device-info";
 
 interface ImagePickerProps {
   serviceId: number | null;
@@ -27,7 +28,19 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ serviceId, images = 
   const [imageLoading, setImageLoading] = useState<{ [key: number]: boolean }>({});
   const [videoLoading, setVideoLoading] = useState<{ [key: number]: boolean }>({});
   const [isVideoUploaed, setisVideoUploaed] = useState(false);
+  const [deviceId, setDeviceId] = useState<string | null>(null);
 
+  useEffect(() => {
+    const getDeviceId = async () => {
+      try {
+        const id = await DeviceInfo.getUniqueId();
+        setDeviceId(id);
+      } catch (error) {
+        console.error("Failed to get device ID:", error);
+      }
+    };
+    getDeviceId();
+  }, []);
 
   const getMimeType = (uri: string) => {
     const extension = uri.split(".").pop()?.toLowerCase() ?? "";
@@ -113,6 +126,8 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ serviceId, images = 
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
           "X-Mobile-App": "true",
+          "X-Device-Type": Platform.OS,
+          "X-Device-Id": deviceId ?? "",
         },
         body: JSON.stringify({
           image: base64Image,
@@ -217,6 +232,8 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ serviceId, images = 
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json',
           "X-Mobile-App": "true",
+          "X-Device-Type": Platform.OS,
+          "X-Device-Id": deviceId ?? "",
           // Do NOT set 'Content-Type', let fetch set it automatically for FormData
         },
         body: formData,
