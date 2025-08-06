@@ -12,22 +12,28 @@ import DeviceInfo from "react-native-device-info";
 
 interface ImagePickerProps {
   serviceId: number | null;
-  images: string[];
-  onImageSelect: (imagePath: string) => void;
-  onImageDelete: (imagePath: string) => void;
-  video: string[];
-  onVideoSelect: (videoPath: string) => void;
-  onVideoDelete: (videoPath: string) => void;
+  images?: string[];
+  payloadKey?: string;
+  isImageUpload?: boolean;
+  isCameraUpload?: boolean;
+  isVideoUpload?: boolean;
+  maxImages?: number;
+  maxVideos?: number;
+  video?: string[];
+  onImageSelect?: (imagePath: string) => void;
+  onImageDelete?: (imagePath: string) => void;
+  onVideoSelect?: (videoPath: string) => void;
+  onVideoDelete?: (videoPath: string) => void;
 }
 
-const ImagePickerComponent: React.FC<ImagePickerProps> = ({ serviceId, images = [], onImageSelect, onImageDelete, video = [], onVideoSelect, onVideoDelete }) => {
+const ImagePickerComponent: React.FC<ImagePickerProps> = (
+  { serviceId, images = [], onImageSelect = () => { }, onImageDelete = () => { }, payloadKey = "image", video = [], onVideoSelect = () => { }, onVideoDelete = () => { }, isImageUpload = true, isCameraUpload = true, isVideoUpload = true, maxImages = 15, maxVideos = 1 }) => {
   const { t } = useTranslation(); // Initialize translation hook
   const [selectedImages, setSelectedImages] = useState<string[]>(images);
   const [selectedVideo, setSelectedVideo] = useState<string[]>(video);
   const [uploading, setUploading] = useState(false); // Add this
   const [imageLoading, setImageLoading] = useState<{ [key: number]: boolean }>({});
   const [videoLoading, setVideoLoading] = useState<{ [key: number]: boolean }>({});
-  const [isVideoUploaed, setisVideoUploaed] = useState(false);
   const [deviceId, setDeviceId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -130,7 +136,7 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ serviceId, images = 
           "X-Device-Id": deviceId ?? "",
         },
         body: JSON.stringify({
-          image: base64Image,
+          [payloadKey]: base64Image,
           id: serviceId,
         }),
       });
@@ -278,12 +284,6 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ serviceId, images = 
     }
   };
 
-  useEffect(() => {
-    setisVideoUploaed(false);
-    if (selectedVideo.length > 0) {
-      setisVideoUploaed(true);
-    }
-  }, [selectedVideo]);
   return (
     <>
       <View className="p-4 items-center">
@@ -363,98 +363,109 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = ({ serviceId, images = 
             )}
           </View>
         )}
-        {/* {(!selectedImages.length || !selectedVideo.length) && uploading && (
-          <View className="w-40 h-40 rounded-lg mb-4 justify-center items-center bg-gray-200">
-            <ActivityIndicator size="large" color="#00ff00" />
-          </View>
-        )} */}
 
         <View className="flex-row justify-center space-x-4">
-          <TouchableOpacity
-            className={`p-3 rounded-lg mr-3 ${uploading ? 'bg-gray-400' : 'bg-green-500'}`}
-            onPress={() => handleImagePick('camera')}
-            disabled={uploading || selectedImages.length >= 15}
-          >
-            <Text className="text-white font-bold">{t("useCamera")}</Text>
-          </TouchableOpacity>
+          {isCameraUpload && (
+            <TouchableOpacity
+              className={`p-3 rounded-lg mr-3 ${(uploading || selectedImages.length === maxImages) ? 'bg-gray-400' : 'bg-green-500'}`}
+              onPress={() => handleImagePick('camera')}
+              disabled={uploading || selectedImages.length === maxImages}
+            >
+              <Text className="text-white font-bold">{t("useCamera")}</Text>
+            </TouchableOpacity>
+          )}
 
-          <TouchableOpacity
-            className={`p-3 rounded-lg mr-3 ${uploading ? 'bg-gray-400' : 'bg-green-500'}`}
-            onPress={() => handleImagePick('gallery')}
-            disabled={uploading || selectedImages.length >= 15}
-          >
-            <Text className="text-white font-bold">{t("uploadImage")}</Text>
-          </TouchableOpacity>
+          {isImageUpload && (
+            <TouchableOpacity
+              className={`p-3 rounded-lg mr-3 ${(uploading || selectedImages.length === maxImages) ? 'bg-gray-400' : 'bg-green-500'}`}
+              onPress={() => handleImagePick('gallery')}
+              disabled={uploading || selectedImages.length === maxImages}
+            >
+              <Text className="text-white font-bold">{t("uploadImage")}</Text>
+            </TouchableOpacity>
+          )}
         </View>
-        {selectedImages.length >= 15 && (
+        {selectedImages.length === maxImages && (
           <View className="flex-row justify-center space-x-4 mt-3">
             <Text className="text-gray-500 text-sm">
               {t("maxImagesUploaded")}
             </Text>
           </View>
         )}
-        <View className="flex-row justify-center space-x-4 mt-3">
-          <TouchableOpacity
-            className={`p-3 rounded-lg mr-3 ${(uploading || isVideoUploaed) ? 'bg-gray-400' : 'bg-green-500'}`}
-            onPress={async () => {
-              try {
-                const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-                if (status !== 'granted') {
-                  Alert.alert(t("permissionDenied"), t("allowGalleryAccess"));
-                  return;
-                }
-                // Pick video only
-                const result = await ImagePicker.launchImageLibraryAsync({
-                  mediaTypes: "videos",
-                  videoMaxDuration: 60, // Limit to 60 seconds
-                  allowsEditing: false,
-                  quality: 1,
-                });
+        {isVideoUpload && (
+          <>
+          <View className="flex-row justify-center space-x-4 mt-3">
+            <TouchableOpacity
+              className={`p-3 rounded-lg mr-3 ${(uploading || selectedVideo.length === maxVideos) ? 'bg-gray-400' : 'bg-green-500'}`}
+              onPress={async () => {
+                try {
+                  const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                  if (status !== 'granted') {
+                    Alert.alert(t("permissionDenied"), t("allowGalleryAccess"));
+                    return;
+                  }
+                  // Pick video only
+                  const result = await ImagePicker.launchImageLibraryAsync({
+                    mediaTypes: "videos",
+                    videoMaxDuration: 60, // Limit to 60 seconds
+                    allowsEditing: false,
+                    quality: 1,
+                  });
 
-                if (!result.canceled && result.assets && result.assets.length > 0) {
-                  const video = result.assets[0];
-                  // Check file size (in bytes), e.g., 50MB = 50 * 1024 * 1024
-                  const MAX_SIZE = 100 * 1024 * 1024;
-                  if (video.fileSize !== undefined) {
-                    console.log((video.fileSize / 1024 / 1024), MAX_SIZE);
-                  } else {
-                    console.log('video.fileSize is undefined', MAX_SIZE);
-                  }
-                  if (video.fileSize && video.fileSize > MAX_SIZE) {
-                    Alert.alert(
-                      t("error"),
-                      t("videoSizeLimit") || "Video size should not exceed 50MB."
-                    );
-                    return;
-                  }
-                  setUploading(true);
-                  const token = await AsyncStorage.getItem('token');
-                  if (!token) {
-                    Alert.alert(t("error"), t("noTokenError"), [{ text: t("ok") }]);
+                  if (!result.canceled && result.assets && result.assets.length > 0) {
+                    const video = result.assets[0];
+                    // Check file size (in bytes), e.g., 50MB = 50 * 1024 * 1024
+                    const MAX_SIZE = 100 * 1024 * 1024;
+                    if (video.fileSize !== undefined) {
+                      console.log((video.fileSize / 1024 / 1024), MAX_SIZE);
+                    } else {
+                      console.log('video.fileSize is undefined', MAX_SIZE);
+                    }
+                    if (video.fileSize && video.fileSize > MAX_SIZE) {
+                      Alert.alert(
+                        t("error"),
+                        t("videoSizeLimit") || "Video size should not exceed 50MB."
+                      );
+                      return;
+                    }
+                    setUploading(true);
+                    const token = await AsyncStorage.getItem('token');
+                    if (!token) {
+                      Alert.alert(t("error"), t("noTokenError"), [{ text: t("ok") }]);
+                      setUploading(false);
+                      return;
+                    }
+                    // Upload video to API (implement your own upload logic)
+                    console.log("Uploading video to API", video.uri);
+                    console.log("token", token);
+                    const savedPath = await uploadVideoToDjangoAPI(video.uri, token);
+                    console.log("savedPath", savedPath);
+                    if (savedPath) {
+                      setSelectedVideo((prev) => [savedPath]);
+                      onVideoSelect(savedPath);
+                    }
                     setUploading(false);
-                    return;
                   }
-                  // Upload video to API (implement your own upload logic)
-                  console.log("Uploading video to API", video.uri);
-                  console.log("token", token);
-                  const savedPath = await uploadVideoToDjangoAPI(video.uri, token);
-                  console.log("savedPath", savedPath);
-                  if (savedPath) {
-                    setSelectedVideo((prev) => [savedPath]);
-                    onVideoSelect(savedPath);
-                  }
+                } catch (error) {
                   setUploading(false);
+                  Alert.alert(t("error"), t("videoUploadError") || "Failed to upload the video.");
                 }
-              } catch (error) {
-                setUploading(false);
-                Alert.alert(t("error"), t("videoUploadError") || "Failed to upload the video.");
-              }
-            }}
-            disabled={uploading || isVideoUploaed}
-          >
-            <Text className="text-white font-bold">{t("uploadVideo")}</Text>
-          </TouchableOpacity>
-        </View>
+              }}
+              disabled={uploading || selectedVideo.length === maxVideos}
+            >
+              <Text className="text-white font-bold">{t("uploadVideo")}</Text>
+            </TouchableOpacity>
+          </View>
+          
+          {selectedVideo.length === maxVideos && (
+            <View className="flex-row justify-center space-x-4 mt-3">
+              <Text className="text-gray-500 text-sm">
+                {t("maxVideosUploaded")}
+              </Text>
+            </View>
+          )}
+          </>
+        )}
       </View >
     </>
   )

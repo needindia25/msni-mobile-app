@@ -25,6 +25,11 @@ interface UserInfo {
   is_both_access: boolean;
 }
 
+interface OtherRoom {
+  type: string;
+  rent: string;
+}
+
 interface Subscription {
   id: number;
   title: string;

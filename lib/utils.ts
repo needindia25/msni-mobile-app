@@ -61,3 +61,15 @@ export async function generateOTP(t: any, number: string, optFor: string, type: 
     }
   );
 }
+
+export const getYearOptions = () => {
+  const currentYear = new Date().getFullYear();
+  const years = [];
+  for (let i = 0; i < 10; i++) {
+    years.push({
+      label: `${currentYear - i}`,
+      value: currentYear - i,
+    });
+  }
+  return years;
+};
