@@ -4,18 +4,18 @@ import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, Keyb
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
-
+import { MaterialIcons } from "@expo/vector-icons";
 import { constants, icons } from "@/constants";
 import { fetchAPI } from "@/lib/fetch";
-import { DropdownProps, UserInfo } from "@/types/type";
+import { DropdownProps, OtherRoom, UserInfo } from "@/types/type";
 
 import CustomDropdown from "@/components/CustomDropdown";
 import CustomTextarea from "@/components/CustomTextarea";
 import CustomMultiDropdown from "@/components/CustomMultiDropdown";
 import ImagePickerComponent from "@/components/ImagePicker";
 import GoogleTextInput from "@/components/GoogleTextInput";
-import { getStaticData } from "@/constants/staticData";
-import { getUserPlan } from '@/lib/utils';
+import { getStaticData, formDataKeys } from "@/constants/staticData";
+import { getUserPlan, getYearOptions } from '@/lib/utils';
 import StepIndicator from "@/components/StepIndicator";
 
 const googlePlacesApiKey = constants.EXPO_PUBLIC_PLACES_API_KEY;
@@ -33,44 +33,7 @@ const MultiStepForm = () => {
   const [token, setToken] = useState<string | null>(null);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
-  const [formData, setFormData] = useState({
-    propertyFor: "Rent",
-    title: "",
-    propertyType: "",
-    description: "",
-    latitude: 0,
-    longitude: 0,
-    address: "",
-    location: "",
-    state: 0,
-    stateName: "",
-    district: 0,
-    districtName: "",
-    city: "",
-    zip: "",
-    housingType: [] as string[],
-    bhkType: "",
-    familyPreference: "",
-    foodPreference: "",
-    rent: 0,
-    advance: 0,
-    rentNegotiable: "No",
-    areaInSize: 0,
-    floorNumber: 0,
-    numberOfBedRooms: 1,
-    numberOfBalconies: 0,
-    numberOfBathRooms: [] as string[],
-    ageOfProperty: 0,
-    furnishing: "",
-    parking: "",
-    basicAmenities: [] as string[],
-    additionalAmenities: [] as string[],
-    sourceOfWater: [] as string[],
-    video: [] as string[],
-    images: [] as string[],
-    contactPersonNumber: "",
-    contactPersonName: "",
-  });
+  const [formData, setFormData] = useState(formDataKeys);
 
   const [serviceId, setServiceId] = useState<number | null>(null);
   const [states, setStates] = useState<{ id: number; name: string; code: string }[]>([]);
@@ -306,7 +269,6 @@ const MultiStepForm = () => {
         newErrors.contactPersonNumber = t(!formData.contactPersonNumber ? "contactPersonNumberRequired" : "contactPersonNumberError");
       }
     }
-
     setErrors(newErrors);
 
     return Object.values(newErrors).every((error) => error === "");
@@ -336,6 +298,7 @@ const MultiStepForm = () => {
     }
     return title;
   }
+
   const handleSubmit = async (formData: any, stepIndex: number = 0) => {
     if (!validateForm()) {
       Alert.alert(
@@ -498,8 +461,9 @@ const MultiStepForm = () => {
 
         <KeyboardAvoidingView
           className="p-5 bg-gray-100"
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
+          keyboardVerticalOffset={100}
         >
 
           {/* <View className="p-5 bg-gray-100"> */}
@@ -599,21 +563,24 @@ const MultiStepForm = () => {
                     onChange={(selectedItem: DropdownProps) => handleInputChange("bhkType", selectedItem.value)}
                   />
 
-                  <CustomDropdown
-                    label={t("familyPreference")}
-                    data={staticData.familyPreferenceOptions}
-                    value={formData.familyPreference}
-                    placeholder={t("selectFamilyPreference")}
-                    onChange={(selectedItem: DropdownProps) => handleInputChange("familyPreference", selectedItem.value)}
-                  />
-
-                  <CustomDropdown
-                    label={t("foodPreference")}
-                    data={staticData.foodPreferenceOptions}
-                    value={formData.foodPreference}
-                    placeholder={t("selectFoodPreference")}
-                    onChange={(selectedItem: DropdownProps) => handleInputChange("foodPreference", selectedItem.value)}
-                  />
+                  {formData.propertyFor !== "Sale" && (
+                    <>
+                      <CustomDropdown
+                        label={t("familyPreference")}
+                        data={staticData.familyPreferenceOptions}
+                        value={formData.familyPreference}
+                        placeholder={t("selectFamilyPreference")}
+                        onChange={(selectedItem: DropdownProps) => handleInputChange("familyPreference", selectedItem.value)}
+                      />
+                      <CustomDropdown
+                        label={t("foodPreference")}
+                        data={staticData.foodPreferenceOptions}
+                        value={formData.foodPreference}
+                        placeholder={t("selectFoodPreference")}
+                        onChange={(selectedItem: DropdownProps) => handleInputChange("foodPreference", selectedItem.value)}
+                      />
+                    </>
+                  )}
                 </View>
               )}
 
@@ -751,7 +718,6 @@ const MultiStepForm = () => {
                 />
               </View>
               {errors.address && <Text className="text-red-500">{errors.address}</Text>}
-
               <Text className="text-base font-bold mt-3 mb-3">{t("contactPersonName")}</Text>
               <View>
                 <TextInput
@@ -849,13 +815,84 @@ const MultiStepForm = () => {
                     value={String(formData.rent)}
                     onChangeText={(value) => handleInputChange("rent", value)}
                   />
+                  
+                  <TouchableOpacity
+                    onPress={() => {
+                      handleInputChange("isOtherRoomAvailable", !formData.isOtherRoomAvailable);
+                      if (!formData.isOtherRoomAvailable) {
+                        handleInputChange("otherRoomAvailable", []);
+                      }
+                    }}
+                    style={{ flexDirection: "row", alignItems: "center" }}
+                  >
+                    <MaterialIcons
+                      name={formData.isOtherRoomAvailable ? "check-box" : "check-box-outline-blank"}
+                      size={24}
+                      color={formData.isOtherRoomAvailable ? "#3B82F6" : "#aaa"}
+                    />
+                    <Text style={{ marginLeft: 12, fontSize: 16 }} className="mt-3 mb-3">{t("otherRoomAvailableMessage")}</Text>
+                  </TouchableOpacity>
+                  {formData.isOtherRoomAvailable && staticData.guestHouseRoomTypeOptions.map((option) => {
+                    const isSelected = formData.otherRoomAvailable.some((room: OtherRoom) => room.type === option.value);
+                    const selectedRoom: OtherRoom | undefined = formData.otherRoomAvailable.find((room: OtherRoom) => room.type === option.value);
+                    const rentValue = selectedRoom ? (selectedRoom as OtherRoom).rent : "0";
+
+                    return (
+                      <View key={option.value} style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
+                        {/* The TouchableOpacity now contains only the checkbox and label, making it a distinct clickable area */}
+                        <TouchableOpacity
+                          onPress={() => {
+                            let updatedRooms;
+                            if (isSelected) {
+                              updatedRooms = formData.otherRoomAvailable.filter((room: OtherRoom) => room.type !== option.value);
+                            } else {
+                              updatedRooms = [...formData.otherRoomAvailable, { type: option.value, rent: "0" }];
+                            }
+                            handleInputChange("otherRoomAvailable", updatedRooms);
+                          }}
+                          style={{ flexDirection: "row", alignItems: "center" }}
+                        >
+                          <MaterialIcons
+                            name={isSelected ? "check-box" : "check-box-outline-blank"}
+                            size={24}
+                            color={isSelected ? "#3B82F6" : "#aaa"}
+                          />
+                          <Text style={{ marginLeft: 12, fontSize: 16 }}>{t(option.label)}</Text>
+                        </TouchableOpacity>
+
+                        {/* The TextInput is now a sibling to the TouchableOpacity and uses marginLeft: 'auto' to push to the right */}
+                        <TextInput
+                          style={{
+                            borderWidth: 1,
+                            borderColor: "#D1D5DB",
+                            borderRadius: 8,
+                            padding: 8,
+                            backgroundColor: "#FFFFFF",
+                            minWidth: 100,
+                            marginLeft: 'auto', // This is the key change to push it to the right
+                            color: isSelected ? "#000" : "#aaa",
+                          }}
+                          keyboardType="numeric"
+                          editable={isSelected}
+                          placeholder={t("enterRatePerDayNight")}
+                          value={rentValue}
+                          onChangeText={(value) => {
+                            const updatedRooms = formData.otherRoomAvailable.map((room: OtherRoom) =>
+                              room.type === option.value ? { ...room, rent: value } : room
+                            );
+                            handleInputChange("otherRoomAvailable", updatedRooms);
+                          }}
+                        />
+                      </View>
+                    );
+                  })}
                 </>
               )}
               {formData.propertyType !== "Guest House" && (
                 <>
-                  <Text className="text-base font-bold mt-3 mb-3">{t("rentAmount")}</Text>
+                  <Text className="text-base font-bold mt-3 mb-3">{formData.propertyFor !== "Sale" ? t("rentAmount") : t("saleAmount")}</Text>
                   <TextInput
-                    placeholder={t("enterRentAmount")}
+                    placeholder={formData.propertyFor !== "Sale" ? t("enterRentAmount") : t("enterSaleAmount")}
                     className="border border-gray-300 rounded-lg p-3 bg-white"
                     keyboardType="numeric"
                     value={String(formData.rent)}
@@ -945,6 +982,27 @@ const MultiStepForm = () => {
                   )}
                 </>
               )}
+
+              {formData.propertyFor === "Sale" && (
+                <>
+                  <Text className="text-base font-bold mt-3 mb-3">{t("distanceForMainRoad")}</Text>
+                  <TextInput
+                    placeholder={t("enterDistanceForMainRoad")}
+                    className="border border-gray-300 rounded-lg p-3 bg-white"
+                    keyboardType="numeric"
+                    value={String(formData.distanceForMainRoad)}
+                    onChangeText={(value) => handleInputChange("distanceForMainRoad", value)}
+                  />
+                  <Text className="text-base font-bold mt-3 mb-3">{t("widthOfTheRoadInFrontOfAProperty")}</Text>
+                  <TextInput
+                    placeholder={t("enterWidthOfTheRoadInFrontOfAProperty")}
+                    className="border border-gray-300 rounded-lg p-3 bg-white"
+                    keyboardType="numeric"
+                    value={String(formData.widthOfTheRoadInFrontOfAProperty)}
+                    onChangeText={(value) => handleInputChange("widthOfTheRoadInFrontOfAProperty", value)}
+                  />
+                </>
+              )}
               <View className="text-base font-bold mt-3 mb-3"></View>
             </ScrollView>
           )}
@@ -970,24 +1028,24 @@ const MultiStepForm = () => {
                     placeholder={t("selectParkingType")}
                     onChange={(selectedItem: DropdownProps) => handleInputChange("parking", selectedItem.value)}
                   />
+
+                  <CustomMultiDropdown
+                    label={t("basicAmenities")}
+                    data={staticData.basicAmenitiesOptions}
+                    value={formData.basicAmenities}
+                    placeholder={t("selectBasicAmenities")}
+                    onChange={(selectedItems: DropdownProps[]) => handleInputChange("basicAmenities", selectedItems.map(item => item.value))}
+                  />
+
+                  <CustomMultiDropdown
+                    label={t("additionalAmenities")}
+                    data={staticData.additionalAmenitiesOptions}
+                    value={formData.additionalAmenities}
+                    placeholder={t("selectAdditionalAmenities")}
+                    onChange={(selectedItems: DropdownProps[]) => handleInputChange("additionalAmenities", selectedItems.map(item => item.value))}
+                  />
                 </>
               )}
-
-              <CustomMultiDropdown
-                label={t("basicAmenities")}
-                data={staticData.basicAmenitiesOptions}
-                value={formData.basicAmenities}
-                placeholder={t("selectBasicAmenities")}
-                onChange={(selectedItems: DropdownProps[]) => handleInputChange("basicAmenities", selectedItems.map(item => item.value))}
-              />
-
-              <CustomMultiDropdown
-                label={t("additionalAmenities")}
-                data={staticData.additionalAmenitiesOptions}
-                value={formData.additionalAmenities}
-                placeholder={t("selectAdditionalAmenities")}
-                onChange={(selectedItems: DropdownProps[]) => handleInputChange("additionalAmenities", selectedItems.map(item => item.value))}
-              />
 
               {formData.propertyType !== "Guest House" && (
                 <CustomMultiDropdown
@@ -998,6 +1056,26 @@ const MultiStepForm = () => {
                   onChange={(selectedItems: DropdownProps[]) => handleInputChange("sourceOfWater", selectedItems.map(item => item.value))}
                 />
               )}
+
+              {formData.propertyFor === "Sale" && (
+                <>
+                  <CustomDropdown
+                    label={t("tehsilBill")}
+                    data={getYearOptions()}
+                    value={formData.tehsilBillYear}
+                    placeholder={t("selectYear")}
+                    onChange={(selectedItem: DropdownProps) => handleInputChange("tehsilBillYear", selectedItem.value)}
+                  />
+                  <CustomDropdown
+                    label={t("municipleBill")}
+                    data={getYearOptions()}
+                    value={formData.municipleBillYear}
+                    placeholder={t("selectYear")}
+                    onChange={(selectedItem: DropdownProps) => handleInputChange("municipleBillYear", selectedItem.value)}
+                  />
+                </>
+              )}
+
               <View className="text-base font-bold mt-3 mb-3"></View>
             </ScrollView>
           )}
@@ -1017,7 +1095,17 @@ const MultiStepForm = () => {
                 onImageSelect={(imagePath: string) => {
                   handleInputChange("images", [...formData.images, imagePath]);
                 }}
+                maxImages={15}
+                isVideoUpload={false}
+              />
+
+              <Text className="text-base font-bold mb-4">{t("uploadOneVideo")}</Text>
+              <ImagePickerComponent
+                serviceId={serviceId}
                 video={formData.video}
+                isImageUpload={false}
+                isCameraUpload={false}
+                isVideoUpload={true}
                 onVideoDelete={(videoPath: string) => {
                   const updatedVideo = formData.video.filter((video: string) => video !== videoPath);
                   handleInputChange("video", updatedVideo);
@@ -1025,7 +1113,27 @@ const MultiStepForm = () => {
                 onVideoSelect={(videoPath: string) => {
                   handleInputChange("video", [videoPath]);
                 }}
+                maxVideos={1}
               />
+
+              {formData.propertyFor === "Sale" && (
+                <>
+                  <Text className="text-lg font-bold mb-3">{t("projectMap")}</Text>
+                  <ImagePickerComponent
+                    serviceId={serviceId}
+                    images={formData.projectMap}
+                    payloadKey="projectMap"
+                    onImageDelete={() => {
+                      handleInputChange("projectMap", []);
+                    }}
+                    onImageSelect={(imagePath: string) => {
+                      handleInputChange("projectMap", [imagePath]);
+                    }}
+                    maxImages={1}
+                    isVideoUpload={false}
+                  />
+                </>
+              )}
               <View className="text-base font-bold mt-3 mb-3"></View>
             </ScrollView>
           )}

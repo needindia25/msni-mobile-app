@@ -84,7 +84,7 @@ const SignIn = () => {
         setLoading(false);
         return;
       }
-      console.log("Data:", response); // Log the parsed data
+      // console.log("Data:", response); // Log the parsed data
       const { refresh, access, user_info } = response;
 
       if (!refresh || !access || !user_info) {
