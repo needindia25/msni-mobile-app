@@ -92,7 +92,7 @@ const Services = () => {
       }
       // console.log("Data:", response); // Log the parsed data
       setTotalActiveServices(response.length);
-      console.log("Total Active Services:", transformData(response));
+      // console.log("Total Active Services:", transformData(response));
       setListings(transformData(response));
     }
   };

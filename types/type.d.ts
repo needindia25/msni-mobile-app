@@ -25,7 +25,7 @@ interface UserInfo {
   is_both_access: boolean;
 }
 
-interface OtherRoom {
+export interface OtherRoom {
   type: string;
   rent: string;
 }
@@ -197,4 +197,58 @@ declare interface DriverCardProps {
   item: MarkerData;
   selected: number;
   setSelected: () => void;
+}
+
+
+export interface AppFormData {
+  propertyFor: string;
+  title: string;
+  propertyType: string;
+  description: string;
+  latitude: number;
+  longitude: number;
+  address: string;
+  location: string;
+  state: number;
+  stateName: string;
+  district: number;
+  districtName: string;
+  city: string;
+  zip: string;
+  housingType: string[];
+  bhkType: string;
+  familyPreference: string;
+  foodPreference: string;
+  roomType: string;
+  commercialType: string;
+  rent: number;
+  advance: number;
+  rentNegotiable: string;
+  areaInSize: number;
+  floorNumber: number;
+  numberOfBedRooms: number;
+  numberOfBalconies: number;
+  numberOfBathRooms: string[];
+  ageOfProperty: number;
+  furnishing: string;
+  parking: string;
+  basicAmenities: string[];
+  additionalAmenities: string[];
+  sourceOfWater: string[];
+  images: string[];
+  video: string[];
+  date_updated: string;
+  date_created: string;
+  owner_name: string;
+  owner_contact: string;
+  contactPersonNumber: string;
+  contactPersonName: string;
+  status: boolean;
+  projectMap: string[];
+  otherRoomAvailable: OtherRoom[];
+  isOtherRoomAvailable: boolean;
+  distanceForMainRoad: number;
+  widthOfTheRoadInFrontOfAProperty: number;
+  municipleBillYear: string;
+  tehsilBillYear: string;
 }

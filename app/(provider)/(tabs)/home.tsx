@@ -52,7 +52,7 @@ const Home = () => {
             if (response === null || response === undefined) {
                 return;
             }
-            console.log("Data:", response); // Log the parsed data
+            // console.log("Data:", response); // Log the parsed data
             setListings(transformData(response));
         }
     };
