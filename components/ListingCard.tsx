@@ -15,6 +15,7 @@ interface ListingCardProps {
     stateName: string;
     price: string;
     propertyType: string;
+    propertyFor: string;
   };
   handleView: (id: number) => void;
 }
@@ -52,7 +53,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, handleView }) => {
       {/* Price */}
       <View className="flex-row justify-between items-center mb-3">
         <Text className="text-blue-600 text-lg font-bold">
-          {listing.price} <Text className="text-sm text-gray-500">{t("pricePerMonth")}</Text>
+          {listing.price} <Text className="text-sm text-gray-500">{listing.propertyFor === "Sale" ? "" : t(listing.propertyType !== "Guest House" ? "pricePerMonth" : "priceDayNight")}</Text>
         </Text>
       </View>
 

@@ -9,6 +9,7 @@ import { MaterialIcons } from "@expo/vector-icons"; // Import icons
 import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 import { getUserPlan } from '@/lib/utils';
+import { getInitialURL } from 'expo-linking';
 
 const Services = () => {
   const { t } = useTranslation(); // Initialize translation hook
@@ -89,8 +90,9 @@ const Services = () => {
       if (response === null || response === undefined) {
         return;
       }
-      console.log("Data:", response); // Log the parsed data
+      // console.log("Data:", response); // Log the parsed data
       setTotalActiveServices(response.length);
+      // console.log("Total Active Services:", transformData(response));
       setListings(transformData(response));
     }
   };
@@ -101,6 +103,7 @@ const Services = () => {
     return sortedData.map((property) => ({
       id: property.id,
       title: property.title,
+      propertyFor: property.options.propertyFor,
       propertyType: property.options.propertyType || "Unknown Property Type",
       housingType: property.options.housingType || "Unknown Housing Type",
       location: property.options.address || "Unknown Location",
@@ -170,7 +173,7 @@ const Services = () => {
                   {/* Rating and Price Row */}
                   <View className="flex-row justify-between items-center mb-1">
                     <Text className="text-blue-500 text-lg font-bold">
-                      {listing.price} <Text className="text-sm text-gray-500">{t(listing.propertyType !== "Guest House" ? "pricePerMonth" : "priceDayNight")}</Text>
+                      {listing.price} <Text className="text-sm text-gray-500">{listing.propertyFor === "Sale" ? "" : t(listing.propertyType !== "Guest House" ? "pricePerMonth" : "priceDayNight")}</Text>
                     </Text>
                     <View className="flex-row items-center">
                       {[1, 2, 3, 4, 5].map((star) => (
