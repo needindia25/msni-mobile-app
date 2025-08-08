@@ -1,6 +1,7 @@
 import { constants } from "@/constants";
 import { fetchAPI } from "./fetch";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { format } from "date-fns";
 
 
 export async function getUserInfo(t: any) {
@@ -61,6 +62,12 @@ export async function generateOTP(t: any, number: string, optFor: string, type: 
     }
   );
 }
+
+export const formatDate = (dateString: string, t: any) => {
+    if (!dateString) return t("notAvailable");
+    const date = new Date(dateString);
+    return format(date, "do MMMM yyyy");
+};
 
 export const getYearOptions = () => {
   const currentYear = new Date().getFullYear();

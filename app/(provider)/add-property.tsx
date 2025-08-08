@@ -261,6 +261,10 @@ const MultiStepForm = () => {
         newErrors.zip = t("zipError");
       }
 
+      if (formData.contactPersonName) {
+        formData.contactPersonName = formData.contactPersonName.trim();
+      }
+
       if (!formData.contactPersonName || formData.contactPersonName.length > 30 || formData.contactPersonName.length < 3) {
         newErrors.contactPersonName = t(!formData.contactPersonName ? "contactPersonRequired" : (formData.contactPersonName.length > 30 ? "contactPersonNameMax" : "contactPersonNameMin"));
       }
@@ -815,7 +819,7 @@ const MultiStepForm = () => {
                     value={String(formData.rent)}
                     onChangeText={(value) => handleInputChange("rent", value)}
                   />
-                  
+
                   <TouchableOpacity
                     onPress={() => {
                       handleInputChange("isOtherRoomAvailable", !formData.isOtherRoomAvailable);
@@ -835,7 +839,7 @@ const MultiStepForm = () => {
                   {formData.isOtherRoomAvailable && staticData.guestHouseRoomTypeOptions.map((option) => {
                     const isSelected = formData.otherRoomAvailable.some((room: OtherRoom) => room.type === option.value);
                     const selectedRoom: OtherRoom | undefined = formData.otherRoomAvailable.find((room: OtherRoom) => room.type === option.value);
-                    const rentValue = selectedRoom ? (selectedRoom as OtherRoom).rent : "0";
+                    let rentValue = selectedRoom ? (selectedRoom as OtherRoom).rent : "0";
 
                     return (
                       <View key={option.value} style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
@@ -874,11 +878,14 @@ const MultiStepForm = () => {
                           }}
                           keyboardType="numeric"
                           editable={isSelected}
-                          placeholder={t("enterRatePerDayNight")}
                           value={rentValue}
                           onChangeText={(value) => {
+                            rentValue = parseFloat(value).toFixed(0);
+                            if (isNaN(parseFloat(value))) {
+                              rentValue = "0";
+                            }
                             const updatedRooms = formData.otherRoomAvailable.map((room: OtherRoom) =>
-                              room.type === option.value ? { ...room, rent: value } : room
+                              room.type === option.value ? { ...room, rent: rentValue } : room
                             );
                             handleInputChange("otherRoomAvailable", updatedRooms);
                           }}
@@ -1084,54 +1091,59 @@ const MultiStepForm = () => {
             <ScrollView className="bg-gray-100 p-5"
               keyboardShouldPersistTaps="handled"
               contentContainerStyle={{ flexGrow: 1 }} >
-              <Text className="text-base font-bold mb-4">{t("uploadImage")}</Text>
-              <ImagePickerComponent
-                serviceId={serviceId}
-                images={formData.images}
-                onImageDelete={(imagePath: string) => {
-                  const updatedImages = formData.images.filter((img: string) => img !== imagePath);
-                  handleInputChange("images", updatedImages);
-                }}
-                onImageSelect={(imagePath: string) => {
-                  handleInputChange("images", [...formData.images, imagePath]);
-                }}
-                maxImages={15}
-                isVideoUpload={false}
-              />
+              <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
+                <Text className="text-base font-bold mb-4">{t("uploadImage")}</Text>
+                <ImagePickerComponent
+                  serviceId={serviceId}
+                  images={formData.images}
+                  onImageDelete={(imagePath: string) => {
+                    const updatedImages = formData.images.filter((img: string) => img !== imagePath);
+                    handleInputChange("images", updatedImages);
+                  }}
+                  onImageSelect={(imagePath: string) => {
+                    handleInputChange("images", [...formData.images, imagePath]);
+                  }}
+                  maxImages={15}
+                  isVideoUpload={false}
+                />
+              </View>
+              <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
 
-              <Text className="text-base font-bold mb-4">{t("uploadOneVideo")}</Text>
-              <ImagePickerComponent
-                serviceId={serviceId}
-                video={formData.video}
-                isImageUpload={false}
-                isCameraUpload={false}
-                isVideoUpload={true}
-                onVideoDelete={(videoPath: string) => {
-                  const updatedVideo = formData.video.filter((video: string) => video !== videoPath);
-                  handleInputChange("video", updatedVideo);
-                }}
-                onVideoSelect={(videoPath: string) => {
-                  handleInputChange("video", [videoPath]);
-                }}
-                maxVideos={1}
-              />
-
+                <Text className="text-base font-bold mb-4">{t("uploadOneVideo")}</Text>
+                <ImagePickerComponent
+                  serviceId={serviceId}
+                  video={formData.video}
+                  isImageUpload={false}
+                  isCameraUpload={false}
+                  isVideoUpload={true}
+                  onVideoDelete={(videoPath: string) => {
+                    const updatedVideo = formData.video.filter((video: string) => video !== videoPath);
+                    handleInputChange("video", updatedVideo);
+                  }}
+                  onVideoSelect={(videoPath: string) => {
+                    handleInputChange("video", [videoPath]);
+                  }}
+                  maxVideos={1}
+                />
+              </View>
               {formData.propertyFor === "Sale" && (
                 <>
-                  <Text className="text-lg font-bold mb-3">{t("projectMap")}</Text>
-                  <ImagePickerComponent
-                    serviceId={serviceId}
-                    images={formData.projectMap}
-                    payloadKey="projectMap"
-                    onImageDelete={() => {
-                      handleInputChange("projectMap", []);
-                    }}
-                    onImageSelect={(imagePath: string) => {
-                      handleInputChange("projectMap", [imagePath]);
-                    }}
-                    maxImages={1}
-                    isVideoUpload={false}
-                  />
+                  <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
+                    <Text className="text-base font-bold mb-3">{t("projectMap")}</Text>
+                    <ImagePickerComponent
+                      serviceId={serviceId}
+                      images={formData.projectMap}
+                      payloadKey="projectMap"
+                      onImageDelete={() => {
+                        handleInputChange("projectMap", []);
+                      }}
+                      onImageSelect={(imagePath: string) => {
+                        handleInputChange("projectMap", [imagePath]);
+                      }}
+                      maxImages={1}
+                      isVideoUpload={false}
+                    />
+                  </View>
                 </>
               )}
               <View className="text-base font-bold mt-3 mb-3"></View>

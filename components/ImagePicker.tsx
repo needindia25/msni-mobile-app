@@ -388,7 +388,7 @@ const ImagePickerComponent: React.FC<ImagePickerProps> = (
         {selectedImages.length === maxImages && (
           <View className="flex-row justify-center space-x-4 mt-3">
             <Text className="text-gray-500 text-sm">
-              {t("maxImagesUploaded")}
+              {maxImages === 1 ? "" : t("maxImagesUploaded")}
             </Text>
           </View>
         )}
