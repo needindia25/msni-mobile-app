@@ -38,6 +38,9 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
     ];
 
     const getKeyByValue = (value: string): string => {
+        if (value === "notAvailable") {
+            return t(value);
+        }
         // Find the key by value
         const key = Object.keys(en.translation).find((k) => en.translation[k as keyof typeof en.translation] === value);
 
@@ -72,7 +75,7 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                             </View>
                             <Text className="text-black font-semibold">{formData.advance || t("notAvailable")}</Text>
                         </View>
-                        <View className="flex-row justify-between">
+                        <View className="flex-row justify-between mb-3">
                             {/* Is Rent Negotiable */}
                             <View className="flex-row items-center">
                                 <FontAwesome5 name="rupee-sign" size={16} color="black" />
