@@ -1,5 +1,4 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { format } from "date-fns";
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -11,7 +10,7 @@ import { useTranslation } from "react-i18next"; // Import useTranslation
 import GoogleTextInput from '@/components/GoogleTextInput';
 import { formDataKeys } from "@/constants/staticData";
 import PropertyCommon from '@/components/PropertyCommon';
-import { formatData } from '@/lib/utils';
+import { formatData, formatDate } from '@/lib/utils';
 
 const PropertyDetails = () => {
     const { t } = useTranslation(); // Initialize translation hook
@@ -74,12 +73,6 @@ const PropertyDetails = () => {
         fetchDetails();
     }, []);
 
-    const formatDate = (dateString: string) => {
-        if (!dateString) return t("notAvailable");
-        const date = new Date(dateString);
-        return format(date, "do MMMM yyyy HH:mm");
-    };
-
     return (
         <ScrollView className="bg-gray-100 p-5">
             {loading ? (
@@ -95,11 +88,16 @@ const PropertyDetails = () => {
 
                         {/* Title and Address */}
                         <Text className="text-2xl font-bold mb-2">{formData.title}</Text>
-                        <View className="flex-row items-center mb-3">
+                        <View className="flex-row mb-3 items-center">
                             <MaterialIcons name="location-on" size={20} color="gray" />
-                            <Text className="text-gray-500 ml-1">
-                                {formData.address}, {formData.city}, {formData.districtName}, {formData.stateName} - {formData.zip}
-                            </Text>
+                            <View className="ml-1 flex-1">
+                                <Text className="text-gray-500">
+                                    {formData.address}, {formData.city}
+                                </Text>
+                                <Text className="text-gray-500">
+                                    {formData.districtName}, {formData.stateName} - {formData.zip}
+                                </Text>
+                            </View>
                         </View>
 
                         <PropertyCommon formData={formData} />
@@ -136,7 +134,7 @@ const PropertyDetails = () => {
                                     <MaterialIcons name="update" size={20} color="black" />
                                     <Text className="text-gray-500 ml-2">{t("lastUpdated")}</Text>
                                 </View>
-                                <Text className="text-black font-semibold">{formatDate(formData.date_updated)}</Text>
+                                <Text className="text-black font-semibold">{formatDate(formData.date_updated, t)}</Text>
                             </View>
                             <View className="flex-row justify-between">
                                 {/* Posted On */}
@@ -144,7 +142,7 @@ const PropertyDetails = () => {
                                     <MaterialIcons name="calendar-today" size={20} color="black" />
                                     <Text className="text-gray-500 ml-2">{t("postedOn")}</Text>
                                 </View>
-                                <Text className="text-black font-semibold">{formatDate(formData.date_created)}</Text>
+                                <Text className="text-black font-semibold">{formatDate(formData.date_created, t)}</Text>
                             </View>
                         </View>
 
