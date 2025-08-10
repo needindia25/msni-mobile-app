@@ -484,9 +484,13 @@ const hi = {
         municipleBill: "पिछले वर्ष के लिए अंतिम नगरपालिका बिल भुगतान किया गया",
         tehsilBill: "पिछले वर्ष के लिए अंतिम तहसील बिल भुगतान किया गया",
         selectYear: "वर्ष चुनें",
-        uploadOneVideo: "एक वीडियो अपलोड करें",
+        uploadOneVideo: "एक वीडियो अपलोड करें",        
         otherRoomAvailableMessage: "क्या आप अन्य उपलब्ध कमरों का किराया देखना चाहेंगे?",
         otherRoomAvailableType: "अन्य उपलब्ध कमरे का टैरिफ",
+        propertyListedBy: "संपत्ति द्वारा सूचीबद्ध",
+        selectPropertyListedBy: "संपत्ति द्वारा सूचीबद्ध का चयन करें",
+        directOwner: "प्रत्यक्ष मालिक",
+        agreementOwner: "अनुबंध मालिक"
     },
 };
 

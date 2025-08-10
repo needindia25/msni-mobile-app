@@ -639,6 +639,18 @@ const MultiStepForm = () => {
                   />
                 </View>
               )}
+
+              {formData.propertyFor === "Sale" && (
+                <CustomDropdown
+                  label={t("propertyListedBy")}
+                  data={staticData.propertyListedByOptions}
+                  value={formData.propertyListedBy}
+                  placeholder={t("selectPropertyListedBy")}
+                  onChange={(selectedItem: DropdownProps) => {
+                    handleInputChange("propertyListedBy", selectedItem.value);
+                  }}
+                />
+              )}
               <View className="text-base font-bold mt-3 mb-3"></View>
             </ScrollView>
           )}

@@ -77,6 +77,10 @@ export const getStaticData = (t: TFunction) => ({
         { label: t("nonVeg"), value: "Non-Veg" },
         { label: t("any"), value: "Any" },
     ],
+    propertyListedByOptions: [
+        { label: t("directOwner"), value: "Direct Owner" },
+        { label: t("agreementOwner"), value: "Agreement Owner" },
+    ],
     commercialTypeOptions: [
         { label: t("officeSpace"), value: "Office Space" },
         { label: t("coWorking"), value: "Co-Working" },
@@ -256,6 +260,7 @@ export const formDataKeys = {
     distanceForMainRoad: 0,
     widthOfTheRoadInFrontOfAProperty: 0,
     municipleBillYear: "",
-    tehsilBillYear: ""
+    tehsilBillYear: "",
+    propertyListedBy: ""
 }
 
