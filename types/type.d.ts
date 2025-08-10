@@ -251,4 +251,5 @@ export interface AppFormData {
   widthOfTheRoadInFrontOfAProperty: number;
   municipleBillYear: string;
   tehsilBillYear: string;
+  propertyListedBy: string;
 }

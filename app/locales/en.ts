@@ -488,6 +488,10 @@ const en = {
         uploadOneVideo: "Upload one video",
         otherRoomAvailableMessage: "Would you like to show other type of available rooms also?",
         otherRoomAvailableType: "Other Available Room Type",
+        propertyListedBy: "Property Listed By",
+        selectPropertyListedBy: "Select Property Listed By",
+        directOwner: "Direct Owner",
+        agreementOwner: "Agreement Owner"
     },
 };
 

@@ -487,6 +487,10 @@ const hi = {
         uploadOneVideo: "एक वीडियो अपलोड करें",        
         otherRoomAvailableMessage: "Would you like to show other type of available rooms also?",
         otherRoomAvailableType: "Other Available Room Type",
+        propertyListedBy: "संपत्ति द्वारा सूचीबद्ध",
+        selectPropertyListedBy: "संपत्ति द्वारा सूचीबद्ध का चयन करें",
+        directOwner: "प्रत्यक्ष मालिक",
+        agreementOwner: "अनुबंध मालिक"
     },
 };
 

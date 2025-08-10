@@ -78,7 +78,18 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                                 <FontAwesome5 name="rupee-sign" size={16} color="black" />
                                 <Text className="text-gray-500 ml-2">{t("isRentNegotiable")}</Text>
                             </View>
-                            <Text className="text-black font-semibold">{getKeyByValue(formData.rentNegotiable) || t("notAvailable")}</Text>
+                            <Text className="text-black font-semibold">{getKeyByValue(formData.rentNegotiable || "notAvailable")}</Text>
+                        </View>
+                    </>
+                )}
+                {formData.propertyFor === "Sale" && (
+                    <>
+                        <View className="flex-row justify-between">
+                            <View className="flex-row items-center">
+                                <FontAwesome5 name="rupee-sign" size={16} color="black" />
+                                <Text className="text-gray-500 ml-2">{t("propertyListedBy")}</Text>
+                            </View>
+                            <Text className="text-black font-semibold">{getKeyByValue(formData.propertyListedBy || "notAvailable")}</Text>
                         </View>
                     </>
                 )}
@@ -129,11 +140,11 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                 <View className="flex-row justify-between mb-3">
                     <View>
                         <Text className="text-gray-500">{t("availableFor")}</Text>
-                        <Text className="text-black font-semibold">{getKeyByValue(formData.propertyFor) || t("notAvailable")}</Text>
+                        <Text className="text-black font-semibold">{getKeyByValue(formData.propertyFor || "notAvailable")}</Text>
                     </View>
                     <View>
                         <Text className="text-gray-500">{t("propertyType")}</Text>
-                        <Text className="text-black font-semibold">{getKeyByValue(formData.propertyType) || t("notAvailable")}</Text>
+                        <Text className="text-black font-semibold">{getKeyByValue(formData.propertyType || "notAvailable")}</Text>
                     </View>
                 </View>
             </View>
@@ -163,7 +174,7 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                             <MaterialIcons name="hotel" size={20} color="black" />
                             <Text className="text-gray-500 ml-2">{t("bhkType")}</Text>
                         </View>
-                        <Text className="text-black font-semibold">{getKeyByValue(formData.bhkType) || t("notAvailable")}</Text>
+                        <Text className="text-black font-semibold">{getKeyByValue(formData.bhkType || "notAvailable")}</Text>
                     </View>
 
                     {formData.propertyFor !== "Sale" && (
@@ -174,7 +185,7 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                                     <MaterialIcons name="group" size={20} color="black" />
                                     <Text className="text-gray-500 ml-2">{t("preferredTenancy")}</Text>
                                 </View>
-                                <Text className="text-black font-semibold">{getKeyByValue(formData.familyPreference) || t("notAvailable")}</Text>
+                                <Text className="text-black font-semibold">{getKeyByValue(formData.familyPreference || "notAvailable")}</Text>
                             </View>
 
                             <View className="flex-row justify-between items-center">
@@ -184,7 +195,7 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                                     <Text className="text-gray-500 ml-2">{t("foodPreference")}</Text>
                                 </View>
                                 <Text className="text-black font-semibold">
-                                    {formData.foodPreference === "" ? t("notAvailable") : getKeyByValue(formData.foodPreference)}
+                                    {getKeyByValue(formData.foodPreference || "notAvailable")}
                                 </Text>
                             </View>
                         </>
@@ -216,7 +227,7 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                             <MaterialIcons name="group" size={20} color="black" />
                             <Text className="text-gray-500 ml-2">{t("genderPreference")}</Text>
                         </View>
-                        <Text className="text-black font-semibold">{getKeyByValue(formData.familyPreference) || t("notAvailable")}</Text>
+                        <Text className="text-black font-semibold">{getKeyByValue(formData.familyPreference || "notAvailable")}</Text>
                     </View>
                     <View className="flex-row justify-between items-center">
                         {/* Food Preference */}
@@ -225,7 +236,7 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                             <Text className="text-gray-500 ml-2">{t("foodPreference")}</Text>
                         </View>
                         <Text className="text-black font-semibold">
-                            {formData.foodPreference === "" ? t("notAvailable") : getKeyByValue(formData.foodPreference)}
+                            {getKeyByValue(formData.foodPreference || "notAvailable")}
                         </Text>
                     </View>
                 </View>
@@ -264,7 +275,7 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                                 <Text className="text-gray-500 ml-2">{t("furnishing")}</Text>
                             </View>
                             <Text className="text-black font-semibold">
-                                {formData.furnishing === "" ? t("notAvailable") : getKeyByValue(formData.furnishing)}
+                                {getKeyByValue(formData.furnishing || "notAvailable")}
                             </Text>
                         </View>
                         <View className="flex-row justify-between mb-4">
@@ -274,7 +285,7 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                                 <Text className="text-gray-500 ml-2">{t("parking")}</Text>
                             </View>
                             <Text className="text-black font-semibold">
-                                {formData.parking === "" ? t("notAvailable") : getKeyByValue(formData.parking)}
+                                {getKeyByValue(formData.parking || "notAvailable")}
                             </Text>
                         </View>
                         {formData.propertyType === "Full House" && (
