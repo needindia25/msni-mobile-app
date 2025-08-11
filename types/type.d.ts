@@ -27,7 +27,7 @@ interface UserInfo {
 
 export interface OtherRoom {
   type: string;
-  rent: string;
+  rent: number;
 }
 
 interface Subscription {

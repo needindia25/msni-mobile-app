@@ -52,8 +52,8 @@ export const getStaticData = (t: TFunction) => ({
         { label: t("sharing4Beds"), value: "Sharing 4 Beds" },
     ],
     guestHouseRoomTypeOptions: [
-        { label: t("signalBedAc"), value: "Signal Bed AC" },
-        { label: t("signalBedNonAc"), value: "Signal Bed Non AC" },
+        { label: t("singleBedAc"), value: "Single Bed AC" },
+        { label: t("singleBedNonAc"), value: "Single Bed Non AC" },
         { label: t("doubleBedAc"), value: "Double Bed AC" },
         { label: t("doubleBedNonAc"), value: "Double Bed Non AC" },
         { label: t("tripleBedAc"), value: "Triple Bed AC" },

@@ -851,7 +851,10 @@ const MultiStepForm = () => {
                   {formData.isOtherRoomAvailable && staticData.guestHouseRoomTypeOptions.map((option) => {
                     const isSelected = formData.otherRoomAvailable.some((room: OtherRoom) => room.type === option.value);
                     const selectedRoom: OtherRoom | undefined = formData.otherRoomAvailable.find((room: OtherRoom) => room.type === option.value);
-                    let rentValue = selectedRoom ? (selectedRoom as OtherRoom).rent : "0";
+                    let rentValue = selectedRoom ? (selectedRoom as OtherRoom).rent : 0;
+                    if (isNaN(parseFloat(String(rentValue)))) {
+                      rentValue = 0;
+                    }
 
                     return (
                       <View key={option.value} style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
@@ -890,11 +893,11 @@ const MultiStepForm = () => {
                           }}
                           keyboardType="numeric"
                           editable={isSelected}
-                          value={rentValue}
+                          value={String(rentValue)}
                           onChangeText={(value) => {
-                            rentValue = parseFloat(value).toFixed(0);
+                            rentValue = parseFloat(value);
                             if (isNaN(parseFloat(value))) {
-                              rentValue = "0";
+                              rentValue = 0;
                             }
                             const updatedRooms = formData.otherRoomAvailable.map((room: OtherRoom) =>
                               room.type === option.value ? { ...room, rent: rentValue } : room
@@ -915,7 +918,13 @@ const MultiStepForm = () => {
                     className="border border-gray-300 rounded-lg p-3 bg-white"
                     keyboardType="numeric"
                     value={String(formData.rent)}
-                    onChangeText={(value) => handleInputChange("rent", value)}
+                    onChangeText={(value) => {
+                      let _value = parseFloat(value);
+                      if (isNaN(_value)) {
+                        _value = 0;
+                      }
+                      handleInputChange("rent", _value)
+                    }}
                   />
                   <Text className="text-base font-bold mt-3 mb-3">{t("advanceAmount")}</Text>
                   <TextInput
@@ -923,7 +932,13 @@ const MultiStepForm = () => {
                     className="border border-gray-300 rounded-lg p-3 bg-white"
                     keyboardType="numeric"
                     value={String(formData.advance)}
-                    onChangeText={(value) => handleInputChange("advance", value)}
+                    onChangeText={(value) => {
+                      let _value = parseFloat(value);
+                      if (isNaN(_value)) {
+                        _value = 0;
+                      }
+                      handleInputChange("advance", _value)
+                    }}
                   />
                   <Text className="text-base font-bold mb-3 mt-3">{t("isRentNegotiable")}</Text>
                   <View className="flex-row flex-wrap justify-between">

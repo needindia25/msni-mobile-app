@@ -71,7 +71,7 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                         <View className="flex-row justify-between mb-3">
                             <View className="flex-row items-center">
                                 <FontAwesome5 name="rupee-sign" size={16} color="black" />
-                                <Text className="text-gray-500 ml-2">{t("deposit")}</Text>
+                                <Text className="text-gray-500 ml-2">{formData.propertyFor === "Sale" ? t("advanceAmount") : t("deposit")}</Text>
                             </View>
                             <Text className="text-black font-semibold">{formData.advance || t("notAvailable")}</Text>
                         </View>
