@@ -361,7 +361,7 @@ const MultiStepForm = () => {
 
       formData.rent = formData.rent ? parseFloat(formData.rent) : 0;
       formData.areaInSize = formData.areaInSize ? parseFloat(formData.areaInSize) : 0;
-      formData.advance = formData.rent ? parseFloat(formData.rent) : 0;
+      formData.advance = formData.advance ? parseFloat(formData.advance) : 0;
       const response = await fetchAPI(url, t, {
         method: method,
         headers: {
@@ -829,7 +829,13 @@ const MultiStepForm = () => {
                     className="border border-gray-300 rounded-lg p-3 bg-white"
                     keyboardType="numeric"
                     value={String(formData.rent)}
-                    onChangeText={(value) => handleInputChange("rent", value)}
+                    onChangeText={(value) => {
+                      let _value = parseFloat(value);
+                      if (isNaN(_value)) {
+                        _value = 0;
+                      }
+                      handleInputChange("rent", _value)
+                    }}
                   />
 
                   <TouchableOpacity
