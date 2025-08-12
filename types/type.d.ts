@@ -225,6 +225,8 @@ export interface AppFormData {
   advance: number;
   rentNegotiable: string;
   areaInSize: number;
+  widthProperty: number;
+  lengthProperty: number;
   floorNumber: number;
   numberOfBedRooms: number;
   numberOfBalconies: number;

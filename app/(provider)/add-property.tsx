@@ -968,13 +968,63 @@ const MultiStepForm = () => {
                     ))}
                   </View>
 
+                  {formData.propertyFor === "Sale" && (
+                    <>
+                      <Text className="text-base font-bold mt-3 mb-3">{t("widthProperty")}</Text>
+                      <TextInput
+                        placeholder={t("enterWidthProperty")}
+                        className="border border-gray-300 rounded-lg p-3 bg-white"
+                        keyboardType="numeric"
+                        value={String(formData.widthProperty)}
+                        onChangeText={(value) => {
+                          let _value = parseFloat(value);
+                          if (isNaN(_value)) {
+                            _value = 0;
+                          }
+                          handleInputChange("widthProperty", _value)
+                          let lengthProperty = String(formData.lengthProperty);
+                          if (isNaN(parseFloat(lengthProperty))) {
+                            lengthProperty = "0";
+                          }
+                          let areaInSize = _value * parseFloat(lengthProperty);
+                          handleInputChange("areaInSize", areaInSize);
+                        }}
+                      />
+                      <Text className="text-base font-bold mt-3 mb-3">{t("lengthProperty")}</Text>
+                      <TextInput
+                        placeholder={t("enterLengthProperty")}
+                        className="border border-gray-300 rounded-lg p-3 bg-white"
+                        keyboardType="numeric"
+                        value={String(formData.lengthProperty)}
+                        onChangeText={(value) => {
+                          let _value = parseFloat(value);
+                          if (isNaN(_value)) {
+                            _value = 0;
+                          }
+                          handleInputChange("lengthProperty", _value)
+                          let widthProperty = String(formData.widthProperty);
+                          if (isNaN(parseFloat(widthProperty))) {
+                            widthProperty = "0";
+                          }
+                          let areaInSize = _value * parseFloat(widthProperty);
+                          handleInputChange("areaInSize", areaInSize);
+                        }}
+                      />
+                    </>
+                  )}
                   <Text className="text-base font-bold mt-3 mb-3">{t("areaInSize")}</Text>
                   <TextInput
                     placeholder={t("enterAreaInSize")}
                     className="border border-gray-300 rounded-lg p-3 bg-white"
                     keyboardType="numeric"
                     value={String(formData.areaInSize)}
-                    onChangeText={(value) => handleInputChange("areaInSize", value)}
+                    onChangeText={(value) => {
+                      let _value = parseFloat(value);
+                      if (isNaN(_value)) {
+                        _value = 0;
+                      }
+                      handleInputChange("areaInSize", _value)
+                    }}
                   />
 
                   {formData.propertyType !== "Land" && (
@@ -1031,7 +1081,13 @@ const MultiStepForm = () => {
                     className="border border-gray-300 rounded-lg p-3 bg-white"
                     keyboardType="numeric"
                     value={String(formData.distanceForMainRoad)}
-                    onChangeText={(value) => handleInputChange("distanceForMainRoad", value)}
+                    onChangeText={(value) => {
+                      let _value = parseFloat(value);
+                      if (isNaN(_value)) {
+                        _value = 0;
+                      }
+                      handleInputChange("distanceForMainRoad", _value)
+                    }}
                   />
                   <Text className="text-base font-bold mt-3 mb-3">{t("widthOfTheRoadInFrontOfAProperty")}</Text>
                   <TextInput
@@ -1039,7 +1095,13 @@ const MultiStepForm = () => {
                     className="border border-gray-300 rounded-lg p-3 bg-white"
                     keyboardType="numeric"
                     value={String(formData.widthOfTheRoadInFrontOfAProperty)}
-                    onChangeText={(value) => handleInputChange("widthOfTheRoadInFrontOfAProperty", value)}
+                    onChangeText={(value) => {
+                      let _value = parseFloat(value);
+                      if (isNaN(_value)) {
+                        _value = 0;
+                      }
+                      handleInputChange("widthOfTheRoadInFrontOfAProperty", _value)
+                    }}
                   />
                 </>
               )}
