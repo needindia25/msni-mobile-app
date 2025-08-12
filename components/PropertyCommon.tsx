@@ -6,6 +6,7 @@ import { AppFormData, OtherRoom } from '@/types/type';
 import { formDataKeys } from "@/constants/staticData";
 
 import en from '../app/locales/en'; // Import your translation file
+import LabelValueRow from './LabelValueRow';
 interface PropertyCommonProps {
     formData: AppFormData
 }
@@ -435,56 +436,19 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                 <>
                     <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
                         {formData.tehsilBillYear !== "" && (
-                            <View className="flex-row justify-between items-center mb-4 flex-nowrap">
-                                {/* Left side */}
-                                <View className="flex-row items-center flex-shrink">
-                                    <MaterialIcons name="calendar-today" size={20} color="black" />
-                                    <Text
-                                        className="text-gray-500 ml-2 flex-shrink"
-                                        numberOfLines={3}
-                                        ellipsizeMode="tail"
-                                    >
-                                        {t("tehsilBill")}
-                                    </Text>
-                                </View>
 
-                                {/* Right side */}
-                                <View className="items-end">
-                                    <Text
-                                        className="text-black font-semibold text-right"
-                                        numberOfLines={1}
-                                        ellipsizeMode="tail"
-                                    >
-                                        {formData.tehsilBillYear || t("notAvailable")}
-                                    </Text>
-                                </View>
-                            </View>
+                            <LabelValueRow
+                                icon="calendar-today"
+                                label={`${t("tehsilBill")}`}
+                                value={formData.tehsilBillYear || t("notAvailable")}
+                            />
                         )}
                         {formData.municipleBillYear !== "" && (
-                            <View className="flex-row justify-between items-center mb-4 flex-nowrap">
-                                {/* Left side */}
-                                <View className="flex-row items-center flex-shrink">
-                                    <MaterialIcons name="calendar-today" size={20} color="black" />
-                                    <Text
-                                        className="text-gray-500 ml-2 flex-shrink"
-                                        numberOfLines={3}
-                                        ellipsizeMode="tail"
-                                    >
-                                        {t("municipleBill")}
-                                    </Text>
-                                </View>
-
-                                {/* Right side */}
-                                <View className="items-end">
-                                    <Text
-                                        className="text-black font-semibold text-right"
-                                        numberOfLines={1}
-                                        ellipsizeMode="tail"
-                                    >
-                                        {formData.municipleBillYear || t("notAvailable")}
-                                    </Text>
-                                </View>
-                            </View>
+                            <LabelValueRow
+                                icon="calendar-today"
+                                label={`${t("municipleBill")}`}
+                                value={formData.municipleBillYear || t("notAvailable")}
+                            />
                         )}
                     </View>
                 </>
