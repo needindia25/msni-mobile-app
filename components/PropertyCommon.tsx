@@ -87,13 +87,8 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                 )}
                 {formData.propertyFor === "Sale" && (
                     <>
-                        <View className="flex-row justify-between">
-                            <View className="flex-row items-center">
-                                <FontAwesome5 name="rupee-sign" size={16} color="black" />
-                                <Text className="text-gray-500 ml-2">{t("propertyListedBy")}</Text>
-                            </View>
-                            <Text className="text-black font-semibold">{getKeyByValue(formData.propertyListedBy || "notAvailable")}</Text>
-                        </View>
+                        <Text className="text-lg font-bold mb-2">{t("propertyListedBy")}</Text>
+                        <Text className="text-gray-500">{getKeyByValue(formData.propertyListedBy || "notAvailable")}</Text>
                     </>
                 )}
             </View>
@@ -121,6 +116,24 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
             {/* Area */}
             {formData.propertyType !== "Guest House" && (
                 <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
+                    {formData.propertyFor === "Sale" && (
+                        <>
+                            <View className="flex-row justify-between mb-3">
+                                <View className="flex-row items-center">
+                                    <MaterialIcons name="square-foot" size={20} color="black" />
+                                    <Text className="text-gray-500 ml-2">{t("widthPropertyLabel")}</Text>
+                                </View>
+                                <Text className="text-black font-semibold">{formData.widthProperty ? (formData.widthProperty + " " + t("feet")) : t("notAvailable")}</Text>
+                            </View>
+                            <View className="flex-row justify-between mb-3">
+                                <View className="flex-row items-center">
+                                    <MaterialIcons name="square-foot" size={20} color="black" />
+                                    <Text className="text-gray-500 ml-2">{t("lengthPropertyLabel")}</Text>
+                                </View>
+                                <Text className="text-black font-semibold">{formData.lengthProperty ? (formData.lengthProperty + " " + t("feet")) : t("notAvailable")}</Text>
+                            </View>
+                        </>
+                    )}
                     <View className="flex-row justify-between mb-3">
                         <View className="flex-row items-center">
                             <MaterialIcons name="square-foot" size={20} color="black" />
@@ -357,21 +370,11 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
             {formData.propertyFor === "Sale" && (
                 <>
                     <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
-                        <View className="flex-row justify-between mb-4">
-                            <View className="flex-row items-center">
-                                <MaterialIcons name="straighten" size={20} color="black" />
-                                <Text className="text-gray-500 ml-2">{t("distanceForMainRoad")}</Text>
-                            </View>
-                            <Text className="text-black font-semibold">{formData.distanceForMainRoad || t("notAvailable")}</Text>
-                        </View>
-                        <View className="flex-row justify-between mb-4">
-                            {/* Age of Property */}
-                            <View className="flex-row items-center">
-                                <MaterialIcons name="straighten" size={20} color="black" />
-                                <Text className="text-gray-500 ml-2">{t("widthOfTheRoadInFrontOfAProperty")}</Text>
-                            </View>
-                            <Text className="text-black font-semibold">{formData.widthOfTheRoadInFrontOfAProperty || t("notAvailable")}</Text>
-                        </View>
+                        <Text className="text-lg font-bold mb-2">{t("distanceForMainRoadLabel")}</Text>
+                        <Text className="text-gray-500 mb-2">{formData.distanceForMainRoad ? (formData.distanceForMainRoad + " " + t("meter")) : t("notAvailable")}</Text>
+
+                        <Text className="text-lg font-bold mb-2">{t("widthOfTheRoadInFrontOfAPropertyLabel")}</Text>
+                        <Text className="text-gray-500">{formData.widthOfTheRoadInFrontOfAProperty ? (formData.widthOfTheRoadInFrontOfAProperty + " " + t("feet")) : t("notAvailable")}</Text>
                     </View>
                 </>
             )}
@@ -432,23 +435,55 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                 <>
                     <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
                         {formData.tehsilBillYear !== "" && (
-                            <View className="flex-row justify-between mb-4">
-                                {/* Age of Property */}
-                                <View className="flex-row items-center">
+                            <View className="flex-row justify-between items-center mb-4 flex-nowrap">
+                                {/* Left side */}
+                                <View className="flex-row items-center flex-shrink">
                                     <MaterialIcons name="calendar-today" size={20} color="black" />
-                                    <Text className="text-gray-500 ml-2">{t("tehsilBill")}</Text>
+                                    <Text
+                                        className="text-gray-500 ml-2 flex-shrink"
+                                        numberOfLines={3}
+                                        ellipsizeMode="tail"
+                                    >
+                                        {t("tehsilBill")}
+                                    </Text>
                                 </View>
-                                <Text className="text-black font-semibold">{formData.tehsilBillYear || t("notAvailable")}</Text>
+
+                                {/* Right side */}
+                                <View className="items-end">
+                                    <Text
+                                        className="text-black font-semibold text-right"
+                                        numberOfLines={1}
+                                        ellipsizeMode="tail"
+                                    >
+                                        {formData.tehsilBillYear || t("notAvailable")}
+                                    </Text>
+                                </View>
                             </View>
                         )}
                         {formData.municipleBillYear !== "" && (
-                            <View className="flex-row justify-between mb-4">
-                                {/* Age of Property */}
-                                <View className="flex-row items-center">
+                            <View className="flex-row justify-between items-center mb-4 flex-nowrap">
+                                {/* Left side */}
+                                <View className="flex-row items-center flex-shrink">
                                     <MaterialIcons name="calendar-today" size={20} color="black" />
-                                    <Text className="text-gray-500 ml-2">{t("municipleBill")}</Text>
+                                    <Text
+                                        className="text-gray-500 ml-2 flex-shrink"
+                                        numberOfLines={3}
+                                        ellipsizeMode="tail"
+                                    >
+                                        {t("municipleBill")}
+                                    </Text>
                                 </View>
-                                <Text className="text-black font-semibold">{formData.municipleBillYear || t("notAvailable")}</Text>
+
+                                {/* Right side */}
+                                <View className="items-end">
+                                    <Text
+                                        className="text-black font-semibold text-right"
+                                        numberOfLines={1}
+                                        ellipsizeMode="tail"
+                                    >
+                                        {formData.municipleBillYear || t("notAvailable")}
+                                    </Text>
+                                </View>
                             </View>
                         )}
                     </View>

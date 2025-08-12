@@ -235,6 +235,8 @@ export const formDataKeys = {
     advance: 0,
     rentNegotiable: "No",
     areaInSize: 0,
+    widthProperty: 0,
+    lengthProperty: 0,
     floorNumber: 0,
     numberOfBedRooms: 1,
     numberOfBalconies: 0,
