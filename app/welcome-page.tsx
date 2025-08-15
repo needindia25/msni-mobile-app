@@ -1,94 +1,134 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, Alert, Linking, Platform, TouchableOpacity } from 'react-native';
+import { View, Text, Image, ScrollView, Alert, Linking, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { images } from "@/constants";
+import { constants, images } from "@/constants";
 import { UserInfo } from '@/types/type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import CustomButton from '@/components/CustomButton';
 import VersionCheck from 'react-native-version-check';
-import Toast from 'react-native-toast-message';
+import { fetchAPI } from '@/lib/fetch';
+import { getItemWithExpiration, setItemWithExpiration } from '@/lib/utils';
 
 const WelcomePage = () => {
     const { t } = useTranslation();
     const router = useRouter();
+    const update_remainder_key = "update_remainder"
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+    const [isMandatory, setIsMandatory] = useState<boolean | null>(null);
+    const [storeUrl, setStoreUrl] = useState<string>("");
+    const [latestVersion, setLatestVersion] = useState<string | null>(null);
     const checkAppVersion = async () => {
         try {
-            const res = await VersionCheck.needUpdate();
-            const currentVersion = VersionCheck.getCurrentVersion();
-            // const latestVersion = await VersionCheck.getLatestVersion();
-            if (res && res.isNeeded) {
-                // This means a new version is available in the store
-                Alert.alert(
-                    'Update Required',
-                    'A new version of the app is available. Please update to continue.',
-                    [
-                        {
-                            text: 'Update Now',
-                            onPress: () => {
-                                Linking.openURL(res.storeUrl);
-                            },
-                        },
-                    ],
-                    { cancelable: false }
-                );
-            } else {
-                console.log('App is up to date!');
-                Toast.show({
-                    type: 'info',
-                    text2: `You are on version ${currentVersion}.`,
-                    visibilityTime: 2500,
-                });
+            setIsMandatory(null);
+            setStoreUrl("");
+            setLatestVersion(null);
+            const response = await fetchAPI(
+                `${constants.API_URL}/latest-version/${Platform.OS}/`, t
+            );
+            if (response) {
+                setIsMandatory(response.is_mandatory);
+                setStoreUrl(response.store_url);
+                setLatestVersion(response.version_name);
             }
         } catch (error) {
-            Toast.show({
-                type: 'error',
-                text1: 'Update Check Failed',
-                text2: 'Could not check for new updates.',
-            });
             console.error('Error checking for app updates:', error);
         }
     };
+    const getUserInfo = async () => {
+        const userInfoString = await AsyncStorage.getItem('user_info');
+        const parsedUserInfo = userInfoString ? JSON.parse(userInfoString) : null;
+        setUserInfo(parsedUserInfo);
+    };
     useEffect(() => {
-        const getUserInfo = async () => {
-            const userInfoString = await AsyncStorage.getItem('user_info');
-            const parsedUserInfo = userInfoString ? JSON.parse(userInfoString) : null;
-            console.log("parsedUserInfo ", parsedUserInfo)
-            setUserInfo(parsedUserInfo);
-        };
         getUserInfo();
-        checkAppVersion();
+        const checkForUpdateApp = async () => {
+            await checkAppVersion();
+            // await AsyncStorage.removeItem(update_remainder_key);
+            const updateRemainder = await getItemWithExpiration(update_remainder_key)
+            const currentVersion = VersionCheck.getCurrentVersion();
+            if (updateRemainder !== "1" && currentVersion !== latestVersion) {
+                alertBox();
+            }
+        }
+        checkForUpdateApp();
     }, []);
 
-    const handleNext = async (role = 1) => {
-        checkAppVersion();
-        if (role == 0) {
-            console.log("userInfo ", userInfo);
-            if (userInfo) {
-                router.replace(userInfo.user_type_id === 1 ? "/(seeker)/(tabs)/home" : "/(provider)/(tabs)/services");
-            } else {
-                Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
-                    [
-                        {
-                            text: t("ok"),
-                            onPress: () => {
-                                router.replace("/(auth)/sign-in");
-                            },
-                        },
-                    ]
-                );
-            }
+    const alertBox = () => {
+        if (isMandatory) {
+            Alert.alert(
+                t("updateRequired"),
+                t("newVersionAvailable", { version: latestVersion }),
+                [
+                    {
+                        text: t("updateNow"),
+                        onPress: async () => {
+                            await AsyncStorage.removeItem(update_remainder_key);
+                            Linking.openURL(storeUrl);
+                        }
+                    },
+                ],
+                { cancelable: false }
+            );
         } else {
-            let userInfo = await AsyncStorage.getItem('user_info');
-            const parsedUserInfo = userInfo ? JSON.parse(userInfo) : null;
-            if (parsedUserInfo) {
-                parsedUserInfo.user_type_id = role;
-                await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
-                setUserInfo(parsedUserInfo);
-                router.replace(parsedUserInfo.user_type_id === 1 ? "/(seeker)/(tabs)/home" : "/(provider)/(tabs)/services");
+            Alert.alert(
+                t('updateAvailable'),
+                t("newVersionAvailable", { version: latestVersion }),
+                [
+
+                    {
+                        text: t('later'),
+                        style: 'cancel',
+                        onPress: () => {
+                            setItemWithExpiration("update_remainder", "1");
+                        },
+                    },
+                    {
+                        text: t('updateNow'),
+                        onPress: async () => {
+                            await AsyncStorage.removeItem(update_remainder_key);
+                            Linking.openURL(storeUrl);
+                        }
+                    }
+                ]
+            );
+        }
+    }
+
+    const handleNext = async (role = 1) => {
+        await checkAppVersion();
+        const updateRemainder = await getItemWithExpiration(update_remainder_key)
+        const currentVersion = VersionCheck.getCurrentVersion();
+        if (updateRemainder !== "1" && currentVersion !== latestVersion) {
+            alertBox();
+        } else {
+            if (role == 0) {
+                console.log("userInfo ", userInfo);
+                if (userInfo) {
+                    router.replace(userInfo.user_type_id === 1 ? "/(seeker)/(tabs)/home" : "/(provider)/(tabs)/services");
+                } else {
+                    Alert.alert(t("sessionExpired"), t("pleaseLoginAgain"),
+                        [
+                            {
+                                text: t("ok"),
+                                onPress: () => {
+                                    router.replace("/(auth)/sign-in");
+                                },
+                            },
+                        ]
+                    );
+                }
+            } else {
+                let userInfo = await AsyncStorage.getItem('user_info');
+                const parsedUserInfo = userInfo ? JSON.parse(userInfo) : null;
+                if (parsedUserInfo) {
+                    parsedUserInfo.user_type_id = role;
+                    await AsyncStorage.setItem('user_info', JSON.stringify(parsedUserInfo));
+                    setUserInfo(parsedUserInfo);
+                    router.replace(parsedUserInfo.user_type_id === 1 ? "/(seeker)/(tabs)/home" : "/(provider)/(tabs)/services");
+                }
+                return;
             }
-            return;
         }
     }
 

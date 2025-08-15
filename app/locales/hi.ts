@@ -501,7 +501,12 @@ const hi = {
         widthPropertyLabel: "संपत्ति की चौड़ाई",
         lengthPropertyLabel: "संपत्ति की लंबाई",
         feet: "फीट",
-        meter: "मीटर"
+        meter: "मीटर",
+        updateRequired: "अपडेट आवश्यक है",
+        newVersionAvailable: "ऐप का एक नया संस्करण (v{{version}}) उपलब्ध है।",
+        updateNow: "अभी अपडेट करें",
+        updateAvailable: "अपडेट उपलब्ध है",
+        later: "बाद में याद दिलाएं",
     },
 };
 
