@@ -381,7 +381,7 @@ const Home = () => {
                         style={{ tintColor: "white" }} // Apply white tint color
                       />
                       <Text className="text-center text-base font-bold text-white">
-                        {pref.label === "Sale" ? t("buy") : t(pref.label)}
+                        {pref.label === "Sell" ? t("buy") : t(pref.label)}
                       </Text>
                     </View>
                   </TouchableOpacity>

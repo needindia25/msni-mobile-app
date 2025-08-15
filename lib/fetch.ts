@@ -1,22 +1,22 @@
 import { Alert, Platform } from "react-native";
-import DeviceInfo from "react-native-device-info";
+// import DeviceInfo from "react-native-device-info";
 
 export const fetchAPI = async (url: string, t: (key: string) => string, options?: RequestInit) => {
   try {
-    const deviceId = await DeviceInfo.getUniqueId();
+    // const deviceId = await DeviceInfo.getUniqueId();
     if (options) {
       options.headers = {
         ...options.headers,
         "X-Mobile-App": "true",
         "X-Device-Type": Platform.OS,
-        "X-Device-Id": deviceId,
+        // "X-Device-Id": "",
       };
     } else {
       options = {
         headers: {
           "X-Mobile-App": "true",
           "X-Device-Type": Platform.OS,
-          "X-Device-Id": deviceId,
+          // "X-Device-Id": "",
         },
       };
     }

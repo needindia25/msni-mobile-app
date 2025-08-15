@@ -567,7 +567,7 @@ const MultiStepForm = () => {
                     onChange={(selectedItem: DropdownProps) => handleInputChange("bhkType", selectedItem.value)}
                   />
 
-                  {formData.propertyFor !== "Sale" && (
+                  {formData.propertyFor !== "Sell" && (
                     <>
                       <CustomDropdown
                         label={t("familyPreference")}
@@ -640,7 +640,7 @@ const MultiStepForm = () => {
                 </View>
               )}
 
-              {formData.propertyFor === "Sale" && (
+              {formData.propertyFor === "Sell" && (
                 <CustomDropdown
                   label={t("propertyListedBy")}
                   data={staticData.propertyListedByOptions}
@@ -918,9 +918,9 @@ const MultiStepForm = () => {
               )}
               {formData.propertyType !== "Guest House" && (
                 <>
-                  <Text className="text-base font-bold mt-3 mb-3">{formData.propertyFor !== "Sale" ? t("rentAmount") : t("saleAmount")}</Text>
+                  <Text className="text-base font-bold mt-3 mb-3">{formData.propertyFor !== "Sell" ? t("rentAmount") : t("sellAmount")}</Text>
                   <TextInput
-                    placeholder={formData.propertyFor !== "Sale" ? t("enterRentAmount") : t("enterSaleAmount")}
+                    placeholder={formData.propertyFor !== "Sell" ? t("enterRentAmount") : t("enterSellAmount")}
                     className="border border-gray-300 rounded-lg p-3 bg-white"
                     keyboardType="numeric"
                     value={String(formData.rent)}
@@ -968,7 +968,7 @@ const MultiStepForm = () => {
                     ))}
                   </View>
 
-                  {formData.propertyFor === "Sale" && (
+                  {formData.propertyFor === "Sell" && (
                     <>
                       <Text className="text-base font-bold mt-3 mb-3">{t("widthProperty")}</Text>
                       <TextInput
@@ -1073,7 +1073,7 @@ const MultiStepForm = () => {
                 </>
               )}
 
-              {formData.propertyFor === "Sale" && (
+              {formData.propertyFor === "Sell" && (
                 <>
                   <Text className="text-base font-bold mt-3 mb-3">{t("distanceForMainRoad")}</Text>
                   <TextInput
@@ -1159,7 +1159,7 @@ const MultiStepForm = () => {
                 />
               )}
 
-              {formData.propertyFor === "Sale" && (
+              {formData.propertyFor === "Sell" && (
                 <>
                   <CustomDropdown
                     label={t("tehsilBill")}
@@ -1221,7 +1221,7 @@ const MultiStepForm = () => {
                   maxVideos={1}
                 />
               </View>
-              {formData.propertyFor === "Sale" && (
+              {formData.propertyFor === "Sell" && (
                 <>
                   <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
                     <Text className="text-base font-bold mb-3">{t("projectMap")}</Text>

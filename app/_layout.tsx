@@ -10,6 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import App from '../app';
 import appConfig from "../app.json";
 import './i18n'; // Import i18n configuration
+import Toast from 'react-native-toast-message';
 
 AppRegistry.registerComponent(appConfig.expo.name, () => App);
 
@@ -52,6 +53,8 @@ export default function RootLayout() {
         <Stack.Screen name="no-subscription" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
+      {/* Add the Toast component here */}
+      <Toast />
     </SafeAreaView>
   );
 }

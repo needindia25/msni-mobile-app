@@ -108,7 +108,7 @@ const ServiceRequests = () => {
           {/* Rating and Price Row */}
           <View className="flex-row justify-between items-center mb-1">
             <Text className="text-blue-500 text-lg font-bold">
-              {serviceData?.price} <Text className="text-sm text-gray-500">{serviceData?.propertyFor === "Sale" ? "" :t(serviceData?.propertyType !== "Guest House" ? "pricePerMonth" : "priceDayNight")}</Text>
+              {serviceData?.price} <Text className="text-sm text-gray-500">{serviceData?.propertyFor === "Sell" ? "" :t(serviceData?.propertyType !== "Guest House" ? "pricePerMonth" : "priceDayNight")}</Text>
             </Text>
             <View className="flex-row items-center">
               {[1, 2, 3, 4, 5].map((star) => (

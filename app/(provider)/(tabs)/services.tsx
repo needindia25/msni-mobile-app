@@ -173,7 +173,7 @@ const Services = () => {
                   {/* Rating and Price Row */}
                   <View className="flex-row justify-between items-center mb-1">
                     <Text className="text-blue-500 text-lg font-bold">
-                      {listing.price} <Text className="text-sm text-gray-500">{listing.propertyFor === "Sale" ? "" : t(listing.propertyType !== "Guest House" ? "pricePerMonth" : "priceDayNight")}</Text>
+                      {listing.price} <Text className="text-sm text-gray-500">{listing.propertyFor === "Sell" ? "" : t(listing.propertyType !== "Guest House" ? "pricePerMonth" : "priceDayNight")}</Text>
                     </Text>
                     <View className="flex-row items-center">
                       {[1, 2, 3, 4, 5].map((star) => (

@@ -7,12 +7,49 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import CustomButton from '@/components/CustomButton';
 import VersionCheck from 'react-native-version-check';
+import Toast from 'react-native-toast-message';
 
 const WelcomePage = () => {
     const { t } = useTranslation();
     const router = useRouter();
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-
+    const checkAppVersion = async () => {
+        try {
+            const res = await VersionCheck.needUpdate();
+            const currentVersion = VersionCheck.getCurrentVersion();
+            // const latestVersion = await VersionCheck.getLatestVersion();
+            if (res && res.isNeeded) {
+                // This means a new version is available in the store
+                Alert.alert(
+                    'Update Required',
+                    'A new version of the app is available. Please update to continue.',
+                    [
+                        {
+                            text: 'Update Now',
+                            onPress: () => {
+                                Linking.openURL(res.storeUrl);
+                            },
+                        },
+                    ],
+                    { cancelable: false }
+                );
+            } else {
+                console.log('App is up to date!');
+                Toast.show({
+                    type: 'info',
+                    text2: `You are on version ${currentVersion}.`,
+                    visibilityTime: 2500,
+                });
+            }
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Update Check Failed',
+                text2: 'Could not check for new updates.',
+            });
+            console.error('Error checking for app updates:', error);
+        }
+    };
     useEffect(() => {
         const getUserInfo = async () => {
             const userInfoString = await AsyncStorage.getItem('user_info');
@@ -20,38 +57,12 @@ const WelcomePage = () => {
             console.log("parsedUserInfo ", parsedUserInfo)
             setUserInfo(parsedUserInfo);
         };
-        const checkAppVersion = async () => {
-            try {
-                const res = await VersionCheck.needUpdate();
-                console.log('Version Check Result:', res);
-
-                if (res && res.isNeeded) {
-                    // This means a new version is available in the store
-                    Alert.alert(
-                        'Update Required',
-                        'A new version of the app is available. Please update to continue.',
-                        [
-                            {
-                                text: 'Update Now',
-                                onPress: () => {
-                                    Linking.openURL(res.storeUrl);
-                                },
-                            },
-                        ],
-                        { cancelable: false }
-                    );
-                } else {
-                    console.log('App is up to date!');
-                }
-            } catch (error) {
-                console.error('Error checking for app updates:', error);
-            }
-        };
         getUserInfo();
         checkAppVersion();
     }, []);
 
     const handleNext = async (role = 1) => {
+        checkAppVersion();
         if (role == 0) {
             console.log("userInfo ", userInfo);
             if (userInfo) {

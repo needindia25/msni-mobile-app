@@ -5070,7 +5070,7 @@
         "model": "master.district",
         "pk": 564,
         "fields": {
-            "name": "Salem",
+            "name": "Sellm",
             "state_id": 31,
             "user_id": 1
         }

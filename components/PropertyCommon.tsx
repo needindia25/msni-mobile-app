@@ -60,11 +60,11 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                 <View className="flex-row justify-between mb-3">
                     <View className="flex-row items-center">
                         <FontAwesome5 name="rupee-sign" size={16} color="black" />
-                        <Text className="text-gray-500 ml-2">{formData.propertyFor === "Sale" ? t("saleAmount") : t("rent")}</Text>
+                        <Text className="text-gray-500 ml-2">{formData.propertyFor === "Sell" ? t("sellAmount") : t("rent")}</Text>
                     </View>
                     <Text className="text-black font-semibold">
                         {formData.rent || t("notAvailable")}
-                        {formData.rent ? (formData.propertyFor === "Sale" ? "" : t(formData.propertyType !== "Guest House" ? "pricePerMonth" : "priceDayNight")) : ""}
+                        {formData.rent ? (formData.propertyFor === "Sell" ? "" : t(formData.propertyType !== "Guest House" ? "pricePerMonth" : "priceDayNight")) : ""}
                     </Text>
                 </View>
                 {formData.propertyType !== "Guest House" && (
@@ -72,7 +72,7 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                         <View className="flex-row justify-between mb-3">
                             <View className="flex-row items-center">
                                 <FontAwesome5 name="rupee-sign" size={16} color="black" />
-                                <Text className="text-gray-500 ml-2">{formData.propertyFor === "Sale" ? t("advanceAmount") : t("deposit")}</Text>
+                                <Text className="text-gray-500 ml-2">{formData.propertyFor === "Sell" ? t("advanceAmount") : t("deposit")}</Text>
                             </View>
                             <Text className="text-black font-semibold">{formData.advance || t("notAvailable")}</Text>
                         </View>
@@ -86,7 +86,7 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                         </View>
                     </>
                 )}
-                {formData.propertyFor === "Sale" && (
+                {formData.propertyFor === "Sell" && (
                     <>
                         <Text className="text-lg font-bold mb-2">{t("propertyListedBy")}</Text>
                         <Text className="text-gray-500">{getKeyByValue(formData.propertyListedBy || "notAvailable")}</Text>
@@ -117,7 +117,7 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
             {/* Area */}
             {formData.propertyType !== "Guest House" && (
                 <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
-                    {formData.propertyFor === "Sale" && (
+                    {formData.propertyFor === "Sell" && (
                         <>
                             <View className="flex-row justify-between mb-3">
                                 <View className="flex-row items-center">
@@ -194,7 +194,7 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                         <Text className="text-black font-semibold">{getKeyByValue(formData.bhkType || "notAvailable")}</Text>
                     </View>
 
-                    {formData.propertyFor !== "Sale" && (
+                    {formData.propertyFor !== "Sell" && (
                         <>
                             {/* Preferred Tenancy */}
                             <View className="flex-row justify-between items-center mb-4">
@@ -368,7 +368,7 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                     </View>
                 </>
             )}
-            {formData.propertyFor === "Sale" && (
+            {formData.propertyFor === "Sell" && (
                 <>
                     <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
                         <Text className="text-lg font-bold mb-2">{t("distanceForMainRoadLabel")}</Text>
@@ -432,7 +432,7 @@ const PropertyCommon: React.FC<PropertyCommonProps> = ({ formData = formDataKeys
                 </>
             )}
 
-            {formData.propertyFor === "Sale" && (formData.tehsilBillYear !== "" || formData.municipleBillYear !== "") && (
+            {formData.propertyFor === "Sell" && (formData.tehsilBillYear !== "" || formData.municipleBillYear !== "") && (
                 <>
                     <View className="bg-gray-100 p-4 rounded-lg shadow-md mb-5">
                         {formData.tehsilBillYear !== "" && (
