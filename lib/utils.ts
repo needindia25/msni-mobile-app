@@ -134,3 +134,44 @@ export const formatData = (serviceResponse: any) => {
     tehsilBillYear: options.tehsilBillYear ?? "",
   };
 };
+
+
+export const setItemWithExpiration = async (key: string, value: string) => {
+  try {
+    const expirationTimestamp = new Date().getTime() + (24 * 60 * 60 * 1000); // 24 hours in milliseconds
+    const itemToStore = {
+      value: value,
+      expiration: expirationTimestamp,
+    };
+    const jsonValue = JSON.stringify(itemToStore);
+    await AsyncStorage.setItem(key, jsonValue);
+    console.log(`Item '${key}' set with a 24-hour expiration. : ${jsonValue}`);
+  } catch (error) {
+    console.error(`Error setting item '${key}':`, error);
+  }
+};
+
+export const getItemWithExpiration = async (key: string) => {
+  try {
+    const jsonValue = await AsyncStorage.getItem(key);
+    console.log(`Getting item '${key}' with expiration. ${jsonValue}`);
+    if (jsonValue === null) {
+      return null;
+    }
+
+    const item = JSON.parse(jsonValue);
+    const now = new Date().getTime();
+
+    if (now > item.expiration) {
+      await AsyncStorage.removeItem(key);
+      console.log(`Item '${key}' has expired and was removed.`);
+      return null;
+    }
+
+    // Item is not expired, return the value
+    return item.value;
+  } catch (error) {
+    console.error(`Error getting item '${key}':`, error);
+    return null;
+  }
+};

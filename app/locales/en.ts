@@ -501,7 +501,12 @@ const en = {
         widthPropertyLabel: "Width of Property",
         lengthPropertyLabel: "Length of Property",
         feet: "Feet",
-        meter: "Meters"
+        meter: "Meters",
+        updateRequired: "Update Required",
+        newVersionAvailable: "A new version of the app (v{{version}}) is available.",
+        updateNow: "Update Now",
+        updateAvailable: "Update Available",
+        later: "Remind Me Later",
     },
 };
 
