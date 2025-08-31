@@ -117,7 +117,7 @@ export const envConstants = {
 };
 
 // Use this to select the environment:
-export const ENV = "UAT";
-// export const ENV = "PROD";
+// export const ENV = "UAT";
+export const ENV = "PROD";
 
 export const constants = envConstants[ENV];
