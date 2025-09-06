@@ -1,22 +1,25 @@
 import { Alert, Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // import DeviceInfo from "react-native-device-info";
 
 export const fetchAPI = async (url: string, t: (key: string) => string, options?: RequestInit) => {
   try {
     // const deviceId = await DeviceInfo.getUniqueId();
+    const userInfoString = await AsyncStorage.getItem('user_info');
+    const userInfo = userInfoString ? JSON.parse(userInfoString) : null;
     if (options) {
       options.headers = {
         ...options.headers,
         "X-Mobile-App": "true",
         "X-Device-Type": Platform.OS,
-        // "X-Device-Id": "",
+        "X-User-Id": userInfo?.user_id || "",
       };
     } else {
       options = {
         headers: {
           "X-Mobile-App": "true",
           "X-Device-Type": Platform.OS,
-          // "X-Device-Id": "",
+          "X-User-Id": userInfo?.user_id || "",
         },
       };
     }

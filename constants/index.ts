@@ -101,8 +101,8 @@ export const envConstants = {
   UAT: {
     DEFAULT_LAT: 24.787674373711102,
     DEFAULT_LONG: 84.99152133511204,
-    BASE_URL: "https://msniassets.rarsolutions.com",
-    API_URL: "https://msniapi.rarsolutions.com",
+    BASE_URL: "https://uatassets.multisolutionofneedindia.com",
+    API_URL: "https://uatapi.multisolutionofneedindia.com",
     DEFAULT_PASSWORD: "MSNI@2025",
     EXPO_PUBLIC_PLACES_API_KEY: "AIzaSyBhSmc340OCHOV1eHAWfH7KqVsMBvFO4mE",
   },

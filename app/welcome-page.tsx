@@ -50,7 +50,7 @@ const WelcomePage = () => {
             // await AsyncStorage.removeItem(update_remainder_key);
             const updateRemainder = await getItemWithExpiration(update_remainder_key)
             const currentVersion = VersionCheck.getCurrentVersion();
-            if (updateRemainder !== "1" && latestVersion !== null && currentVersion !== latestVersion) {
+            if (updateRemainder !== "1" && latestVersion !== null && currentVersion < latestVersion) {
                 alertBox();
             }
         }
@@ -102,7 +102,7 @@ const WelcomePage = () => {
         await checkAppVersion();
         const updateRemainder = await getItemWithExpiration(update_remainder_key)
         const currentVersion = VersionCheck.getCurrentVersion();
-        if (updateRemainder !== "1" && latestVersion !== null && currentVersion !== latestVersion) {
+        if (updateRemainder !== "1" && latestVersion !== null && currentVersion < latestVersion) {
             alertBox();
         } else {
             if (role == 0) {

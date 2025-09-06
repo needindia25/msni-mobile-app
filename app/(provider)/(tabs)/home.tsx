@@ -165,6 +165,12 @@ const Home = () => {
                 title = "invalidPlan";
             } else if (userPlan[0].credits <= userPlan[0].used) {
                 title = "creditBalanceExhausted"
+            } else {
+                const userInfoString = await AsyncStorage.getItem('user_info');
+                const userInfoJson = userInfoString ? JSON.parse(userInfoString) : null
+                userInfoJson.has_subscription = true;
+                userInfoJson.plan_id = userPlan[0].id;
+                await AsyncStorage.setItem("user_info", JSON.stringify(userInfoJson));
             }
         } else {
             title = "noActivePlan";
