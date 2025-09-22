@@ -107,7 +107,7 @@ const Services = () => {
       propertyType: property.options.propertyType || "Unknown Property Type",
       housingType: property.options.housingType || "Unknown Housing Type",
       location: property.options.address || "Unknown Location",
-      price: property.options.rent ? '₹ ' + parseFloat(property.options.rent) : "N/A",
+      price: property.options.rent ? '₹ ' + property.options.rent : "N/A",
       requests: property.service_request_count.requests || 0,
       favorites: property.service_request_count.favorites || 0,
       rating: property.service_request_count.avg_rating || 0,

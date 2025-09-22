@@ -65,7 +65,7 @@ const Home = () => {
             propertyFor: property.options.propertyFor,
             location: property.options.address || "Unknown Location",
             rating: "New",
-            price: property.options.rent ? '₹ ' + parseFloat(property.options.rent) : "N/A",
+            price: property.options.rent ? '₹ ' + property.options.rent : "N/A",
             propertyType: property.options.propertyType || "Unknown Property Type",
             housingType: property.options.housingType || "Unknown Housing Type",
             requests: 0,
