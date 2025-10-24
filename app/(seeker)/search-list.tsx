@@ -67,7 +67,7 @@ const SearchList = () => {
             propertyFor: property.options.propertyFor,
             location: property.options.address || "Unknown Location",
             rating: "New",
-            price: property.options.rent ? '₹ ' + parseFloat(property.options.rent) : "N/A",
+            price: property.options.rent ? '₹ ' + property.options.rent : "N/A",
             requests: 0,
             favorites: 0,
             propertyType: property.options.propertyType || "Unknown Property Type",

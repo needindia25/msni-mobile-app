@@ -296,6 +296,13 @@ const MultiStepForm = () => {
         title = "invalidPlan";
       } else if (userPlan[0].credits <= userPlan[0].used) {
         title = "creditBalanceExhausted"
+      } else {
+        const userInfoString = await AsyncStorage.getItem('user_info');
+        const userInfoJson = userInfoString ? JSON.parse(userInfoString) : null
+        userInfoJson.has_subscription = true;
+        userInfoJson.plan_id = userPlan[0].id;
+        await AsyncStorage.setItem("user_info", JSON.stringify(userInfoJson));
+        setUserInfo(userInfoJson);
       }
     } else {
       title = "noActivePlan";
@@ -358,10 +365,26 @@ const MultiStepForm = () => {
           return;
         }
       }
+      const planId = userInfo?.plan_id || null;
+      if (!planId) {
+        Alert.alert(
+          t("error"),
+          t("noActivePlan"),
+          [
+            {
+              text: t("ok"),
+              onPress: () => {
+                router.push("/choose-subscription");
+              },
+            },
+          ]
+        );
+        return;
+      }
 
-      formData.rent = formData.rent ? parseFloat(formData.rent) : 0;
+      // formData.rent = formData.rent ? parseFloat(formData.rent) : 0;
       formData.areaInSize = formData.areaInSize ? parseFloat(formData.areaInSize) : 0;
-      formData.advance = formData.advance ? parseFloat(formData.advance) : 0;
+      // formData.advance = formData.advance ? parseFloat(formData.advance) : 0;
       const response = await fetchAPI(url, t, {
         method: method,
         headers: {
@@ -827,14 +850,10 @@ const MultiStepForm = () => {
                   <TextInput
                     placeholder={t("enterRatePerDayNight")}
                     className="border border-gray-300 rounded-lg p-3 bg-white"
-                    keyboardType="numeric"
+                    maxLength={20}
                     value={String(formData.rent)}
                     onChangeText={(value) => {
-                      let _value = parseFloat(value);
-                      if (isNaN(_value)) {
-                        _value = 0;
-                      }
-                      handleInputChange("rent", _value)
+                      handleInputChange("rent", value)
                     }}
                   />
 
@@ -922,28 +941,20 @@ const MultiStepForm = () => {
                   <TextInput
                     placeholder={formData.propertyFor !== "Sell" ? t("enterRentAmount") : t("enterSellAmount")}
                     className="border border-gray-300 rounded-lg p-3 bg-white"
-                    keyboardType="numeric"
+                    maxLength={20}
                     value={String(formData.rent)}
                     onChangeText={(value) => {
-                      let _value = parseFloat(value);
-                      if (isNaN(_value)) {
-                        _value = 0;
-                      }
-                      handleInputChange("rent", _value)
+                      handleInputChange("rent", value)
                     }}
                   />
                   <Text className="text-base font-bold mt-3 mb-3">{t("advanceAmount")}</Text>
                   <TextInput
                     placeholder={t("enterAdvanceAmount")}
                     className="border border-gray-300 rounded-lg p-3 bg-white"
-                    keyboardType="numeric"
+                    maxLength={20}
                     value={String(formData.advance)}
                     onChangeText={(value) => {
-                      let _value = parseFloat(value);
-                      if (isNaN(_value)) {
-                        _value = 0;
-                      }
-                      handleInputChange("advance", _value)
+                      handleInputChange("advance", value)
                     }}
                   />
                   <Text className="text-base font-bold mb-3 mt-3">{t("isRentNegotiable")}</Text>

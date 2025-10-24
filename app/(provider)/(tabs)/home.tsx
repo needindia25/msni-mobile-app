@@ -65,7 +65,7 @@ const Home = () => {
             propertyFor: property.options.propertyFor,
             location: property.options.address || "Unknown Location",
             rating: "New",
-            price: property.options.rent ? '₹ ' + parseFloat(property.options.rent) : "N/A",
+            price: property.options.rent ? '₹ ' + property.options.rent : "N/A",
             propertyType: property.options.propertyType || "Unknown Property Type",
             housingType: property.options.housingType || "Unknown Housing Type",
             requests: 0,
@@ -165,6 +165,12 @@ const Home = () => {
                 title = "invalidPlan";
             } else if (userPlan[0].credits <= userPlan[0].used) {
                 title = "creditBalanceExhausted"
+            } else {
+                const userInfoString = await AsyncStorage.getItem('user_info');
+                const userInfoJson = userInfoString ? JSON.parse(userInfoString) : null
+                userInfoJson.has_subscription = true;
+                userInfoJson.plan_id = userPlan[0].id;
+                await AsyncStorage.setItem("user_info", JSON.stringify(userInfoJson));
             }
         } else {
             title = "noActivePlan";

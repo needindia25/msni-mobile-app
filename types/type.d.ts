@@ -221,8 +221,8 @@ export interface AppFormData {
   foodPreference: string;
   roomType: string;
   commercialType: string;
-  rent: number;
-  advance: number;
+  rent: string;
+  advance: string;
   rentNegotiable: string;
   areaInSize: number;
   widthProperty: number;

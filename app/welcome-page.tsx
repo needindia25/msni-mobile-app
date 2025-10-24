@@ -23,13 +23,16 @@ const WelcomePage = () => {
             setIsMandatory(null);
             setStoreUrl("");
             setLatestVersion(null);
-            const response = await fetchAPI(
-                `${constants.API_URL}/latest-version/${Platform.OS}/`, t
-            );
-            if (response) {
-                setIsMandatory(response.is_mandatory);
-                setStoreUrl(response.store_url);
-                setLatestVersion(response.version_name);
+            const response = await fetch(`${constants.API_URL}/latest-version/${Platform.OS}/`);
+            if (response.ok) {
+                const response_json = await response.json();
+                if (response_json.hasOwnProperty("error")) {
+                } else if (response_json.hasOwnProperty("warning")) {
+                } else {
+                    setIsMandatory(response_json.is_mandatory);
+                    setStoreUrl(response_json.store_url);
+                    setLatestVersion(response_json.version_name);
+                }
             }
         } catch (error) {
             console.error('Error checking for app updates:', error);
@@ -47,7 +50,7 @@ const WelcomePage = () => {
             // await AsyncStorage.removeItem(update_remainder_key);
             const updateRemainder = await getItemWithExpiration(update_remainder_key)
             const currentVersion = VersionCheck.getCurrentVersion();
-            if (updateRemainder !== "1" && currentVersion !== latestVersion) {
+            if (updateRemainder !== "1" && latestVersion !== null && currentVersion < latestVersion) {
                 alertBox();
             }
         }
@@ -99,7 +102,7 @@ const WelcomePage = () => {
         await checkAppVersion();
         const updateRemainder = await getItemWithExpiration(update_remainder_key)
         const currentVersion = VersionCheck.getCurrentVersion();
-        if (updateRemainder !== "1" && currentVersion !== latestVersion) {
+        if (updateRemainder !== "1" && latestVersion !== null && currentVersion < latestVersion) {
             alertBox();
         } else {
             if (role == 0) {
