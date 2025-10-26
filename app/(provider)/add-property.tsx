@@ -115,6 +115,7 @@ const MultiStepForm = () => {
                   ? [serviceResponse["options"].numberOfBathRooms + " Bath Room" + (serviceResponse["options"].numberOfBathRooms > 1 ? "s" : "")]
                   : serviceResponse["options"].numberOfBathRooms)
                 : [],
+              field_officer_code: serviceResponse["options"].field_officer_code || formDataKeys.field_officer_code,
             }
           }));
 
@@ -1188,6 +1189,17 @@ const MultiStepForm = () => {
                   />
                 </>
               )}
+
+              <Text className="text-base font-bold mt-3 mb-3">{ t("fieldOfficerCode")}</Text>
+              <TextInput
+                placeholder={t("enterFieldOfficerCode")}
+                className="border border-gray-300 rounded-lg p-3 bg-white"
+                maxLength={20}
+                value={String(formData.field_officer_code)}
+                onChangeText={(value) => {
+                  handleInputChange("field_officer_code", value)
+                }}
+              />
 
               <View className="text-base font-bold mt-3 mb-3"></View>
             </ScrollView>

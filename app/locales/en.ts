@@ -507,6 +507,8 @@ const en = {
         updateNow: "Update Now",
         updateAvailable: "Update Available",
         later: "Remind Me Later",
+        fieldOfficerCode: "Field Officer Code (Optional)",
+        enterFieldOfficerCode: "Enter Field Officer Code",
     },
 };
 

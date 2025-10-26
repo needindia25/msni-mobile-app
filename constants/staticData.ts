@@ -263,6 +263,7 @@ export const formDataKeys = {
     widthOfTheRoadInFrontOfAProperty: 0,
     municipleBillYear: "",
     tehsilBillYear: "",
-    propertyListedBy: ""
+    propertyListedBy: "",
+    field_officer_code: "NDBR001"
 }
 

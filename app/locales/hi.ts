@@ -507,6 +507,8 @@ const hi = {
         updateNow: "अभी अपडेट करें",
         updateAvailable: "अपडेट उपलब्ध है",
         later: "बाद में याद दिलाएं",
+        fieldOfficerCode: "फील्ड ऑफिसर कोड (यदि लागू हो)",
+        enterFieldOfficerCode: "फील्ड ऑफिसर कोड दर्ज करें",
     },
 };
 
