@@ -50,6 +50,24 @@ const SignUp = () => {
         ]
       ); // Use translation key
       return false;
+    } else if (form.name.length < 3 || form.name.length > 50) {
+      Alert.alert(t("error"), t("nameLength"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      ); // Use translation key
+      return false;
+    } else if (!/^[a-zA-Z\s]+$/.test(form.name)) {
+      Alert.alert(t("error"), t("invalidName"),
+        [
+          {
+            text: t("ok"),
+          },
+        ]
+      ); // Use translation key
+      return false;
     }
     if (!form.phone) {
       Alert.alert(t("error"), t("phoneRequired"),

@@ -509,6 +509,8 @@ const en = {
         later: "Remind Me Later",
         fieldOfficerCode: "Field Officer Code (Optional)",
         enterFieldOfficerCode: "Enter Field Officer Code",
+        invalidName: "Name should contain only alphabets and spaces.",
+        nameLength: "Name must be between 3 and 50 characters.",
     },
 };
 
