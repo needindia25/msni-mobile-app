@@ -125,7 +125,7 @@ const SignUp = () => {
       return;
     }
     setLoading(true);
-    const otpGenerated = await generateOTP(t, form.phone, "signup");
+    const otpGenerated = await generateOTP(t, form.phone, "signup", "generate", form.name);
     setLoading(false);
     if (otpGenerated) {
       setVerificationModal(true);

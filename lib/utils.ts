@@ -45,7 +45,15 @@ export async function formatDescription(item: any) {
   return descriptions;
 };
 
-export async function generateOTP(t: any, number: string, optFor: string, type: string = "generate") {
+export async function generateOTP(t: any, number: string, optFor: string, type: string = "generate", full_name: string = "") {
+  let payload: any = {
+    "username": number,
+    "otp_for": optFor,
+    "full_name": full_name
+  };
+  if (optFor !== "signup" || full_name === "" || full_name === null || full_name === undefined) {
+    delete payload.full_name;
+  }
   return await fetchAPI(
     `${constants.API_URL}/otp/${type}/`, t,
     {
@@ -53,12 +61,7 @@ export async function generateOTP(t: any, number: string, optFor: string, type: 
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(
-        {
-          "username": number,
-          "otp_for": optFor
-        }
-      )
+      body: JSON.stringify(payload),
     }
   );
 }
