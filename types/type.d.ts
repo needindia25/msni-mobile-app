@@ -254,4 +254,5 @@ export interface AppFormData {
   municipleBillYear: string;
   tehsilBillYear: string;
   propertyListedBy: string;
+  field_officer_code : string;
 }

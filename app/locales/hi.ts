@@ -507,6 +507,10 @@ const hi = {
         updateNow: "अभी अपडेट करें",
         updateAvailable: "अपडेट उपलब्ध है",
         later: "बाद में याद दिलाएं",
+        fieldOfficerCode: "फील्ड ऑफिसर कोड (यदि लागू हो)",
+        enterFieldOfficerCode: "फील्ड ऑफिसर कोड दर्ज करें",
+        invalidName: "नाम में केवल अक्षर और रिक्त स्थान होने चाहिए।",
+        nameLength: "नाम 3 से 50 वर्णों के बीच होना चाहिए।",
     },
 };
 
